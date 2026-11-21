@@ -1,0 +1,102 @@
+[project]
+name = "viewallet-backend"
+version = "0.1.0"
+description = "VieWallet backend: simulated fintech e-wallet API and worker (modular monolith)."
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.20.1",
+    "fastapi>=0.165.0",
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.9",
+    "pydantic>=2.14.4",
+    "pydantic-settings>=2.16.3",
+    "redis>=8.1.0",
+    "sqlalchemy[asyncio]>=2.1.9",
+    "structlog>=26.1.0",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "asgi-lifespan>=2.1.0",
+    "hypothesis>=6.170.17",
+    "import-linter>=2.17",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.5.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.6",
+]
+
+[tool.uv]
+package = false
+# The repository lives in a cloud-synced folder on the dev machine where hardlinks fail.
+link-mode = "copy"
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+extend-exclude = ["migrations/versions/*.py.mako"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "N", "UP", "B", "A", "C4", "DTZ", "T20", "SIM", "RUF",
+    "S", "ASYNC", "PT", "RET", "PL", "TRY", "PERF",
+]
+ignore = [
+    "PLR0913",  # explicit keyword-only arguments are preferred over parameter objects here
+    "TRY003",   # messages on domain exceptions are intentional
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "PLR2004", "S311"]
+"migrations/**" = ["N999"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_unreachable = true
+files = ["app", "tests", "migrations"]
+exclude = ["migrations/versions/.*\\.mako$"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = ["--strict-markers", "--strict-config", "-ra"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = [
+    "integration: needs PostgreSQL (and Redis for some tests); configured via VW_TEST_* env vars",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@abstractmethod"]
+
+# ---------------------------------------------------------------- import-linter
+# Module boundary rules (ADR-0001). Contracts for business modules are added as modules appear.
+[tool.importlinter]
+root_package = "app"
+
+[[tool.importlinter.contracts]]
+name = "Shared kernel (app.core) does not depend on API, modules or entrypoints"
+type = "forbidden"
+source_modules = ["app.core"]
+forbidden_modules = ["app.api", "app.modules", "app.main", "app.worker", "app.scripts"]
+
+[[tool.importlinter.contracts]]
+name = "Business modules do not depend on entrypoints or the HTTP composition layer"
+type = "forbidden"
+source_modules = ["app.modules"]
+forbidden_modules = ["app.main", "app.worker", "app.api", "app.scripts"]
+allow_indirect_imports = true

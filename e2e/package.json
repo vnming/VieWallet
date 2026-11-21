@@ -1,0 +1,17 @@
+{
+  "name": "viewallet-e2e",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "wait": "bash wait-for-stack.sh",
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "typescript": "~6.0"
+  }
+}

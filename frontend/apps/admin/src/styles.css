@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@import "@viewallet/ui/styles.css";
+
+@source "./";

@@ -1,0 +1,129 @@
+# Hướng dẫn môi trường phát triển
+
+| Mục | Giá trị |
+|---|---|
+| Trạng thái | Phản ánh code Phase 1 |
+| Cập nhật | 2026-11-21 |
+| Liên quan | [Kiến trúc §7](../architecture/architecture.md#7-góc-nhìn-triển-khai), [ADR-0010](../adr/0010-runtime-versions.md) |
+
+## 1. Yêu cầu
+
+| Công cụ | Phiên bản đã kiểm tra | Ghi chú |
+|---|---|---|
+| Docker Desktop (WSL 2) | 29.9.3, Compose v5.7.0 | Chạy Postgres, Redis, Mailpit và toàn bộ stack |
+| uv | 0.11 | Tự cài Python 3.14 theo `backend/pyproject.toml` |
+| Node.js | 24 | |
+| pnpm | 9.15.4 | Ghim qua `packageManager` |
+
+Trên Windows:
+
+- Dùng `127.0.0.1` thay cho `localhost` trong mọi URL (xem ADR-0010).
+- Nếu terminal không nhận lệnh `docker`, thêm `C:\Users\<user>\AppData\Local\Programs\DockerDesktop\resources\bin` vào PATH hoặc mở lại terminal.
+
+## 2. Cấu hình lần đầu
+
+```bash
+cp .env.example .env                    # mật khẩu dev cho Postgres và hai DB role
+cp backend/.env.example backend/.env    # dùng cùng mật khẩu với .env ở gốc
+cd backend && uv sync && cd ..
+cd frontend && pnpm install && cd ..
+cd e2e && pnpm install && pnpm exec playwright install chromium && cd ..
+```
+
+Lần đầu container Postgres khởi động, script `infra/docker/postgres/initdb/01-roles.sh` tạo:
+
+- role `viewallet_migrator` (sở hữu database, chạy migration và seed);
+- role `viewallet_app` (API và worker; chỉ có quyền DML do migration cấp);
+- database `viewallet` (dev) và `viewallet_test` (integration test), cùng extension `pg_trgm`, `citext`.
+
+Script chỉ chạy khi volume `pgdata` còn trống. Muốn chạy lại thì phải xóa volume (`docker compose down -v`). **Lệnh này xóa toàn bộ dữ liệu local.**
+
+## 3. Chạy toàn bộ stack trong Docker
+
+```bash
+docker compose up -d --build
+bash e2e/wait-for-stack.sh
+```
+
+| Dịch vụ | URL |
+|---|---|
+| App khách hàng | <http://127.0.0.1:8080> |
+| App admin | <http://127.0.0.1:8081> |
+| API, tài liệu OpenAPI | <http://127.0.0.1:8000/api/docs> |
+| Mailpit (email dev) | <http://127.0.0.1:8025> |
+| Postgres | `127.0.0.1:55432` |
+
+Service `migrate` chạy `alembic upgrade head` rồi seed dữ liệu tham chiếu, sau đó thoát với mã 0. `api` và `worker` chỉ khởi động khi `migrate` thành công.
+
+## 4. Phát triển hằng ngày (app chạy trên host)
+
+```bash
+docker compose up -d postgres redis mailpit
+
+# backend (terminal 1)
+cd backend
+uv run alembic upgrade head
+uv run python -m app.scripts.seed
+uv run uvicorn --factory app.main:app_factory --reload --port 8000
+
+# worker (terminal 2)
+cd backend && uv run python -m app.worker
+
+# frontend (terminal 3, 4)
+cd frontend && pnpm dev:web      # http://127.0.0.1:5173
+cd frontend && pnpm dev:admin    # http://127.0.0.1:5174
+```
+
+Vite proxy `/api` và `/health` sang `127.0.0.1:8000`, nên trình duyệt luôn gọi API cùng origin.
+
+## 5. Kiểm tra chất lượng (giống CI)
+
+```bash
+# backend
+cd backend
+uv run ruff format --check . && uv run ruff check .
+uv run mypy
+uv run lint-imports
+uv run pytest --cov --cov-fail-under=90     # integration test cần postgres + redis đang chạy
+
+# frontend
+cd frontend
+pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+
+# e2e (cần stack ở mục 3)
+cd e2e && pnpm test
+```
+
+Integration test đọc `VW_TEST_DATABASE_URL`, `VW_TEST_MIGRATION_DATABASE_URL`, `VW_TEST_REDIS_URL` từ `backend/.env`. Nếu thiếu, pytest bỏ qua các test này và in rõ lý do. Mỗi phiên test dựng lại schema của `viewallet_test` bằng `alembic downgrade base` rồi `upgrade head`, nên cũng kiểm tra luôn chiều downgrade của migration.
+
+## 6. Thay đổi API
+
+Sau khi sửa endpoint hoặc schema Pydantic:
+
+```bash
+cd frontend && pnpm gen:api
+```
+
+Lệnh này xuất `openapi.json` từ backend và sinh lại `packages/api-client/src/schema.d.ts`. CI báo lỗi nếu một trong hai file lệch với code.
+
+## 7. Thay đổi database
+
+1. Sửa model SQLAlchemy.
+2. `cd backend && uv run alembic revision -m "<mô tả>"`, viết migration bằng tay hoặc với `--autogenerate` rồi rà lại.
+3. `uv run alembic upgrade head` và `uv run alembic check`. Test `test_models_match_migrations` cũng chạy kiểm tra này.
+4. Cập nhật [database.md](../architecture/database.md).
+
+Bảng chỉ-thêm (ledger, event, audit) dùng `make_append_only_sql()` trong `app/core/migration_ops.py`.
+
+## 8. CI/CD
+
+Workflow `.github/workflows/ci.yml` chạy trên mọi pull request và mỗi lần push lên `main`:
+
+| Job | Nội dung |
+|---|---|
+| `backend` | Postgres 18 + Redis 8 service container, tạo role, ruff, mypy strict, import-linter, pytest + coverage ≥ 90 %, kiểm tra `openapi.json` không lệch |
+| `frontend` | Kiểm tra type sinh từ OpenAPI không lệch, prettier, eslint, tsc, vitest, build |
+| `e2e` | `docker compose up --build` + Playwright (Chromium, mobile và desktop); khi lỗi thì upload report và log compose |
+| `secrets` | gitleaks trên toàn bộ lịch sử git |
+
+Chưa có job triển khai (Phase 13).

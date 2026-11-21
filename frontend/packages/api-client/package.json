@@ -1,0 +1,22 @@
+{
+  "name": "@viewallet/api-client",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@tanstack/react-query": "^5.108.2",
+    "openapi-fetch": "^0.17.0",
+    "react": "^19.3.1"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.13.0",
+    "typescript": "~6.0"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "gen": "cd ../../../backend && uv run python -m app.scripts.export_openapi ../frontend/packages/api-client/openapi.json && cd ../frontend/packages/api-client && openapi-typescript openapi.json -o src/schema.d.ts && prettier --write src/schema.d.ts"
+  }
+}

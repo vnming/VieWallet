@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "VieWallet Admin",
+    "tagline": "Vận hành & quản trị",
+    "skipToContent": "Bỏ qua đến nội dung chính",
+    "environment": "Môi trường"
+  },
+  "nav": {
+    "label": "Điều hướng quản trị",
+    "overview": "Tổng quan"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "overview": {
+    "title": "Tổng quan hệ thống",
+    "intro": "Bản nền tảng của ứng dụng quản trị. Đăng nhập nhân viên (MFA) và các màn hình vận hành sẽ có từ Phase 2 và Phase 8.",
+    "statusTitle": "Sức khỏe dịch vụ"
+  },
+  "status": {
+    "loading": "Đang tải trạng thái hệ thống",
+    "overallOk": "Mọi dịch vụ hoạt động bình thường",
+    "overallFail": "Một số dịch vụ đang gặp sự cố",
+    "version": "Phiên bản",
+    "environment": "Môi trường",
+    "serverTime": "Giờ máy chủ",
+    "checks": {
+      "database": "Cơ sở dữ liệu",
+      "migrations": "Phiên bản schema",
+      "redis": "Redis"
+    },
+    "ok": "Hoạt động",
+    "fail": "Lỗi",
+    "errorTitle": "Không kết nối được máy chủ",
+    "errorDescription": "Kiểm tra backend đã chạy chưa, rồi thử lại.",
+    "retry": "Thử lại",
+    "correlation": "Mã tham chiếu"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Đường dẫn này không tồn tại.",
+    "back": "Về tổng quan"
+  },
+  "common": {
+    "close": "Đóng"
+  }
+}

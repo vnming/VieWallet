@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "VieWallet",
+    "tagline": "Simulated e-wallet",
+    "simulationNotice": "Simulation environment — no real money, no real banks.",
+    "skipToContent": "Skip to main content"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "design": "Design"
+  },
+  "language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "home": {
+    "title": "Welcome to VieWallet",
+    "intro": "This is the foundation build. Wallet features (sign-up, deposits, transfers) arrive in later phases according to the roadmap.",
+    "statusTitle": "System status"
+  },
+  "status": {
+    "loading": "Loading system status",
+    "overallOk": "All services are operating normally",
+    "overallFail": "Some services have problems",
+    "version": "Version",
+    "environment": "Environment",
+    "serverTime": "Server time",
+    "checks": {
+      "database": "Database",
+      "migrations": "Schema version",
+      "redis": "Redis"
+    },
+    "ok": "Operational",
+    "fail": "Failing",
+    "errorTitle": "Cannot reach the server",
+    "errorDescription": "Check that the backend is running, then try again.",
+    "retry": "Try again",
+    "correlation": "Reference"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This address does not exist.",
+    "back": "Back to home"
+  },
+  "common": {
+    "close": "Close"
+  }
+}

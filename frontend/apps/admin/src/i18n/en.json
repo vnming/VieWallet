@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "VieWallet Admin",
+    "tagline": "Operations & administration",
+    "skipToContent": "Skip to main content",
+    "environment": "Environment"
+  },
+  "nav": {
+    "label": "Admin navigation",
+    "overview": "Overview"
+  },
+  "language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "overview": {
+    "title": "System overview",
+    "intro": "Foundation build of the admin app. Staff sign-in (MFA) and operations screens arrive in Phase 2 and Phase 8.",
+    "statusTitle": "Service health"
+  },
+  "status": {
+    "loading": "Loading system status",
+    "overallOk": "All services are operating normally",
+    "overallFail": "Some services have problems",
+    "version": "Version",
+    "environment": "Environment",
+    "serverTime": "Server time",
+    "checks": {
+      "database": "Database",
+      "migrations": "Schema version",
+      "redis": "Redis"
+    },
+    "ok": "Operational",
+    "fail": "Failing",
+    "errorTitle": "Cannot reach the server",
+    "errorDescription": "Check that the backend is running, then try again.",
+    "retry": "Try again",
+    "correlation": "Reference"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This address does not exist.",
+    "back": "Back to overview"
+  },
+  "common": {
+    "close": "Close"
+  }
+}

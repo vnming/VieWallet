@@ -1,0 +1,119 @@
+# VieWallet local stack.
+#
+#   cp .env.example .env
+#   docker compose up -d --build          # full stack
+#   docker compose up -d postgres redis mailpit   # infrastructure only (apps run on the host)
+#
+# Images run as non-root where the upstream image allows it.
+name: viewallet
+
+x-backend-env: &backend-env
+  VW_ENVIRONMENT: development
+  VW_LOG_JSON: "true"
+  VW_DATABASE_URL: postgresql+psycopg://viewallet_app:${VW_DB_APP_PASSWORD:?set in .env}@postgres:5432/viewallet
+  VW_MIGRATION_DATABASE_URL: postgresql+psycopg://viewallet_migrator:${VW_DB_MIGRATOR_PASSWORD:?set in .env}@postgres:5432/viewallet
+  VW_REDIS_URL: redis://redis:6379/0
+  VW_CORS_ORIGINS: '["http://localhost:${VW_PORT_WEB:-8080}","http://localhost:${VW_PORT_ADMIN:-8081}","http://localhost:5173","http://localhost:5174"]'
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      VW_DB_MIGRATOR_PASSWORD: ${VW_DB_MIGRATOR_PASSWORD:?set in .env}
+      VW_DB_APP_PASSWORD: ${VW_DB_APP_PASSWORD:?set in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./infra/docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:${VW_PORT_POSTGRES:-55432}:5432"
+    healthcheck:
+      # TCP check on purpose: the temporary server used during initdb listens on the socket only.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d viewallet"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:${VW_PORT_REDIS:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "127.0.0.1:${VW_PORT_MAILPIT_UI:-8025}:8025"
+      - "127.0.0.1:1025:1025"
+
+  migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment: *backend-env
+    command: ["sh", "-c", "alembic upgrade head && python -m app.scripts.seed"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment: *backend-env
+    command: ["uvicorn", "--factory", "app.main:app_factory", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--no-access-log"]
+    ports:
+      - "127.0.0.1:${VW_PORT_API:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready').status == 200 else 1)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment: *backend-env
+    command: ["python", "-m", "app.worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/frontend.Dockerfile
+      args:
+        APP: web
+    ports:
+      - "127.0.0.1:${VW_PORT_WEB:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  admin:
+    build:
+      context: .
+      dockerfile: infra/docker/frontend.Dockerfile
+      args:
+        APP: admin
+    ports:
+      - "127.0.0.1:${VW_PORT_ADMIN:-8081}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:

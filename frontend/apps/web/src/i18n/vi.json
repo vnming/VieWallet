@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "VieWallet",
+    "tagline": "Ví điện tử mô phỏng",
+    "simulationNotice": "Môi trường mô phỏng — không có tiền thật, không có ngân hàng thật.",
+    "skipToContent": "Bỏ qua đến nội dung chính"
+  },
+  "nav": {
+    "label": "Điều hướng chính",
+    "home": "Trang chủ",
+    "design": "Thiết kế"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "home": {
+    "title": "Chào mừng đến VieWallet",
+    "intro": "Đây là bản nền tảng của hệ thống. Các tính năng ví (đăng ký, nạp, chuyển tiền) sẽ được bổ sung ở các phase tiếp theo theo roadmap.",
+    "statusTitle": "Trạng thái hệ thống"
+  },
+  "status": {
+    "loading": "Đang tải trạng thái hệ thống",
+    "overallOk": "Mọi dịch vụ hoạt động bình thường",
+    "overallFail": "Một số dịch vụ đang gặp sự cố",
+    "version": "Phiên bản",
+    "environment": "Môi trường",
+    "serverTime": "Giờ máy chủ",
+    "checks": {
+      "database": "Cơ sở dữ liệu",
+      "migrations": "Phiên bản schema",
+      "redis": "Redis"
+    },
+    "ok": "Hoạt động",
+    "fail": "Lỗi",
+    "errorTitle": "Không kết nối được máy chủ",
+    "errorDescription": "Kiểm tra backend đã chạy chưa, rồi thử lại.",
+    "retry": "Thử lại",
+    "correlation": "Mã tham chiếu"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Đường dẫn này không tồn tại.",
+    "back": "Về trang chủ"
+  },
+  "common": {
+    "close": "Đóng"
+  }
+}
