@@ -1,0 +1,2 @@
+# False positive: a UUID used as an Idempotency-Key in a unit test (replaced by uuid4() later).
+7badb616e85914624389016f47a5e94ee1f1b9c1:backend/tests/unit/test_http_foundation.py:generic-api-key:152

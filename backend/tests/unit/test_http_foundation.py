@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import AsyncIterator
 
 import httpx
@@ -149,7 +150,7 @@ class TestIdempotencyHeader:
         assert response.json()["code"] == "IDEMPOTENCY_KEY_INVALID"
 
     async def test_valid(self, client: httpx.AsyncClient) -> None:
-        key = "0193f0c2-8f5e-7c3a-9d1e-2b4f6a8c0e12"
+        key = str(uuid.uuid4())
         response = await client.post("/idem", headers={"Idempotency-Key": key})
         assert response.status_code == 200
         assert response.json() == {"key": key}
