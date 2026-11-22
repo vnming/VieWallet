@@ -2,8 +2,8 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Phản ánh code Phase 1 |
-| Cập nhật | 2026-11-21 |
+| Trạng thái | Phản ánh code Phase 3 |
+| Cập nhật | 2026-11-23 |
 | Liên quan | [Kiến trúc §7](../architecture/architecture.md#7-góc-nhìn-triển-khai), [ADR-0010](../adr/0010-runtime-versions.md) |
 
 ## 1. Yêu cầu
@@ -53,7 +53,9 @@ bash e2e/wait-for-stack.sh
 | Mailpit (email dev) | <http://127.0.0.1:8025> |
 | Postgres | `127.0.0.1:55432` |
 
-Service `migrate` chạy `alembic upgrade head` rồi seed dữ liệu tham chiếu, sau đó thoát với mã 0. `api` và `worker` chỉ khởi động khi `migrate` thành công.
+Service `migrate` chạy `alembic upgrade head` rồi seed dữ liệu tham chiếu (tiền tệ, RBAC, tài khoản ledger hệ thống cho VND, phí và hạn mức mặc định), sau đó thoát với mã 0. Seed không ghi đè rule đã có. `api` và `worker` chỉ khởi động khi `migrate` thành công.
+
+Worker chạy các job định kỳ: `purge_expired_idempotency_keys` (mỗi giờ), `internal_reconciliation` (mỗi giờ, kiểm tra I1–I5), `expire_approval_requests` (mỗi 5 phút, hết hạn sau 72 giờ).
 
 ## 3a. Tài khoản nhân viên
 
@@ -67,6 +69,16 @@ echo "<mật khẩu>" | docker compose exec -T api python -m app.scripts.create_
 Role hợp lệ: SUPPORT, OPERATIONS, FINANCE, RISK_ANALYST, KYC_REVIEWER, ADMIN, SUPER_ADMIN. Lần đăng nhập admin đầu tiên bắt buộc thiết lập TOTP (Google Authenticator, Aegis, 1Password...). Email phải có tên miền thật (ví dụ `example.com`); tên miền dành riêng như `.local` bị từ chối.
 
 Email xác minh, đặt lại mật khẩu và thông báo bảo mật xem tại Mailpit: <http://127.0.0.1:8025>.
+
+## 3b. Tạo số dư demo
+
+Chưa có nạp tiền (Phase 4), nên số dư demo được tạo bằng **điều chỉnh số dư** qua maker-checker, đúng như mọi thay đổi số dư khác:
+
+1. Khách đăng ký, xác minh email, đăng nhập app khách hàng; số ví hiện trên trang Ví.
+2. Tạo hai nhân viên role `FINANCE` (mục 3a). Người thứ nhất vào **Điều chỉnh số dư**, chọn lý do "Nạp tiền mô phỏng (demo)", nhập số ví và số tiền.
+3. Người thứ hai vào **Phê duyệt** và duyệt. Số dư và lịch sử của khách cập nhật ngay.
+
+Một nhân viên không thể tự duyệt yêu cầu của mình (kiểm tra ở service và bằng CHECK trong DB).
 
 ## 4. Phát triển hằng ngày (app chạy trên host)
 

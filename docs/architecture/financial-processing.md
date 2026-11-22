@@ -2,8 +2,8 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Bản nháp chờ duyệt (Phase 0) — **tài liệu ưu tiên cao nhất** |
-| Cập nhật | 2026-11-21 |
+| Trạng thái | Lõi đã cài đặt ở Phase 3 (xem §13) — **tài liệu ưu tiên cao nhất** |
+| Cập nhật | 2026-11-23 |
 | Liên quan | [Database](database.md), [Payment Provider Simulator](payment-provider-simulator.md), [ADR-0002 Ledger](../adr/0002-double-entry-ledger.md), [ADR-0003 Tiền](../adr/0003-money-representation.md), [ADR-0004 Concurrency](../adr/0004-concurrency-control.md) |
 
 ## 1. Nguyên tắc
@@ -329,3 +329,18 @@ BLOCK ⇒ giao dịch FAILED với `RISK_BLOCKED` (thông báo chung chung cho u
 
 - `reference`: `VW` + `YYMMDD` + 10 ký tự Crockford base32 ngẫu nhiên (ví dụ `VW261121K7Q2M9XD4P`). Duy nhất, hiển thị cho user và support.
 - Số ví: 10 chữ số = 9 số ngẫu nhiên + 1 chữ số kiểm tra Luhn; duy nhất; không bao giờ dùng lại.
+
+## 13. Trạng thái cài đặt (Phase 3)
+
+| Phần | Nơi cài đặt | Ghi chú |
+|---|---|---|
+| Money, phí bps, kẹp min/max | `core/money.py`, `pricing/domain.py` | Số học nguyên; test biên làm tròn (FT-29) |
+| Hệ thống tài khoản, quy tắc kế toán kép | `ledger/domain.py` | `JournalDraft` từ chối journal không cân, < 2 dòng, nhiều tiền tệ |
+| Engine posting, khóa có thứ tự | `ledger/service.py` (`post`, `reverse`) | `FOR UPDATE` số dư ví khách theo id; tài khoản hệ thống cập nhật nguyên tử sau cùng theo id; kiểm tra đủ tiền trước khi ghi |
+| Bất biến I1–I5 | `ledger.check_invariants` + `operations/reconciliation.py` | I5 so Σ `transactions.held_minor` với số dư HOLD |
+| State machine (§5) | `transactions/domain/state_machine.py` | Bảng khai báo; test duyệt mọi bộ (loại, từ, đến) (FT-24) |
+| CAS trạng thái + event + outbox | `transactions/service.py` (`transition`) | 0 dòng cập nhật ⇒ `TXN_CONCURRENT_UPDATE` |
+| ADJUSTMENT + maker-checker | `transactions/use_cases/adjustment.py`, `operations/approvals.py` | Thực hiện trong cùng DB transaction với quyết định duyệt; trừ tiền thiếu số dư ⇒ giao dịch CANCELLED, yêu cầu FAILED |
+| Hạn mức, risk | `pricing`, `risk` | Engine và rule mặc định có test; được nối vào luồng chuyển/rút/thanh toán ở Phase 4–5 |
+
+Lưu ý khi dùng tiếp ở Phase 4–5: thao tác giữ tiền phải cập nhật `held_minor` trong cùng transaction với journal `*_HOLD`, và trả về 0 khi tất toán/hoàn giữ, nếu không I5 sẽ báo vi phạm.

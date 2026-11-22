@@ -8,7 +8,11 @@
   "nav": {
     "label": "Điều hướng quản trị",
     "overview": "Tổng quan",
-    "audit": "Nhật ký audit"
+    "audit": "Nhật ký audit",
+    "wallets": "Tra cứu ví",
+    "adjustments": "Điều chỉnh số dư",
+    "approvals": "Phê duyệt",
+    "reconciliation": "Đối soát"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -17,7 +21,7 @@
   },
   "overview": {
     "title": "Tổng quan hệ thống",
-    "intro": "Theo dõi sức khỏe dịch vụ. Các màn hình vận hành (giao dịch, KYC, rủi ro, đối soát) sẽ được bổ sung ở Phase 8.",
+    "intro": "Theo dõi sức khỏe dịch vụ. Phase 3 có tra cứu ví, điều chỉnh số dư (maker-checker), phê duyệt và đối soát nội bộ; màn hình vận hành đầy đủ ở Phase 8.",
     "statusTitle": "Sức khỏe dịch vụ"
   },
   "status": {
@@ -45,7 +49,10 @@
     "back": "Về tổng quan"
   },
   "common": {
-    "close": "Đóng"
+    "close": "Đóng",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "search": "Tìm"
   },
   "errors": {
     "network": "Không kết nối được máy chủ.",
@@ -117,5 +124,105 @@
     "pageOf": "Trang {{page}}/{{total}}",
     "previous": "Trước",
     "next": "Sau"
+  },
+  "finance": {
+    "amount": "Số tiền (VND)",
+    "amountHint": "Số nguyên đồng, không dấu chấm. Ví dụ 250000.",
+    "walletNumber": "Số ví",
+    "direction": "Chiều",
+    "directions": {
+      "CREDIT": "Cộng tiền cho khách",
+      "DEBIT": "Trừ tiền của khách"
+    },
+    "reasons": {
+      "GOODWILL": "Thiện chí",
+      "CORRECTION": "Sửa sai",
+      "RECONCILIATION": "Sau đối soát",
+      "DEMO_FUNDING": "Nạp tiền mô phỏng (demo)"
+    },
+    "actions": {
+      "ADJUSTMENT": "Điều chỉnh số dư",
+      "WALLET_UNFREEZE": "Mở khóa ví"
+    },
+    "approvalStatus": {
+      "PENDING": "Chờ duyệt",
+      "APPROVED": "Đã duyệt",
+      "EXECUTED": "Đã thực hiện",
+      "FAILED": "Thực hiện thất bại",
+      "REJECTED": "Bị từ chối",
+      "EXPIRED": "Hết hạn",
+      "CANCELLED": "Đã hủy"
+    }
+  },
+  "wallets": {
+    "title": "Tra cứu ví",
+    "description": "Nhập số ví 10 chữ số để xem số dư và trạng thái.",
+    "notFound": "Không tìm thấy ví",
+    "balance": "Số dư",
+    "status": "Trạng thái",
+    "owner": "Mã người dùng",
+    "freezeSource": "Khóa bởi",
+    "reason": "Lý do",
+    "freeze": "Khóa ví",
+    "freezeTitle": "Khóa ví ngay",
+    "freezeBody": "Ví bị khóa ngay lập tức. Mở khóa cần người thứ hai phê duyệt.",
+    "frozenDone": "Đã khóa ví",
+    "requestUnfreeze": "Đề nghị mở khóa",
+    "unfreezeTitle": "Đề nghị mở khóa ví",
+    "unfreezeBody": "Một nhân viên khác có quyền mở khóa sẽ duyệt đề nghị này.",
+    "unfreezeRequested": "Đã gửi đề nghị mở khóa",
+    "proposeAdjustment": "Đề xuất điều chỉnh"
+  },
+  "adjustments": {
+    "title": "Điều chỉnh số dư",
+    "description": "Mọi điều chỉnh cần một nhân viên khác duyệt (maker-checker). Không có tiền thật: dùng 'Nạp tiền mô phỏng' để tạo số dư demo.",
+    "reason": "Mã lý do",
+    "note": "Ghi chú nội bộ",
+    "noteHint": "Ít nhất 10 ký tự. Chỉ nhân viên thấy.",
+    "customerText": "Nội dung khách hàng thấy (tùy chọn)",
+    "ticket": "Mã ticket (tùy chọn)",
+    "submit": "Gửi đề xuất",
+    "created": "Đã tạo đề xuất {{reference}}, đang chờ duyệt."
+  },
+  "approvals": {
+    "title": "Phê duyệt",
+    "description": "Yêu cầu do nhân viên khác tạo. Bạn không thể duyệt yêu cầu của chính mình.",
+    "filter": "Trạng thái",
+    "empty": "Không có yêu cầu nào",
+    "maker": "Người tạo",
+    "mine": "Bạn",
+    "created": "Tạo lúc",
+    "expires": "Hết hạn",
+    "reasonLabel": "Lý do",
+    "approve": "Duyệt và thực hiện",
+    "reject": "Từ chối",
+    "cancel": "Hủy yêu cầu",
+    "note": "Ghi chú",
+    "rejectTitle": "Từ chối yêu cầu",
+    "rejectNote": "Lý do từ chối (ít nhất 5 ký tự)",
+    "approved": "Đã duyệt và thực hiện",
+    "failed": "Đã duyệt nhưng thực hiện thất bại: {{code}}",
+    "rejected": "Đã từ chối yêu cầu",
+    "cancelled": "Đã hủy yêu cầu",
+    "failure": "Mã lỗi",
+    "error": "Không tải được danh sách phê duyệt"
+  },
+  "reconciliation": {
+    "title": "Đối soát nội bộ",
+    "description": "Kiểm tra bất biến I1–I5 của ledger: journal cân bằng, số dư khớp posting, không âm, bảng cân đối thử, tiền giữ. Chạy tự động mỗi giờ.",
+    "run": "Chạy đối soát ngay",
+    "ran": "Đối soát xong: {{count}} vi phạm",
+    "empty": "Chưa có lần chạy nào",
+    "started": "Bắt đầu",
+    "status": "Kết quả",
+    "violations": "Vi phạm",
+    "trigger": "Người chạy",
+    "system": "Hệ thống",
+    "clean": "Không có vi phạm",
+    "items": "Chi tiết vi phạm",
+    "invariant": "Bất biến",
+    "subject": "Đối tượng",
+    "expected": "Kỳ vọng",
+    "actual": "Thực tế"
   }
 }

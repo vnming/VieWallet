@@ -46,12 +46,14 @@ export function RequirePermission({
   permission,
   children,
 }: {
-  permission: string;
+  /** One permission, or a list meaning "any of these". */
+  permission: string | string[];
   children: ReactNode;
 }) {
   const { t } = useTranslation();
   const me = useStaffMe();
-  if (!me.data?.permissions.includes(permission)) {
+  const wanted = Array.isArray(permission) ? permission : [permission];
+  if (!wanted.some((p) => me.data?.permissions.includes(p))) {
     return <InlineAlert tone="warning" title={t("auth.noPermission")} />;
   }
   return <>{children}</>;

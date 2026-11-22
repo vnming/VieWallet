@@ -11,6 +11,7 @@ import { VerifyEmailPage } from "../routes/auth/VerifyEmailPage";
 import { DesignPage } from "../routes/DesignPage";
 import { HomePage } from "../routes/HomePage";
 import { NotFoundPage } from "../routes/NotFoundPage";
+import { HistoryPage, TransactionDetailPage, WalletPage } from "../routes/wallet/WalletPages";
 
 export const routes: RouteObject[] = [
   {
@@ -27,6 +28,9 @@ export const routes: RouteObject[] = [
         children: [
           { path: "onboarding/pin", element: <SetPinPage /> },
           { path: "account/security", element: <SecurityPage /> },
+          { path: "wallet", element: <WalletPage /> },
+          { path: "history", element: <HistoryPage /> },
+          { path: "history/:reference", element: <TransactionDetailPage /> },
         ],
       },
       // Style guide with sample data: development builds only.

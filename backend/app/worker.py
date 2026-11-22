@@ -20,9 +20,10 @@ from app.core.db import Database
 from app.core.idempotency import IdempotencyStore
 from app.core.jobs import JobScheduler, JobSpec
 from app.core.logging import configure_logging
-from app.core.outbox import HandlerRegistry, OutboxDispatcher
+from app.core.outbox import HandlerRegistry, OutboxDispatcher, OutboxMessage
 from app.modules.notifications.public import EmailSender, SmtpEmailSender
 from app.modules.notifications.public import register_handlers as register_email_handlers
+from app.modules.operations.public import expire_due, run_internal
 
 logger = structlog.get_logger("app.worker")
 
@@ -37,6 +38,13 @@ def build_registry(
         settings.smtp_host, settings.smtp_port, settings.smtp_from
     )
     register_email_handlers(registry, cipher, sender)
+
+    async def log_event(message: OutboxMessage) -> None:
+        # Consumers (in-app notifications, analytics) subscribe from Phase 4 on.
+        logger.info("domain_event", topic=message.topic, aggregate_id=message.aggregate_id)
+
+    for topic in ("transaction.status_changed", "reconciliation.violation_found"):
+        registry.register(topic, log_event)
     return registry
 
 
@@ -48,7 +56,22 @@ def build_jobs(db: Database, clock: Clock, settings: Settings) -> list[JobSpec]:
             removed = await store.purge_expired(session)
         logger.info("idempotency_keys_purged", removed=removed)
 
-    return [JobSpec("purge_expired_idempotency_keys", timedelta(hours=1), purge_idempotency_keys)]
+    async def reconcile_ledger() -> None:
+        async with db.transaction() as session:
+            result = await run_internal(session, clock, triggered_by=None)
+        logger.info("internal_reconciliation_finished", violations=result.run.violations)
+
+    async def expire_approvals() -> None:
+        async with db.transaction() as session:
+            expired = await expire_due(session, clock)
+        if expired:
+            logger.info("approvals_expired", count=expired)
+
+    return [
+        JobSpec("purge_expired_idempotency_keys", timedelta(hours=1), purge_idempotency_keys),
+        JobSpec("internal_reconciliation", timedelta(hours=1), reconcile_ledger),
+        JobSpec("expire_approval_requests", timedelta(minutes=5), expire_approvals),
+    ]
 
 
 async def run_worker(settings: Settings, stop: asyncio.Event) -> None:

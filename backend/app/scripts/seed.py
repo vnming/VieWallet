@@ -12,11 +12,14 @@ import sys
 import structlog
 from sqlalchemy.dialects.postgresql import insert
 
+from app.core.clock import SystemClock
 from app.core.config import get_settings
 from app.core.db import Database
 from app.core.logging import configure_logging
 from app.core.models import CurrencyRecord
 from app.modules.access.public import seed_catalog
+from app.modules.ledger.public import seed_system_accounts
+from app.modules.pricing.public import seed_defaults
 
 logger = structlog.get_logger("app.seed")
 
@@ -39,7 +42,18 @@ async def seed(db: Database) -> None:
                 )
             )
         await seed_catalog(session)
-    logger.info("seed_completed", currencies=[c["code"] for c in CURRENCIES], rbac=True)
+        clock = SystemClock()
+        for currency in CURRENCIES:
+            if currency["enabled"]:
+                await seed_system_accounts(session, clock, str(currency["code"]))
+        await seed_defaults(session)
+    logger.info(
+        "seed_completed",
+        currencies=[c["code"] for c in CURRENCIES],
+        rbac=True,
+        ledger_system_accounts=True,
+        pricing_defaults=True,
+    )
 
 
 async def _main() -> None:

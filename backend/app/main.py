@@ -30,6 +30,9 @@ from app.core.rate_limit import RateLimiter
 from app.modules.audit import api as audit_api
 from app.modules.identity import api as identity_api
 from app.modules.identity.context import IdentityServices
+from app.modules.operations import api as operations_api
+from app.modules.transactions import api as transactions_api
+from app.modules.wallet import api as wallet_api
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 
@@ -65,6 +68,7 @@ def create_app(settings: Settings | None = None, *, clock: Clock | None = None) 
             ),
             expected_migration_head=migration_head(),
         )
+        app.state.idempotency = app.state.vw.idempotency
         app.state.identity = IdentityServices.build(settings, db, clock, RateLimiter(redis, clock))
         try:
             yield
@@ -102,6 +106,11 @@ def create_app(settings: Settings | None = None, *, clock: Clock | None = None) 
     app.include_router(identity_api.me_router)
     app.include_router(identity_api.admin_router)
     app.include_router(audit_api.router)
+    app.include_router(wallet_api.router)
+    app.include_router(wallet_api.admin_router)
+    app.include_router(transactions_api.router)
+    app.include_router(transactions_api.admin_router)
+    app.include_router(operations_api.router)
     return app
 
 

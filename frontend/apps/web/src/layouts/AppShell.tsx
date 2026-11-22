@@ -3,7 +3,7 @@ import { isLocale, rememberLocale } from "@viewallet/shared";
 import { Button } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
-import { Home, type LucideIcon, Palette, ShieldCheck } from "lucide-react";
+import { History, Home, type LucideIcon, Palette, ShieldCheck, Wallet } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
@@ -19,7 +19,11 @@ function useNavItems(signedIn: boolean): NavItem[] {
   return [
     { to: "/", key: "nav.home", icon: Home, end: true },
     ...(signedIn
-      ? [{ to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false }]
+      ? [
+          { to: "/wallet", key: "nav.wallet", icon: Wallet, end: true },
+          { to: "/history", key: "nav.history", icon: History, end: false },
+          { to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false },
+        ]
       : []),
     // The living style guide is only linked in development builds.
     ...(import.meta.env.DEV

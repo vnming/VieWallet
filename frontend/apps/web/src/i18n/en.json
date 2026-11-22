@@ -9,7 +9,9 @@
     "label": "Main navigation",
     "home": "Home",
     "design": "Design",
-    "security": "Security"
+    "security": "Security",
+    "wallet": "Wallet",
+    "history": "History"
   },
   "language": {
     "label": "Language",
@@ -21,7 +23,7 @@
     "intro": "Create a simulated account to get started. Wallet, deposits and transfers arrive in the next phases.",
     "statusTitle": "System status",
     "greeting": "Hello, {{name}}",
-    "signedInIntro": "Your account is ready. Wallet, deposits and transfers arrive in the next phases."
+    "signedInIntro": "Your balance and recent transactions are below. Deposits, withdrawals and transfers arrive in later phases."
   },
   "status": {
     "loading": "Loading system status",
@@ -171,5 +173,78 @@
         "DISABLED": "Disabled"
       }
     }
+  },
+  "wallet": {
+    "title": "My wallet",
+    "description": "Other VieWallet users send money to your wallet number.",
+    "balanceLabel": "Available balance",
+    "number": "Wallet number",
+    "copy": "Copy wallet number",
+    "copied": "Wallet number copied",
+    "hide": "Hide balance",
+    "show": "Show balance",
+    "hidden": "Balance hidden",
+    "frozenTitle": "Wallet is frozen",
+    "frozenSelf": "You froze this wallet. All transactions are paused; unfreeze it with your transaction PIN.",
+    "frozenStaff": "Support has frozen this wallet. Please contact support to unfreeze it.",
+    "freeze": "Freeze wallet",
+    "freezeTitle": "Freeze your wallet?",
+    "freezeBody": "Use this if you lost your phone or suspect someone else is using your wallet. A frozen wallet cannot send or receive money. You can unfreeze it with your PIN.",
+    "freezeConfirm": "Freeze",
+    "frozenDone": "Wallet frozen",
+    "unfreeze": "Unfreeze wallet",
+    "unfreezeTitle": "Unfreeze wallet",
+    "unfreezeBody": "Enter your transaction PIN to unfreeze.",
+    "unfreezeDone": "Wallet unfrozen",
+    "cancel": "Cancel",
+    "recent": "Recent transactions",
+    "viewAll": "View all",
+    "loadError": "Could not load your wallet",
+    "comingSoon": "Deposits, withdrawals and transfers arrive in later phases.",
+    "status": {
+      "ACTIVE": "Active",
+      "FROZEN": "Frozen",
+      "SUSPENDED": "Suspended",
+      "CLOSED": "Closed"
+    }
+  },
+  "history": {
+    "title": "Transaction history",
+    "description": "Every transaction of your wallet, newest first.",
+    "empty": "No transactions yet",
+    "emptyBody": "Your transactions will show up here.",
+    "emptyFiltered": "No transactions match the filters",
+    "loadMore": "Load more",
+    "filterType": "Type",
+    "filterStatus": "Status",
+    "all": "All",
+    "error": "Could not load your transactions"
+  },
+  "txn": {
+    "types": {
+      "DEPOSIT": "Deposit",
+      "WITHDRAWAL": "Withdrawal",
+      "TRANSFER": "Transfer",
+      "PAYMENT": "Payment",
+      "REFUND": "Refund",
+      "REVERSAL": "Reversal",
+      "ADJUSTMENT": "Balance adjustment"
+    },
+    "detailTitle": "Transaction details",
+    "reference": "Reference",
+    "amount": "Amount",
+    "fee": "Fee",
+    "total": "Change on your wallet",
+    "counterparty": "Counterparty",
+    "description": "Description",
+    "created": "Created",
+    "completed": "Completed",
+    "timeline": "Progress",
+    "notFound": "Transaction not found",
+    "notFoundBody": "It does not exist or does not belong to your wallet.",
+    "back": "Back to history",
+    "copy": "Copy reference",
+    "copied": "Reference copied",
+    "failure": "Reason"
   }
 }

@@ -149,16 +149,21 @@ StaffPrincipal = Annotated[Principal, Depends(staff_principal)]
 PendingStaffSession = Annotated[sessions.ResolvedSession, Depends(pending_staff_session)]
 
 
+def ensure_permission(principal: Principal, code: str, now: datetime) -> None:
+    """Check a permission chosen at run time (e.g. depends on the approval's action type)."""
+    if code not in principal.permissions:
+        raise ForbiddenError()
+    if code in SENSITIVE_PERMISSIONS:
+        verified = principal.mfa_verified_at
+        if verified is None or now - verified > STEP_UP_WINDOW:
+            raise MfaStepUpRequiredError()
+
+
 def require_permission(code: str):  # type: ignore[no-untyped-def]
     """Dependency factory: staff principal holding ``code`` (fresh MFA for sensitive ones)."""
 
     async def dependency(principal: StaffPrincipal, ctx: IdentityDep) -> Principal:
-        if code not in principal.permissions:
-            raise ForbiddenError()
-        if code in SENSITIVE_PERMISSIONS:
-            verified = principal.mfa_verified_at
-            if verified is None or ctx.clock.now() - verified > STEP_UP_WINDOW:
-                raise MfaStepUpRequiredError()
+        ensure_permission(principal, code, ctx.clock.now())
         return principal
 
     return Depends(dependency)

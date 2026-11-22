@@ -25,7 +25,16 @@ from tests.conftest import BACKEND_DIR, IntegrationSettings
 # Tables cleaned between tests. Reference data (currencies, RBAC catalog) is left in place.
 # Append-only tables (audit_logs, login_history) cannot be truncated, by design; tests that
 # read them filter by the rows they created.
-MUTABLE_TABLES = ("idempotency_keys", "outbox_events", "scheduled_jobs", "users")
+MUTABLE_TABLES = (
+    "idempotency_keys",
+    "outbox_events",
+    "scheduled_jobs",
+    "reconciliation_runs",
+    "users",  # cascades to wallets, transactions, approval_requests, transaction_events
+)
+# Append-only children reached by the cascade. The test fixture (table owner) lifts their
+# TRUNCATE guard inside its own transaction; the application role can never do this.
+CASCADED_APPEND_ONLY = ("transaction_events",)
 
 TEST_ENCRYPTION_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
 TEST_PIN_PEPPER = base64.urlsafe_b64encode(os.urandom(32)).decode()
@@ -80,8 +89,16 @@ async def clean_redis(migrated: IntegrationSettings) -> None:
 @pytest.fixture(autouse=True)
 async def clean_tables(migrator_db: Database) -> None:
     async with migrator_db.transaction() as session:
+        for table in CASCADED_APPEND_ONLY:
+            await session.execute(
+                text(f"ALTER TABLE app.{table} DISABLE TRIGGER {table}_no_truncate")
+            )
         tables = ", ".join(f"app.{t}" for t in MUTABLE_TABLES)
         await session.execute(text(f"TRUNCATE {tables} CASCADE"))
+        for table in CASCADED_APPEND_ONLY:
+            await session.execute(
+                text(f"ALTER TABLE app.{table} ENABLE TRIGGER {table}_no_truncate")
+            )
 
 
 @pytest.fixture

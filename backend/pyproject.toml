@@ -105,3 +105,16 @@ type = "forbidden"
 source_modules = ["app.modules"]
 forbidden_modules = ["app.main", "app.worker", "app.api", "app.scripts"]
 allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "Business modules are layered (higher layers call lower ones through public.py)"
+type = "layers"
+layers = [
+    "app.modules.operations",
+    "app.modules.transactions",
+    "app.modules.wallet",
+    "app.modules.identity | app.modules.ledger | app.modules.pricing | app.modules.risk",
+    "app.modules.notifications | app.modules.audit | app.modules.access",
+]
+# The audit HTTP layer authorizes through identity; the audit service itself stays below it.
+ignore_imports = ["app.modules.audit.api -> app.modules.identity.public"]

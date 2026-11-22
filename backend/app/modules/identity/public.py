@@ -8,8 +8,10 @@ from app.modules.identity.http import (
     MetaDep,
     Principal,
     StaffPrincipal,
+    ensure_permission,
     require_permission,
 )
+from app.modules.identity.models import User
 from app.modules.identity.pin import verify_pin
 from app.modules.identity.staff import create_staff
 
@@ -24,7 +26,9 @@ __all__ = [
     "Principal",
     "RequestMeta",
     "StaffPrincipal",
+    "User",
     "create_staff",
+    "ensure_permission",
     "require_permission",
     "verify_pin",
 ]

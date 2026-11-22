@@ -77,6 +77,32 @@ Phiên đăng nhập là cookie phía server (ADR-0012). Mọi request ghi phả
 | POST · GET | `/admin/auth/logout` · `/admin/me` | — · hồ sơ nhân viên, role, permission, hạn phiên |
 | GET | `/admin/audit-logs` · `/admin/audit-logs/verify` | `audit:read:any` (phân trang, lọc theo action/actor/target) · `audit:verify:any` (nhạy cảm) |
 
+## 3a. Ví, lịch sử giao dịch, phê duyệt, đối soát (đã cài đặt ở Phase 3)
+
+Các mục 5, 6, 13 bên dưới là thiết kế đầy đủ; bảng này là phần đã chạy được. Số tiền luôn là `{"amount": "<chuỗi số nguyên>", "currency": "VND"}`.
+
+| Method | Path | Quyền | Ghi chú |
+|---|---|---|---|
+| GET | `/api/v1/wallet` | khách | Mở ví (kèm tài khoản ledger) ở lần gọi đầu, idempotent. Trả `wallet_number`, `status`, `freeze_source`, `balance` |
+| POST | `/api/v1/wallet/freeze` | khách | Tự khóa ví (không cần PIN vì chỉ bớt quyền). Khóa khi đã khóa ⇒ 409 `WALLET_STATE_CONFLICT` |
+| POST | `/api/v1/wallet/unfreeze` | khách | `{pin}`. Chỉ mở được khóa do chính mình đặt; khóa của nhân viên ⇒ 409 |
+| GET | `/api/v1/transactions` | khách | `cursor` (id cuối trang trước, UUIDv7), `limit` ≤ 50, `type`, `status`. Mới nhất trước. Điều chỉnh đang chờ duyệt không hiển thị |
+| GET | `/api/v1/transactions/{reference}` | khách | Chi tiết + `events` (timeline). Giao dịch của người khác ⇒ 404 (không lộ sự tồn tại) |
+| GET | `/api/v1/admin/wallets/{wallet_number}` | `user:read:any` | Số dư, trạng thái, chủ ví |
+| POST | `/api/v1/admin/wallets/{wallet_number}/freeze` | `wallet:freeze:any` | `{reason}`; có hiệu lực ngay |
+| POST | `/api/v1/admin/wallets/{wallet_number}/unfreeze-requests` | `wallet:unfreeze:any` | Tạo yêu cầu `WALLET_UNFREEZE`; người thứ hai duyệt |
+| GET | `/api/v1/admin/transactions/{reference}` | `transaction:read:any` | Kèm `metadata` nội bộ, `held`, event có actor và correlation id |
+| POST | `/api/v1/admin/adjustments` [I] | `adjustment:propose:any` (step-up) | `{wallet_number, direction: CREDIT\|DEBIT, amount, reason_code, note, description?, ticket_ref?}` ⇒ 201 `{approval, transaction_reference}` |
+| GET | `/api/v1/admin/approvals` | có ít nhất một quyền duyệt | `status` (mặc định PENDING), `page`, `page_size`. Chỉ thấy loại yêu cầu mình có quyền duyệt; `can_decide` cho biết có được quyết định không |
+| GET | `/api/v1/admin/approvals/{id}` | như trên | |
+| POST | `/api/v1/admin/approvals/{id}/approve` | quyền duyệt theo loại (step-up) | `{note?}`. Duyệt và thực hiện trong cùng DB transaction ⇒ `EXECUTED` hoặc `FAILED` + `failure_code` (ví dụ `INSUFFICIENT_BALANCE`). Tự duyệt ⇒ 403 `APPROVAL_SELF_DECISION` |
+| POST | `/api/v1/admin/approvals/{id}/reject` | như trên | `{note}` ≥ 5 ký tự; hủy giao dịch đang chờ |
+| POST | `/api/v1/admin/approvals/{id}/cancel` | chỉ maker | |
+| GET/POST | `/api/v1/admin/reconciliation/runs` | `reconciliation:manage:any` | POST chạy đối soát nội bộ I1–I5 ngay và trả kết quả kèm `items` |
+| GET | `/api/v1/admin/reconciliation/runs/{id}` | như trên | |
+
+Mã lỗi mới: `WALLET_NOT_FOUND`, `WALLET_NOT_ACTIVE`, `WALLET_STATE_CONFLICT`, `TXN_NOT_FOUND`, `TXN_INVALID_STATE`, `TXN_CONCURRENT_UPDATE`, `INSUFFICIENT_BALANCE`, `ALREADY_REVERSED`, `APPROVAL_NOT_FOUND`, `APPROVAL_NOT_PENDING`, `APPROVAL_SELF_DECISION`, `APPROVAL_EXPIRED`, `APPROVAL_DUPLICATE`.
+
 ## 4. KYC
 
 `GET /kyc` (trạng thái, tier, lịch sử) · `POST /kyc/submissions` (thông tin) · `POST /kyc/submissions/{id}/documents` (multipart, ≤ 5 MB) · `POST /kyc/submissions/{id}/submit`.

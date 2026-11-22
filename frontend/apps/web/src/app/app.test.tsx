@@ -151,7 +151,7 @@ describe("authentication flows", () => {
     await userEvent.type(screen.getByLabelText(vi.auth.fields.email), "lan@example.com");
     await userEvent.type(screen.getByLabelText(vi.auth.fields.password), "x");
     await userEvent.click(screen.getByRole("button", { name: vi.auth.login.submit }));
-    await screen.findByText(vi.status.overallOk);
+    await screen.findByRole("heading", { level: 1, name: "Xin chào, Trần Thị Lan" });
     expect(router.state.location.pathname).toBe("/");
   });
 
@@ -248,7 +248,7 @@ describe("authentication flows", () => {
     await userEvent.type(screen.getByLabelText(vi.auth.fields.password), "mây-trắng-bay-2026");
     api.on("GET /api/v1/me", json(me));
     await userEvent.click(submit);
-    await screen.findByText(vi.status.overallOk);
+    await screen.findByRole("heading", { level: 1, name: "Xin chào, Trần Thị Lan" });
     expect(api.calls.find((c) => c.path === "/api/v1/me/pin")?.body).toEqual({
       password: "mây-trắng-bay-2026",
       pin: "270419",

@@ -3,23 +3,61 @@ import { isLocale, rememberLocale } from "@viewallet/shared";
 import { Badge, Button } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
-import { LayoutDashboard, type LucideIcon, ScrollText } from "lucide-react";
+import {
+  ClipboardCheck,
+  LayoutDashboard,
+  type LucideIcon,
+  Scale,
+  ScrollText,
+  SlidersHorizontal,
+  WalletCards,
+} from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router";
+
+import { APPROVER_PERMISSIONS } from "../features/auth/permissions";
 
 interface NavItem {
   to: string;
   key: string;
   icon: LucideIcon;
   end: boolean;
-  /** Shown only when the staff member holds this permission (the API enforces it anyway). */
-  permission?: string;
+  /** Shown only when the staff member holds one of these (the API enforces it anyway). */
+  permission?: string[];
 }
 
 const NAV_ITEMS: NavItem[] = [
   { to: "/", key: "nav.overview", icon: LayoutDashboard, end: true },
-  { to: "/audit", key: "nav.audit", icon: ScrollText, end: false, permission: "audit:read:any" },
+  {
+    to: "/wallets",
+    key: "nav.wallets",
+    icon: WalletCards,
+    end: false,
+    permission: ["user:read:any"],
+  },
+  {
+    to: "/adjustments",
+    key: "nav.adjustments",
+    icon: SlidersHorizontal,
+    end: false,
+    permission: ["adjustment:propose:any"],
+  },
+  {
+    to: "/approvals",
+    key: "nav.approvals",
+    icon: ClipboardCheck,
+    end: false,
+    permission: APPROVER_PERMISSIONS,
+  },
+  {
+    to: "/reconciliation",
+    key: "nav.reconciliation",
+    icon: Scale,
+    end: false,
+    permission: ["reconciliation:manage:any"],
+  },
+  { to: "/audit", key: "nav.audit", icon: ScrollText, end: false, permission: ["audit:read:any"] },
 ];
 
 function StaffMenu() {
@@ -95,7 +133,7 @@ export function AdminShell() {
   const me = useStaffMe();
   const permissions = me.data?.permissions ?? [];
   const navItems = NAV_ITEMS.filter(
-    (item) => !item.permission || permissions.includes(item.permission),
+    (item) => !item.permission || item.permission.some((p) => permissions.includes(p)),
   );
 
   useEffect(() => {

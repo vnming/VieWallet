@@ -21,9 +21,9 @@ import uuid
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Final
+from typing import Annotated, Any, Final
 
-from fastapi import Header
+from fastapi import Depends, Header, Request
 from sqlalchemy import CheckConstraint, Index, String, UniqueConstraint, delete, select, update
 from sqlalchemy.dialects.postgresql import JSONB, insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -257,6 +257,15 @@ class IdempotencyStore:
         )
 
 
+def get_idempotency_store(request: Request) -> IdempotencyStore:
+    """The process-wide store, set on ``app.state.idempotency`` by the composition root."""
+    store: IdempotencyStore = request.app.state.idempotency
+    return store
+
+
+IdempotencyDep = Annotated[IdempotencyStore, Depends(get_idempotency_store)]
+
+
 def idempotency_key_header(
     idempotency_key: str | None = Header(
         default=None,
@@ -270,3 +279,6 @@ def idempotency_key_header(
     if not _KEY_RE.match(idempotency_key):
         raise IdempotencyKeyInvalidError()
     return idempotency_key
+
+
+IdempotencyKey = Annotated[str, Depends(idempotency_key_header)]

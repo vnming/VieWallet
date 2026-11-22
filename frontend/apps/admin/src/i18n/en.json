@@ -8,7 +8,11 @@
   "nav": {
     "label": "Admin navigation",
     "overview": "Overview",
-    "audit": "Audit log"
+    "audit": "Audit log",
+    "wallets": "Wallet lookup",
+    "adjustments": "Adjustments",
+    "approvals": "Approvals",
+    "reconciliation": "Reconciliation"
   },
   "language": {
     "label": "Language",
@@ -17,7 +21,7 @@
   },
   "overview": {
     "title": "System overview",
-    "intro": "Service health at a glance. Operations screens (transactions, KYC, risk, reconciliation) arrive in Phase 8.",
+    "intro": "Service health at a glance. Phase 3 adds wallet lookup, balance adjustments (maker-checker), approvals and internal reconciliation; full operations screens come in Phase 8.",
     "statusTitle": "Service health"
   },
   "status": {
@@ -45,7 +49,10 @@
     "back": "Back to overview"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "search": "Search"
   },
   "errors": {
     "network": "Cannot reach the server.",
@@ -117,5 +124,105 @@
     "pageOf": "Page {{page}} of {{total}}",
     "previous": "Previous",
     "next": "Next"
+  },
+  "finance": {
+    "amount": "Amount (VND)",
+    "amountHint": "Whole dong, no separators. For example 250000.",
+    "walletNumber": "Wallet number",
+    "direction": "Direction",
+    "directions": {
+      "CREDIT": "Credit the customer",
+      "DEBIT": "Debit the customer"
+    },
+    "reasons": {
+      "GOODWILL": "Goodwill",
+      "CORRECTION": "Correction",
+      "RECONCILIATION": "Reconciliation",
+      "DEMO_FUNDING": "Simulated top-up (demo)"
+    },
+    "actions": {
+      "ADJUSTMENT": "Balance adjustment",
+      "WALLET_UNFREEZE": "Unfreeze wallet"
+    },
+    "approvalStatus": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "EXECUTED": "Executed",
+      "FAILED": "Execution failed",
+      "REJECTED": "Rejected",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    }
+  },
+  "wallets": {
+    "title": "Wallet lookup",
+    "description": "Enter a 10-digit wallet number to see its balance and status.",
+    "notFound": "Wallet not found",
+    "balance": "Balance",
+    "status": "Status",
+    "owner": "User id",
+    "freezeSource": "Frozen by",
+    "reason": "Reason",
+    "freeze": "Freeze wallet",
+    "freezeTitle": "Freeze wallet now",
+    "freezeBody": "The wallet is frozen immediately. Unfreezing needs a second person's approval.",
+    "frozenDone": "Wallet frozen",
+    "requestUnfreeze": "Request unfreeze",
+    "unfreezeTitle": "Request to unfreeze",
+    "unfreezeBody": "Another staff member with the unfreeze permission approves this request.",
+    "unfreezeRequested": "Unfreeze requested",
+    "proposeAdjustment": "Propose adjustment"
+  },
+  "adjustments": {
+    "title": "Balance adjustments",
+    "description": "Every adjustment needs approval by another staff member (maker-checker). There is no real money: use 'Simulated top-up' for demo balances.",
+    "reason": "Reason code",
+    "note": "Internal note",
+    "noteHint": "At least 10 characters. Staff only.",
+    "customerText": "Text shown to the customer (optional)",
+    "ticket": "Ticket reference (optional)",
+    "submit": "Submit proposal",
+    "created": "Proposal {{reference}} created and awaiting approval."
+  },
+  "approvals": {
+    "title": "Approvals",
+    "description": "Requests made by other staff. You cannot decide on your own requests.",
+    "filter": "Status",
+    "empty": "No requests",
+    "maker": "Made by",
+    "mine": "You",
+    "created": "Created",
+    "expires": "Expires",
+    "reasonLabel": "Reason",
+    "approve": "Approve and execute",
+    "reject": "Reject",
+    "cancel": "Cancel request",
+    "note": "Note",
+    "rejectTitle": "Reject request",
+    "rejectNote": "Reason for rejecting (at least 5 characters)",
+    "approved": "Approved and executed",
+    "failed": "Approved but execution failed: {{code}}",
+    "rejected": "Request rejected",
+    "cancelled": "Request cancelled",
+    "failure": "Failure code",
+    "error": "Could not load approvals"
+  },
+  "reconciliation": {
+    "title": "Internal reconciliation",
+    "description": "Checks ledger invariants I1–I5: balanced journals, balances match postings, no negatives, trial balance, holds. Runs hourly.",
+    "run": "Run now",
+    "ran": "Reconciliation finished: {{count}} violations",
+    "empty": "No runs yet",
+    "started": "Started",
+    "status": "Result",
+    "violations": "Violations",
+    "trigger": "Run by",
+    "system": "System",
+    "clean": "No violations",
+    "items": "Violations",
+    "invariant": "Invariant",
+    "subject": "Subject",
+    "expected": "Expected",
+    "actual": "Actual"
   }
 }

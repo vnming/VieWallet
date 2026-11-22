@@ -9,7 +9,9 @@
     "label": "Điều hướng chính",
     "home": "Trang chủ",
     "design": "Thiết kế",
-    "security": "Bảo mật"
+    "security": "Bảo mật",
+    "wallet": "Ví",
+    "history": "Lịch sử"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -21,7 +23,7 @@
     "intro": "Tạo tài khoản mô phỏng để bắt đầu. Ví, nạp tiền và chuyển tiền sẽ được bổ sung ở các phase tiếp theo.",
     "statusTitle": "Trạng thái hệ thống",
     "greeting": "Xin chào, {{name}}",
-    "signedInIntro": "Tài khoản của bạn đã sẵn sàng. Ví, nạp tiền và chuyển tiền sẽ có ở các phase tiếp theo."
+    "signedInIntro": "Số dư và giao dịch gần đây của bạn ở bên dưới. Nạp, rút và chuyển tiền sẽ có ở các phase tiếp theo."
   },
   "status": {
     "loading": "Đang tải trạng thái hệ thống",
@@ -171,5 +173,78 @@
         "DISABLED": "Bị vô hiệu"
       }
     }
+  },
+  "wallet": {
+    "title": "Ví của tôi",
+    "description": "Số ví dùng để nhận tiền từ người dùng VieWallet khác.",
+    "balanceLabel": "Số dư khả dụng",
+    "number": "Số ví",
+    "copy": "Sao chép số ví",
+    "copied": "Đã sao chép số ví",
+    "hide": "Ẩn số dư",
+    "show": "Hiện số dư",
+    "hidden": "Số dư đang ẩn",
+    "frozenTitle": "Ví đang bị khóa",
+    "frozenSelf": "Bạn đã tạm khóa ví. Mọi giao dịch đang dừng; mở khóa bằng PIN giao dịch khi cần.",
+    "frozenStaff": "Ví đã bị bộ phận hỗ trợ tạm khóa. Vui lòng liên hệ hỗ trợ để được mở khóa.",
+    "freeze": "Tạm khóa ví",
+    "freezeTitle": "Tạm khóa ví?",
+    "freezeBody": "Dùng khi bạn mất điện thoại hoặc nghi ngờ có người dùng ví. Khi khóa, ví không gửi hay nhận tiền. Bạn có thể tự mở lại bằng PIN.",
+    "freezeConfirm": "Khóa ví",
+    "frozenDone": "Đã khóa ví",
+    "unfreeze": "Mở khóa ví",
+    "unfreezeTitle": "Mở khóa ví",
+    "unfreezeBody": "Nhập PIN giao dịch để mở khóa.",
+    "unfreezeDone": "Đã mở khóa ví",
+    "cancel": "Hủy",
+    "recent": "Giao dịch gần đây",
+    "viewAll": "Xem tất cả",
+    "loadError": "Không tải được thông tin ví",
+    "comingSoon": "Nạp tiền, rút tiền và chuyển tiền sẽ có ở các phase tiếp theo.",
+    "status": {
+      "ACTIVE": "Đang hoạt động",
+      "FROZEN": "Đang khóa",
+      "SUSPENDED": "Tạm ngưng",
+      "CLOSED": "Đã đóng"
+    }
+  },
+  "history": {
+    "title": "Lịch sử giao dịch",
+    "description": "Mọi giao dịch của ví, mới nhất ở trên cùng.",
+    "empty": "Chưa có giao dịch nào",
+    "emptyBody": "Giao dịch của bạn sẽ hiển thị ở đây.",
+    "emptyFiltered": "Không có giao dịch phù hợp bộ lọc",
+    "loadMore": "Xem thêm",
+    "filterType": "Loại giao dịch",
+    "filterStatus": "Trạng thái",
+    "all": "Tất cả",
+    "error": "Không tải được lịch sử giao dịch"
+  },
+  "txn": {
+    "types": {
+      "DEPOSIT": "Nạp tiền",
+      "WITHDRAWAL": "Rút tiền",
+      "TRANSFER": "Chuyển tiền",
+      "PAYMENT": "Thanh toán",
+      "REFUND": "Hoàn tiền",
+      "REVERSAL": "Đảo giao dịch",
+      "ADJUSTMENT": "Điều chỉnh số dư"
+    },
+    "detailTitle": "Chi tiết giao dịch",
+    "reference": "Mã giao dịch",
+    "amount": "Số tiền",
+    "fee": "Phí",
+    "total": "Tổng thay đổi trên ví",
+    "counterparty": "Đối tác",
+    "description": "Nội dung",
+    "created": "Thời gian tạo",
+    "completed": "Hoàn tất lúc",
+    "timeline": "Tiến trình",
+    "notFound": "Không tìm thấy giao dịch",
+    "notFoundBody": "Giao dịch không tồn tại hoặc không thuộc ví của bạn.",
+    "back": "Quay lại lịch sử",
+    "copy": "Sao chép mã giao dịch",
+    "copied": "Đã sao chép mã giao dịch",
+    "failure": "Lý do"
   }
 }

@@ -12,3 +12,5 @@ export * from "./components/Toast";
 export * from "./components/SystemStatusPanel";
 export * from "./components/InlineAlert";
 export * from "./components/SecretFields";
+export * from "./components/TransactionRow";
+export * from "./components/StatusTimeline";

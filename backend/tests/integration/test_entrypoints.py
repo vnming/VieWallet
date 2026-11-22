@@ -63,14 +63,23 @@ async def test_purge_job_removes_expired_keys(
     )
     clock.advance(timedelta(hours=25))
     jobs = build_jobs(db, clock, app_settings)
-    assert [j.name for j in jobs] == ["purge_expired_idempotency_keys"]
-    assert await JobScheduler(db, clock, jobs).run_due() == ["purge_expired_idempotency_keys"]
+    names = [j.name for j in jobs]
+    assert names == [
+        "purge_expired_idempotency_keys",
+        "internal_reconciliation",
+        "expire_approval_requests",
+    ]
+    assert await JobScheduler(db, clock, jobs).run_due() == names
     async with db.transaction() as session:
         assert await session.scalar(text("SELECT count(*) FROM app.idempotency_keys")) == 0
 
 
 async def test_worker_starts_and_stops_cleanly(app_settings: Settings) -> None:
-    assert build_registry(app_settings).topics == ["notifications.email.requested"]
+    assert build_registry(app_settings).topics == [
+        "notifications.email.requested",
+        "reconciliation.violation_found",
+        "transaction.status_changed",
+    ]
     stop = asyncio.Event()
     task = asyncio.create_task(run_worker(app_settings, stop))
     await asyncio.sleep(0.3)

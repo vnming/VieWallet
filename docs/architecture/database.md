@@ -2,8 +2,8 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Bản nháp chờ duyệt (Phase 0). Bảng được tạo ở phase cần đến nó, luôn qua migration Alembic. |
-| Cập nhật | 2026-11-21 |
+| Trạng thái | Bảng được tạo ở phase cần đến nó, luôn qua migration Alembic. Đã cài đặt: `0001` (nền tảng), `0002` (identity, access, audit), `0003` (ví, ledger, giao dịch, pricing, risk, phê duyệt, đối soát) |
+| Cập nhật | 2026-11-23 |
 | Engine | PostgreSQL 18, schema `app` (simulator dùng schema `simulator` với role riêng) |
 | Liên quan | [Xử lý tài chính](financial-processing.md), [Kiến trúc](architecture.md) |
 
@@ -116,6 +116,8 @@ Index: `status`, `created_at`. Nhân viên và khách hàng dùng chung bảng; 
 
 ### 3.3 Ví và ledger
 
+> Đã cài đặt ở migration `0003` (Phase 3). Khác bản thiết kế: `wallets` có thêm `freeze_source` (SELF, STAFF, SYSTEM; CHECK chỉ có giá trị khi `status = FROZEN`) để khách chỉ tự mở được khóa do chính mình đặt; cột chiều của posting tên là `side`. Trigger ràng buộc trễ `journals_balanced` và `postings_balanced` (hàm `app.check_journal_balanced()`, SQLSTATE `VW002`) từ chối lúc commit mọi journal không cân, ít hơn 2 dòng hoặc lệch tiền tệ. Role ứng dụng: `ledger_accounts` chỉ SELECT/INSERT; `account_balances` không DELETE; `journals`, `postings` chỉ-thêm.
+
 **currencies** — `code CHAR(3) PK`, `exponent SMALLINT`, `enabled BOOL`.
 
 **wallets** — `owner_user_id`, `wallet_number CHAR(10) UNIQUE`, `wallet_type` (MAIN, MERCHANT), `currency`, `status` (ACTIVE, FROZEN, SUSPENDED, CLOSED), `status_reason`, `frozen_by`, `frozen_at`, `ledger_account_id UNIQUE`. `UNIQUE(owner_user_id, currency, wallet_type)`.
@@ -129,6 +131,8 @@ Index: `status`, `created_at`. Nhân viên và khách hàng dùng chung bảng; 
 **postings** (chỉ-thêm) — `journal_id`, `account_id`, `direction` (DEBIT, CREDIT), `amount_minor BIGINT CHECK (> 0)`, `currency`, `seq SMALLINT`. Index: `(account_id, journal_id)`, `journal_id`. Deferred constraint trigger: Σ nợ = Σ có cho mỗi journal; mọi posting cùng tiền tệ với journal.
 
 ### 3.4 Giao dịch
+
+> `transactions` và `transaction_events` đã cài đặt ở `0003`. Khác bản thiết kế: thêm `held_minor` (số tiền giao dịch đang giữ trên tài khoản HOLD; bất biến I5 so sánh Σ `held_minor` với số dư HOLD); cột `metadata` (thuộc tính Python `extra`) lưu dữ liệu nội bộ như ghi chú của nhân viên; `payment_request_id`, `bank_destination_id`, `provider_code` sẽ thêm ở Phase 4–5 khi có bảng đích; index trigram để tìm kiếm thêm ở Phase 7. CHECK `wallets_match_type` buộc đúng ví theo loại (ví dụ ADJUSTMENT có đúng một trong hai ví). Phân trang lịch sử dùng `(wallet_id, id)` vì UUIDv7 đã tăng theo thời gian.
 
 **transactions** — `reference TEXT UNIQUE`, `type`, `status`, `amount_minor BIGINT CHECK (> 0)`, `fee_minor BIGINT DEFAULT 0 CHECK (>= 0)`, `currency`, `initiator_user_id`, `source_wallet_id NULL`, `destination_wallet_id NULL`, `counterparty_snapshot JSONB` (tên/số ví đã che tại thời điểm giao dịch), `description TEXT` (≤ 140 ký tự, đã làm sạch), `category_code`, `idempotency_key`, `related_transaction_id NULL` (bản gốc của hoàn tiền/đảo), `payment_request_id NULL`, `bank_destination_id NULL`, `provider_code NULL`, `fee_rule_id`, `fee_rule_version`, `quote_expires_at`, `risk_decision`, `failure_code`, `failure_message`, `refunded_amount_minor BIGINT DEFAULT 0`, `metadata JSONB`, `confirmed_at`, `completed_at`, `version`.
 Constraint: `UNIQUE(initiator_user_id, idempotency_key)`, `CHECK (refunded_amount_minor <= amount_minor)`, CHECK theo loại (ví dụ TRANSFER cần cả hai ví và `source <> destination`).
@@ -158,6 +162,8 @@ Index: `(source_wallet_id, created_at DESC, id)`, `(destination_wallet_id, creat
 **provider_callbacks** (chỉ-thêm) — `provider_code`, `event_id`, `provider_reference`, `signature_valid BOOL`, `headers JSONB` (đã che), `body JSONB`, `received_at`. `UNIQUE(provider_code, event_id)`. Kết quả xử lý (RECEIVED, APPLIED, IGNORED_DUPLICATE, IGNORED_STALE, REJECTED, ORPHAN) nằm ở bảng đi kèm `provider_callback_results` để hộp nhận giữ được tính chỉ-thêm.
 
 ### 3.7 Pricing, rủi ro, vận hành
+
+> Đã cài đặt ở `0003`: `fee_rules`, `limit_rules` (có thêm cột `code` duy nhất để seed idempotent; role ứng dụng chỉ đọc), `risk_assessments` (chỉ-thêm), `approval_requests` (CHECK `maker_is_not_checker`, index duy nhất một trường hợp PENDING cho mỗi đối tượng), `reconciliation_runs`, `reconciliation_items`. Rule rủi ro ở Phase 3 nằm trong code (`risk/domain.py`, có `rules_version`); bảng `risk_rules`, `risk_alerts`, `account_risk_flags`, `recovery_cases` thêm ở Phase 4–6.
 
 **fee_rules** — `txn_type`, `currency`, `scope` (DEFAULT, KYC_TIER, USER), `scope_value`, `fixed_minor`, `bps`, `min_fee_minor`, `max_fee_minor`, `effective_from`, `effective_to`, `version`, `status` (DRAFT, ACTIVE, RETIRED), `approval_request_id`.
 **limit_rules** — `txn_type|ALL`, `direction` (OUT, IN), `scope`, `scope_value`, `period` (PER_TXN, DAILY, MONTHLY, BALANCE_CAP), `max_amount_minor`, `max_count`, `min_amount_minor`, `currency`, `status`, `version`.

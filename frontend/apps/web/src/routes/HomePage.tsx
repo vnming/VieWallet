@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { SystemStatusCard } from "../features/system/SystemStatusCard";
+import { WalletOverview } from "./wallet/WalletPages";
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -44,7 +45,7 @@ export function HomePage() {
           </InlineAlert>
         )}
       </section>
-      <SystemStatusCard />
+      {user ? <WalletOverview /> : <SystemStatusCard />}
     </div>
   );
 }

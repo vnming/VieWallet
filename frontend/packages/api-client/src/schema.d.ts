@@ -4,6 +4,108 @@
  */
 
 export interface paths {
+  "/api/v1/admin/adjustments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Adjustment */
+    post: operations["propose_adjustment_api_v1_admin_adjustments_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/approvals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Approvals */
+    get: operations["list_approvals_api_v1_admin_approvals_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/approvals/{approval_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Approval */
+    get: operations["get_approval_api_v1_admin_approvals__approval_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/approvals/{approval_id}/approve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Approve Request */
+    post: operations["approve_request_api_v1_admin_approvals__approval_id__approve_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/approvals/{approval_id}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel Request */
+    post: operations["cancel_request_api_v1_admin_approvals__approval_id__cancel_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/approvals/{approval_id}/reject": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reject Request */
+    post: operations["reject_request_api_v1_admin_approvals__approval_id__reject_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/audit-logs": {
     parameters: {
       query?: never;
@@ -151,6 +253,112 @@ export interface paths {
     get: operations["staff_me_api_v1_admin_me_get"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reconciliation/runs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Reconciliation Runs */
+    get: operations["list_reconciliation_runs_api_v1_admin_reconciliation_runs_get"];
+    put?: never;
+    /** Trigger Reconciliation */
+    post: operations["trigger_reconciliation_api_v1_admin_reconciliation_runs_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reconciliation/runs/{run_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Reconciliation Run */
+    get: operations["get_reconciliation_run_api_v1_admin_reconciliation_runs__run_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/transactions/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Admin Get Transaction */
+    get: operations["admin_get_transaction_api_v1_admin_transactions__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/wallets/{wallet_number}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Admin Get Wallet */
+    get: operations["admin_get_wallet_api_v1_admin_wallets__wallet_number__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/wallets/{wallet_number}/freeze": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Admin Freeze Wallet
+     * @description Freezing is immediate (protective). Unfreezing needs a second person (operations).
+     */
+    post: operations["admin_freeze_wallet_api_v1_admin_wallets__wallet_number__freeze_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/wallets/{wallet_number}/unfreeze-requests": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Request Unfreeze */
+    post: operations["request_unfreeze_api_v1_admin_wallets__wallet_number__unfreeze_requests_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -482,6 +690,94 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/transactions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List My Transactions */
+    get: operations["list_my_transactions_api_v1_transactions_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/transactions/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get My Transaction */
+    get: operations["get_my_transaction_api_v1_transactions__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/wallet": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get My Wallet */
+    get: operations["get_my_wallet_api_v1_wallet_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/wallet/freeze": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Freeze My Wallet
+     * @description Self-service freeze (lost phone): no PIN needed, it only removes capabilities.
+     */
+    post: operations["freeze_my_wallet_api_v1_wallet_freeze_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/wallet/unfreeze": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Unfreeze My Wallet */
+    post: operations["unfreeze_my_wallet_api_v1_wallet_unfreeze_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/health/live": {
     parameters: {
       query?: never;
@@ -529,6 +825,233 @@ export interface components {
        */
       status: "accepted";
     };
+    /**
+     * ActionType
+     * @enum {string}
+     */
+    ActionType: "ADJUSTMENT" | "WALLET_UNFREEZE";
+    /** AdjustmentCreatedOut */
+    AdjustmentCreatedOut: {
+      approval: components["schemas"]["ApprovalOut"];
+      /** Transaction Reference */
+      transaction_reference: string;
+    };
+    /**
+     * AdjustmentDirection
+     * @enum {string}
+     */
+    AdjustmentDirection: "CREDIT" | "DEBIT";
+    /** AdjustmentIn */
+    AdjustmentIn: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /**
+       * Description
+       * @description Shown to the customer
+       * @default
+       */
+      description: string;
+      direction: components["schemas"]["AdjustmentDirection"];
+      /**
+       * Note
+       * @description Internal justification
+       */
+      note: string;
+      reason_code: components["schemas"]["AdjustmentReason"];
+      /** Ticket Ref */
+      ticket_ref?: string | null;
+      /** Wallet Number */
+      wallet_number: string;
+    };
+    /**
+     * AdjustmentReason
+     * @enum {string}
+     */
+    AdjustmentReason: "GOODWILL" | "CORRECTION" | "RECONCILIATION" | "DEMO_FUNDING";
+    /** AdminTransactionEventOut */
+    AdminTransactionEventOut: {
+      /** Actor Id */
+      actor_id: string | null;
+      /** Actor Type */
+      actor_type: string;
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string;
+      /** Correlation Id */
+      correlation_id: string | null;
+      from_status: components["schemas"]["TxnStatus"] | null;
+      /** Message */
+      message: string | null;
+      /** Reason Code */
+      reason_code: string | null;
+      to_status: components["schemas"]["TxnStatus"];
+    };
+    /** AdminTransactionOut */
+    AdminTransactionOut: {
+      amount: components["schemas"]["Amount"];
+      /** Completed At */
+      completed_at: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Description */
+      description: string;
+      /** Destination Wallet Id */
+      destination_wallet_id: string | null;
+      /** Events */
+      events: components["schemas"]["AdminTransactionEventOut"][];
+      /** Failure Code */
+      failure_code: string | null;
+      fee: components["schemas"]["Amount"];
+      held: components["schemas"]["Amount"];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Initiator User Id
+       * Format: uuid
+       */
+      initiator_user_id: string;
+      /** Metadata */
+      metadata: {
+        [key: string]: unknown;
+      };
+      /** Reference */
+      reference: string;
+      /** Risk Decision */
+      risk_decision: string | null;
+      /** Source Wallet Id */
+      source_wallet_id: string | null;
+      status: components["schemas"]["TxnStatus"];
+      type: components["schemas"]["TxnType"];
+      /** Version */
+      version: number;
+    };
+    /** AdminWalletOut */
+    AdminWalletOut: {
+      balance: components["schemas"]["AmountOut"];
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Currency */
+      currency: string;
+      freeze_source: components["schemas"]["FreezeSource"] | null;
+      /** Frozen At */
+      frozen_at: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Owner User Id
+       * Format: uuid
+       */
+      owner_user_id: string;
+      status: components["schemas"]["WalletStatus"];
+      /** Status Reason */
+      status_reason: string | null;
+      /** Wallet Number */
+      wallet_number: string;
+    };
+    /** Amount */
+    Amount: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /** Currency */
+      currency: string;
+    };
+    /** AmountOut */
+    AmountOut: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /** Currency */
+      currency: string;
+    };
+    /** ApprovalOut */
+    ApprovalOut: {
+      action_type: components["schemas"]["ActionType"];
+      /**
+       * Can Decide
+       * @description The caller may approve/reject (not the maker)
+       */
+      can_decide: boolean;
+      /** Checker Id */
+      checker_id: string | null;
+      /** Checker Note */
+      checker_note: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Decided At */
+      decided_at: string | null;
+      /** Executed At */
+      executed_at: string | null;
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      /** Failure Code */
+      failure_code: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Maker Id
+       * Format: uuid
+       */
+      maker_id: string;
+      /** Maker Reason */
+      maker_reason: string;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+      status: components["schemas"]["ApprovalStatus"];
+      /** Target Id */
+      target_id: string;
+      /** Target Type */
+      target_type: string;
+    };
+    /** ApprovalPageOut */
+    ApprovalPageOut: {
+      /** Items */
+      items: components["schemas"]["ApprovalOut"][];
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total */
+      total: number;
+    };
+    /**
+     * ApprovalStatus
+     * @enum {string}
+     */
+    ApprovalStatus:
+      "PENDING" | "APPROVED" | "REJECTED" | "EXECUTED" | "FAILED" | "EXPIRED" | "CANCELLED";
     /** AuditLogItem */
     AuditLogItem: {
       /** Action */
@@ -638,6 +1161,20 @@ export interface components {
       /** New Pin */
       new_pin: string;
     };
+    /** Counterparty */
+    Counterparty: {
+      /** Kind */
+      kind: string;
+      /** Name */
+      name?: string | null;
+      /** Wallet Number Masked */
+      wallet_number_masked?: string | null;
+    };
+    /** DecisionIn */
+    DecisionIn: {
+      /** Note */
+      note?: string | null;
+    };
     /** EmailOnlyRequest */
     EmailOnlyRequest: {
       /**
@@ -646,6 +1183,20 @@ export interface components {
        */
       email: string;
     };
+    /** FreezeIn */
+    FreezeIn: {
+      /**
+       * Reason
+       * @default
+       */
+      reason: string;
+    };
+    /**
+     * FreezeSource
+     * @description Who froze the wallet. A customer may lift only a freeze they placed themselves.
+     * @enum {string}
+     */
+    FreezeSource: "SELF" | "STAFF" | "SYSTEM";
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -764,6 +1315,93 @@ export interface components {
        */
       status: "ok" | "fail";
     };
+    /** ReconciliationItemOut */
+    ReconciliationItemOut: {
+      /** Actual */
+      actual: string;
+      /** Expected */
+      expected: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Invariant */
+      invariant: string | null;
+      /** Status */
+      status: string;
+      /** Subject */
+      subject: string;
+      /** Type */
+      type: string;
+    };
+    /** ReconciliationRunDetailOut */
+    ReconciliationRunDetailOut: {
+      /** Finished At */
+      finished_at: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Items */
+      items: components["schemas"]["ReconciliationItemOut"][];
+      /** Kind */
+      kind: string;
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+      /** Stats */
+      stats: {
+        [key: string]: unknown;
+      };
+      /** Status */
+      status: string;
+      /** Triggered By */
+      triggered_by: string | null;
+      /** Violations */
+      violations: number;
+    };
+    /** ReconciliationRunOut */
+    ReconciliationRunOut: {
+      /** Finished At */
+      finished_at: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Kind */
+      kind: string;
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+      /** Stats */
+      stats: {
+        [key: string]: unknown;
+      };
+      /** Status */
+      status: string;
+      /** Triggered By */
+      triggered_by: string | null;
+      /** Violations */
+      violations: number;
+    };
+    /** ReconciliationRunPageOut */
+    ReconciliationRunPageOut: {
+      /** Items */
+      items: components["schemas"]["ReconciliationRunOut"][];
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total */
+      total: number;
+    };
     /** RegisterRequest */
     RegisterRequest: {
       /**
@@ -781,6 +1419,11 @@ export interface components {
       locale: "vi" | "en";
       /** Password */
       password: string;
+    };
+    /** RejectIn */
+    RejectIn: {
+      /** Note */
+      note: string;
     };
     /** ResetPasswordRequest */
     ResetPasswordRequest: {
@@ -819,6 +1462,11 @@ export interface components {
       password: string;
       /** Pin */
       pin: string;
+    };
+    /** StaffFreezeIn */
+    StaffFreezeIn: {
+      /** Reason */
+      reason: string;
     };
     /** StaffLoginResponse */
     StaffLoginResponse: {
@@ -874,6 +1522,126 @@ export interface components {
       /** Version */
       version: string;
     };
+    /** TransactionDetailOut */
+    TransactionDetailOut: {
+      amount: components["schemas"]["Amount"];
+      /** Completed At */
+      completed_at: string | null;
+      counterparty: components["schemas"]["Counterparty"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Description */
+      description: string;
+      /**
+       * Direction
+       * @description Relative to the caller's wallet
+       * @enum {string}
+       */
+      direction: "IN" | "OUT";
+      /** Events */
+      events: components["schemas"]["TransactionEventOut"][];
+      /** Failure Code */
+      failure_code: string | null;
+      fee: components["schemas"]["Amount"];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Reference */
+      reference: string;
+      status: components["schemas"]["TxnStatus"];
+      /** @description What moved on the caller's wallet (amount + fee if OUT) */
+      total: components["schemas"]["Amount"];
+      type: components["schemas"]["TxnType"];
+    };
+    /** TransactionEventOut */
+    TransactionEventOut: {
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string;
+      from_status: components["schemas"]["TxnStatus"] | null;
+      /** Reason Code */
+      reason_code: string | null;
+      to_status: components["schemas"]["TxnStatus"];
+    };
+    /** TransactionOut */
+    TransactionOut: {
+      amount: components["schemas"]["Amount"];
+      /** Completed At */
+      completed_at: string | null;
+      counterparty: components["schemas"]["Counterparty"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Description */
+      description: string;
+      /**
+       * Direction
+       * @description Relative to the caller's wallet
+       * @enum {string}
+       */
+      direction: "IN" | "OUT";
+      /** Failure Code */
+      failure_code: string | null;
+      fee: components["schemas"]["Amount"];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Reference */
+      reference: string;
+      status: components["schemas"]["TxnStatus"];
+      /** @description What moved on the caller's wallet (amount + fee if OUT) */
+      total: components["schemas"]["Amount"];
+      type: components["schemas"]["TxnType"];
+    };
+    /** TransactionPageOut */
+    TransactionPageOut: {
+      /** Items */
+      items: components["schemas"]["TransactionOut"][];
+      /** Next Cursor */
+      next_cursor: string | null;
+    };
+    /**
+     * TxnStatus
+     * @enum {string}
+     */
+    TxnStatus:
+      | "CREATED"
+      | "PENDING"
+      | "PROCESSING"
+      | "COMPLETED"
+      | "FAILED"
+      | "CANCELLED"
+      | "EXPIRED"
+      | "PARTIALLY_REFUNDED"
+      | "REFUNDED"
+      | "REVERSED";
+    /**
+     * TxnType
+     * @enum {string}
+     */
+    TxnType:
+      "DEPOSIT" | "WITHDRAWAL" | "TRANSFER" | "PAYMENT" | "REFUND" | "REVERSAL" | "ADJUSTMENT";
+    /** UnfreezeIn */
+    UnfreezeIn: {
+      /** Pin */
+      pin: string;
+    };
+    /** UnfreezeRequestIn */
+    UnfreezeRequestIn: {
+      /** Reason */
+      reason: string;
+    };
     /** UpdateProfileRequest */
     UpdateProfileRequest: {
       /** Display Name */
@@ -906,6 +1674,28 @@ export interface components {
        */
       email: string;
     };
+    /** WalletOut */
+    WalletOut: {
+      balance: components["schemas"]["AmountOut"];
+      /** Currency */
+      currency: string;
+      freeze_source: components["schemas"]["FreezeSource"] | null;
+      /** Frozen At */
+      frozen_at: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      status: components["schemas"]["WalletStatus"];
+      /** Wallet Number */
+      wallet_number: string;
+    };
+    /**
+     * WalletStatus
+     * @enum {string}
+     */
+    WalletStatus: "ACTIVE" | "FROZEN" | "SUSPENDED" | "CLOSED";
   };
   responses: never;
   parameters: never;
@@ -915,6 +1705,207 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  propose_adjustment_api_v1_admin_adjustments_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AdjustmentIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdjustmentCreatedOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_approvals_api_v1_admin_approvals_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["ApprovalStatus"] | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalPageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_approval_api_v1_admin_approvals__approval_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        approval_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  approve_request_api_v1_admin_approvals__approval_id__approve_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        approval_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecisionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  cancel_request_api_v1_admin_approvals__approval_id__cancel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        approval_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  reject_request_api_v1_admin_approvals__approval_id__reject_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        approval_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RejectIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   list_audit_logs_api_v1_admin_audit_logs_get: {
     parameters: {
       query?: {
@@ -1153,6 +2144,221 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["StaffMeResponse"];
+        };
+      };
+    };
+  };
+  list_reconciliation_runs_api_v1_admin_reconciliation_runs_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReconciliationRunPageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  trigger_reconciliation_api_v1_admin_reconciliation_runs_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReconciliationRunDetailOut"];
+        };
+      };
+    };
+  };
+  get_reconciliation_run_api_v1_admin_reconciliation_runs__run_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReconciliationRunDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_get_transaction_api_v1_admin_transactions__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdminTransactionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_get_wallet_api_v1_admin_wallets__wallet_number__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        wallet_number: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdminWalletOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_freeze_wallet_api_v1_admin_wallets__wallet_number__freeze_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        wallet_number: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StaffFreezeIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdminWalletOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  request_unfreeze_api_v1_admin_wallets__wallet_number__unfreeze_requests_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        wallet_number: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UnfreezeRequestIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -1761,6 +2967,157 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SystemStatus"];
+        };
+      };
+    };
+  };
+  list_my_transactions_api_v1_transactions_get: {
+    parameters: {
+      query?: {
+        cursor?: string | null;
+        limit?: number;
+        type?: components["schemas"]["TxnType"] | null;
+        status?: components["schemas"]["TxnStatus"] | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TransactionPageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_my_transaction_api_v1_transactions__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TransactionDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_my_wallet_api_v1_wallet_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WalletOut"];
+        };
+      };
+    };
+  };
+  freeze_my_wallet_api_v1_wallet_freeze_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FreezeIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WalletOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  unfreeze_my_wallet_api_v1_wallet_unfreeze_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UnfreezeIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WalletOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
