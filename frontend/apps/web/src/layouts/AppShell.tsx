@@ -1,15 +1,71 @@
+import { useIdentityApi, useMe } from "@viewallet/api-client";
 import { isLocale, rememberLocale } from "@viewallet/shared";
+import { Button } from "@viewallet/ui";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
-import { Home, Palette } from "lucide-react";
+import { Home, type LucideIcon, Palette, ShieldCheck } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet } from "react-router";
+import { Link, NavLink, Outlet, useNavigate } from "react-router";
 
-const NAV_ITEMS = [
-  { to: "/", key: "nav.home", icon: Home, end: true },
-  // The living style guide is only linked in development builds.
-  ...(import.meta.env.DEV ? [{ to: "/design", key: "nav.design", icon: Palette, end: false }] : []),
-] as const;
+interface NavItem {
+  to: string;
+  key: string;
+  icon: LucideIcon;
+  end: boolean;
+}
+
+function useNavItems(signedIn: boolean): NavItem[] {
+  return [
+    { to: "/", key: "nav.home", icon: Home, end: true },
+    ...(signedIn
+      ? [{ to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false }]
+      : []),
+    // The living style guide is only linked in development builds.
+    ...(import.meta.env.DEV
+      ? [{ to: "/design", key: "nav.design", icon: Palette, end: false }]
+      : []),
+  ];
+}
+
+function UserMenu() {
+  const { t } = useTranslation();
+  const me = useMe();
+  const api = useIdentityApi();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const logout = useMutation({
+    mutationFn: api.logout,
+    onSettled: () => {
+      // Drop every cached response so nothing of this user stays on a shared device.
+      queryClient.clear();
+      void navigate("/login", { replace: true });
+    },
+  });
+  if (me.isPending) return null;
+  if (!me.data) {
+    return (
+      <Link to="/login" className="text-sm font-medium text-primary underline underline-offset-4">
+        {t("auth.login.cta")}
+      </Link>
+    );
+  }
+  return (
+    <div className="flex items-center gap-3">
+      <span className="hidden max-w-40 truncate text-sm text-fg sm:inline">
+        {me.data.display_name ?? me.data.full_name}
+      </span>
+      <Button
+        size="sm"
+        variant="secondary"
+        loading={logout.isPending}
+        onClick={() => logout.mutate()}
+      >
+        {t("auth.logout")}
+      </Button>
+    </div>
+  );
+}
 
 export function LanguageSwitch() {
   const { t, i18n } = useTranslation();
@@ -37,6 +93,8 @@ export function LanguageSwitch() {
 /** Customer shell: top bar + bottom tab bar on mobile, side navigation from lg breakpoint. */
 export function AppShell() {
   const { t, i18n } = useTranslation();
+  const me = useMe();
+  const navItems = useNavItems(Boolean(me.data));
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
@@ -54,7 +112,7 @@ export function AppShell() {
       <aside className="hidden border-r border-border bg-surface lg:flex lg:flex-col lg:gap-8 lg:px-5 lg:py-6">
         <Brand />
         <nav aria-label={t("nav.label")} className="flex flex-col gap-1">
-          {NAV_ITEMS.map(({ to, key, icon: Icon, end }) => (
+          {navItems.map(({ to, key, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -81,7 +139,10 @@ export function AppShell() {
             <Brand />
           </div>
           <p className="hidden text-xs text-fg-muted md:block">{t("app.simulationNotice")}</p>
-          <LanguageSwitch />
+          <div className="flex items-center gap-3">
+            <LanguageSwitch />
+            <UserMenu />
+          </div>
         </header>
 
         <main id="main" tabIndex={-1} className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
@@ -94,7 +155,7 @@ export function AppShell() {
           aria-label={t("nav.label")}
           className="fixed inset-x-0 bottom-0 z-30 grid auto-cols-fr grid-flow-col border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
-          {NAV_ITEMS.map(({ to, key, icon: Icon, end }) => (
+          {navItems.map(({ to, key, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}

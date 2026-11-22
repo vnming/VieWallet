@@ -14,7 +14,7 @@
 - **Tiền**: `{"amount": "1250000", "currency": "VND"}` — amount là chuỗi số nguyên đơn vị nhỏ nhất. Các trường hiển thị phụ (nếu có) không bao giờ dùng cho logic.
 - **Thời gian**: RFC 3339 UTC (`2026-11-21T07:30:00Z`).
 - **ID**: chuỗi UUID; giao dịch còn truy cập được bằng `reference`.
-- **Header**: `Authorization: Bearer <access>`, `Idempotency-Key` (bắt buộc ở endpoint đánh dấu **[I]**), `X-Request-ID` (tùy chọn; được trả lại), `Accept-Language` (vi, en).
+- **Header**: cookie phiên (`vw_session` / `vw_admin_session`), `X-VW-CSRF: 1` cho mọi request ghi, `Idempotency-Key` (bắt buộc ở endpoint đánh dấu **[I]**), `X-Request-ID` (tùy chọn; được trả lại), `Accept-Language` (vi, en).
 - **Phân trang**:
   - Cursor (luồng dữ liệu: giao dịch, thông báo, tin nhắn AI): `?limit=20&cursor=<opaque>` → `{ "items": [...], "next_cursor": "..." | null }`. Keyset trên `(created_at, id)`.
   - Theo trang (bảng admin): `?page=1&page_size=50` → `{ "items": [...], "page": 1, "page_size": 50, "total": 1234 }`. `page_size ≤ 100`.
@@ -40,8 +40,8 @@
 | HTTP | Dùng khi |
 |---|---|
 | 400 | Request sai định dạng |
-| 401 | Thiếu/sai/hết hạn token (`AUTH_REQUIRED`, `TOKEN_EXPIRED`) |
-| 403 | Đã xác thực nhưng không có quyền (`FORBIDDEN`, `MFA_STEP_UP_REQUIRED`, `ACCOUNT_RESTRICTED`) |
+| 401 | Chưa đăng nhập hoặc phiên không còn hiệu lực (`AUTH_REQUIRED`, `SESSION_EXPIRED`, `INVALID_CREDENTIALS`) |
+| 403 | Không có quyền hoặc bị chặn (`FORBIDDEN`, `CSRF_FAILED`, `MFA_REQUIRED`, `MFA_STEP_UP_REQUIRED`, `EMAIL_NOT_VERIFIED`, `ACCOUNT_LOCKED`, `ACCOUNT_DISABLED`) |
 | 404 | Không tồn tại **hoặc không thuộc về user** (không lộ sự tồn tại) |
 | 409 | Xung đột trạng thái: `TXN_INVALID_STATE`, `IDEMPOTENCY_IN_PROGRESS`, `VERSION_CONFLICT` |
 | 422 | Lỗi validate và quy tắc nghiệp vụ: `VALIDATION_ERROR`, `INSUFFICIENT_BALANCE`, `LIMIT_EXCEEDED`, `PIN_INVALID`, `PIN_LOCKED`, `PIN_NOT_SET`, `WALLET_FROZEN`, `RISK_BLOCKED`, `QUOTE_EXPIRED`, `IDEMPOTENCY_KEY_REUSED`, `KYC_REQUIRED`, `RECIPIENT_UNAVAILABLE`, `RECEIVER_LIMIT_EXCEEDED` |
@@ -50,28 +50,32 @@
 
 Mã lỗi là một enum đóng, có tài liệu, chia sẻ với frontend qua client sinh tự động.
 
-## 3. Xác thực và định danh
+## 3. Xác thực và định danh (đã cài đặt ở Phase 2)
+
+Phiên đăng nhập là cookie phía server (ADR-0012). Mọi request ghi phải có `X-VW-CSRF: 1`.
 
 | Method | Path | Ghi chú |
 |---|---|---|
-| POST | `/auth/register` | email, password, full_name, phone? → 201; gửi mã xác minh |
-| POST | `/auth/verify-email` | email, code |
-| POST | `/auth/login` | email, password (+ `audience`) → access token + refresh cookie; admin: trả challenge `mfa_required` |
-| POST | `/auth/mfa/verify` | challenge_id, totp_code |
-| POST | `/auth/refresh` | cookie + header CSRF → access token mới, cookie đã xoay vòng |
-| POST | `/auth/logout` | phiên hiện tại |
-| POST | `/auth/logout-all` | mọi phiên |
-| POST | `/auth/password/forgot` · `/auth/password/reset` | — |
-| GET | `/me` | hồ sơ, role, permission, tier KYC, cờ |
-| PATCH | `/me` | display_name, locale |
-| POST | `/me/password` | mật khẩu hiện tại + mới |
-| POST | `/me/email` | mật khẩu + email mới → xác minh |
-| GET | `/me/sessions` · DELETE `/me/sessions/{id}` | — |
-| GET | `/me/login-history` | cursor |
-| POST | `/me/pin` | đặt PIN (lần đầu) |
-| PUT | `/me/pin` | đổi PIN (cũ, mới) |
-| POST | `/me/pin/reset/request` · `/me/pin/reset/confirm` | mật khẩu + mã email |
-| POST | `/admin/auth/mfa/enroll` · `/admin/auth/mfa/confirm` | chỉ nhân viên |
+| POST | `/auth/register` | email, password, full_name, locale → **202** luôn giống nhau (email đã tồn tại cũng vậy); gửi mã xác minh |
+| POST | `/auth/verify-email` | email, code → 204; sai ⇒ 422 `VERIFICATION_CODE_INVALID` |
+| POST | `/auth/verify-email/resend` | email → 202 (rate limit theo địa chỉ và IP) |
+| POST | `/auth/login` | email, password → 200 `MeResponse` + cookie `vw_session`; lỗi `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED`, `ACCOUNT_LOCKED` (kèm `Retry-After`), `RATE_LIMITED` |
+| POST | `/auth/logout` · `/auth/logout-all` | thu hồi phiên hiện tại / mọi phiên |
+| POST | `/auth/password/forgot` | email → 202 luôn giống nhau; gửi link đặt lại (30 phút) |
+| POST | `/auth/password/reset` | token, new_password → 204; thu hồi mọi phiên |
+| GET · PATCH | `/me` | hồ sơ, permission, trạng thái PIN · đổi full_name/display_name/locale |
+| POST | `/me/password` | current_password, new_password → 204; thu hồi các phiên khác |
+| POST | `/me/email` · `/me/email/confirm` | password + new_email → 202 · code → `MeResponse` |
+| GET · DELETE | `/me/sessions` · `/me/sessions/{id}` | phiên đang hoạt động (đánh dấu `current`) · thu hồi một phiên (phiên của người khác ⇒ 404) |
+| GET | `/me/login-history?limit=` | tối đa 50 bản ghi mới nhất |
+| POST · PUT | `/me/pin` | đặt PIN lần đầu (password + pin) · đổi PIN (current_pin, new_pin) |
+| POST | `/me/pin/reset/request` · `/me/pin/reset/confirm` | password → mã qua email · code + new_pin |
+| POST | `/admin/auth/login` | → `{next_step: MFA_ENROLLMENT_REQUIRED | MFA_REQUIRED}` + cookie phiên `MFA_PENDING` |
+| POST | `/admin/auth/mfa/enroll` · `/admin/auth/mfa/confirm` | secret + `otpauth://` URI · code → 10 mã khôi phục, phiên được nâng cấp |
+| POST | `/admin/auth/mfa/verify` | code **hoặc** recovery_code → 204, phiên được nâng cấp |
+| POST | `/admin/auth/step-up` | code → làm mới `mfa_verified_at` (permission nhạy cảm cần ≤ 15 phút) |
+| POST · GET | `/admin/auth/logout` · `/admin/me` | — · hồ sơ nhân viên, role, permission, hạn phiên |
+| GET | `/admin/audit-logs` · `/admin/audit-logs/verify` | `audit:read:any` (phân trang, lọc theo action/actor/target) · `audit:verify:any` (nhạy cảm) |
 
 ## 4. KYC
 

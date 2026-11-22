@@ -6,7 +6,9 @@ No database connection is needed: the app is built but its lifespan is not start
 
 from __future__ import annotations
 
+import base64
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -18,6 +20,9 @@ def build_openapi() -> dict[str, object]:
     settings = Settings(
         environment=Environment.DEVELOPMENT,
         database_url="postgresql+psycopg://unused@localhost/unused",
+        # Throwaway keys: building the schema does not encrypt anything.
+        data_encryption_key=base64.urlsafe_b64encode(os.urandom(32)).decode(),
+        pin_pepper=base64.urlsafe_b64encode(os.urandom(32)).decode(),
         log_json=False,
         log_level="WARNING",
     )

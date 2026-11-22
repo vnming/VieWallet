@@ -48,7 +48,28 @@ TITLES: dict[str, dict[str, str]] = {
         "en": "A request with this Idempotency-Key is still being processed",
     },
     "SERVICE_UNAVAILABLE": {"vi": "Dịch vụ tạm thời không khả dụng", "en": "Service unavailable"},
+    "RATE_LIMITED": {
+        "vi": "Bạn thao tác quá nhanh, vui lòng thử lại sau",
+        "en": "Too many requests, please try again later",
+    },
+    "CSRF_FAILED": {
+        "vi": "Yêu cầu bị chặn vì không đến từ ứng dụng hợp lệ",
+        "en": "Request blocked: it did not come from a trusted application",
+    },
+    "AUTH_REQUIRED": {"vi": "Vui lòng đăng nhập", "en": "Authentication required"},
+    "FORBIDDEN": {"vi": "Bạn không có quyền thực hiện thao tác này", "en": "Forbidden"},
 }
+
+
+def register_titles(titles: dict[str, dict[str, str]]) -> None:
+    """Modules register the localized titles of their own error codes at import time."""
+    for code, localized in titles.items():
+        if "vi" not in localized or "en" not in localized:
+            raise ValueError(f"error {code} needs both vi and en titles")
+        existing = TITLES.get(code)
+        if existing is not None and existing != localized:
+            raise ValueError(f"error code {code} is already registered with other titles")
+        TITLES[code] = localized
 
 
 def negotiate_locale(accept_language: str | None) -> str:
@@ -116,6 +137,16 @@ class ValidationFailedError(AppError):
 class ServiceUnavailableError(AppError):
     code = "SERVICE_UNAVAILABLE"
     status = 503
+
+
+class AuthRequiredError(AppError):
+    code = "AUTH_REQUIRED"
+    status = 401
+
+
+class ForbiddenError(AppError):
+    code = "FORBIDDEN"
+    status = 403
 
 
 class IdempotencyKeyRequiredError(BadRequestError):

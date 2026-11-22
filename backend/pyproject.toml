@@ -5,11 +5,14 @@ description = "VieWallet backend: simulated fintech e-wallet API and worker (mod
 requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.20.1",
+    "argon2-cffi>=25.1.0",
+    "cryptography>=50.0.2",
     "fastapi>=0.165.0",
     "httpx>=0.28.1",
     "psycopg[binary]>=3.3.9",
-    "pydantic>=2.14.4",
+    "pydantic[email]>=2.14.4",
     "pydantic-settings>=2.16.3",
+    "pyotp>=2.12.1",
     "redis>=8.1.0",
     "sqlalchemy[asyncio]>=2.1.9",
     "structlog>=26.1.0",
@@ -51,7 +54,9 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "PLR2004", "S311"]
-"migrations/**" = ["N999"]
+"migrations/**" = ["N999", "E501"]
+# User-facing message catalogue: long sentences are clearer unwrapped.
+"app/modules/notifications/templates.py" = ["E501"]
 
 # ---------------------------------------------------------------- mypy
 [tool.mypy]

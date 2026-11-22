@@ -10,3 +10,5 @@ export * from "./components/StatusBadge";
 export * from "./components/TextField";
 export * from "./components/Toast";
 export * from "./components/SystemStatusPanel";
+export * from "./components/InlineAlert";
+export * from "./components/SecretFields";

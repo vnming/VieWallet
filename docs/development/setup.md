@@ -55,6 +55,19 @@ bash e2e/wait-for-stack.sh
 
 Service `migrate` chạy `alembic upgrade head` rồi seed dữ liệu tham chiếu, sau đó thoát với mã 0. `api` và `worker` chỉ khởi động khi `migrate` thành công.
 
+## 3a. Tài khoản nhân viên
+
+Không có đăng ký công khai cho nhân viên. Tạo bằng CLI (mật khẩu đọc từ stdin, không lộ trong lịch sử shell):
+
+```bash
+echo "<mật khẩu>" | docker compose exec -T api python -m app.scripts.create_staff \
+    --email ops@example.com --name "Ops Demo" --role SUPER_ADMIN
+```
+
+Role hợp lệ: SUPPORT, OPERATIONS, FINANCE, RISK_ANALYST, KYC_REVIEWER, ADMIN, SUPER_ADMIN. Lần đăng nhập admin đầu tiên bắt buộc thiết lập TOTP (Google Authenticator, Aegis, 1Password...). Email phải có tên miền thật (ví dụ `example.com`); tên miền dành riêng như `.local` bị từ chối.
+
+Email xác minh, đặt lại mật khẩu và thông báo bảo mật xem tại Mailpit: <http://127.0.0.1:8025>.
+
 ## 4. Phát triển hằng ngày (app chạy trên host)
 
 ```bash

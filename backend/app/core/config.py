@@ -51,9 +51,42 @@ class Settings(BaseSettings):
     outbox_max_attempts: int = Field(default=10, ge=1, le=100)
     worker_idle_sleep_seconds: float = Field(default=1.0, gt=0, le=60)
 
+    # --- Secrets (no defaults). Base64-encoded 32-byte keys. -------------------------
+    data_encryption_key: str = Field(
+        description="AES-256-GCM key for encrypted columns and secret outbox payloads."
+    )
+    pin_pepper: str = Field(description="HMAC key applied to transaction PINs before Argon2id.")
+
+    # --- Sessions (ADR-0012) -------------------------------------------------------------
+    cookie_secure: bool = True
+    web_session_idle_hours: int = Field(default=24 * 7, ge=1)
+    web_session_absolute_hours: int = Field(default=24 * 30, ge=1)
+    admin_session_idle_minutes: int = Field(default=30, ge=5)
+    admin_session_absolute_hours: int = Field(default=8, ge=1)
+
+    # --- Password/PIN hashing (Argon2id). Tests lower the cost for speed. -----------------
+    argon2_time_cost: int = Field(default=3, ge=1)
+    argon2_memory_kib: int = Field(default=64 * 1024, ge=8)
+    argon2_parallelism: int = Field(default=4, ge=1)
+
+    # --- Email (Mailpit in development) ----------------------------------------------------
+    smtp_host: str = "127.0.0.1"
+    smtp_port: int = 1025
+    smtp_from: str = "VieWallet <no-reply@viewallet.local>"
+    web_base_url: str = "http://127.0.0.1:8080"
+    admin_base_url: str = "http://127.0.0.1:8081"
+
     @property
     def expose_api_docs(self) -> bool:
         return self.environment is not Environment.PRODUCTION_LIKE
+
+    @property
+    def trusted_origins(self) -> frozenset[str]:
+        """Origins allowed to send state-changing requests (CSRF Origin check)."""
+        return frozenset(o.rstrip("/") for o in self.cors_origins) | {
+            self.web_base_url.rstrip("/"),
+            self.admin_base_url.rstrip("/"),
+        }
 
 
 @lru_cache(maxsize=1)

@@ -1,6 +1,6 @@
 # ADR-0008: JWT access ngắn hạn, refresh cookie xoay vòng, session phía server, TOTP cho nhân viên
 
-- Trạng thái: Accepted (2026-11-21)
+- Trạng thái: Superseded bởi [ADR-0012](0012-server-side-session-cookies.md) (2026-11-22: chủ dự án quyết định tạm thời chưa dựng JWT). Phần MFA nhân viên và Argon2id cho mật khẩu/PIN vẫn giữ nguyên trong ADR-0012 và tài liệu bảo mật.
 - Ngày: 2026-11-21
 
 ## Quyết định

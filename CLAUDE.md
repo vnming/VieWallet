@@ -4,7 +4,8 @@ Ví điện tử fintech mô phỏng (dự án portfolio). **Không tiền thậ
 
 ## Trạng thái hiện tại
 
-- Phase 0 đã duyệt. Phase 1 (foundation) hoàn tất trên nhánh `phase-1/foundation`, chờ chủ dự án nghiệm thu (`docs/01-phase1-report.md`).
+- Phase 0, 1, 2 hoàn tất (`docs/01-phase1-report.md`, `docs/02-phase2-report.md`). Chủ dự án đã cho phép làm Phase 3 (Wallet & Financial Core).
+- Đăng nhập: session cookie phía server (ADR-0012), không dùng JWT. Mọi request ghi cần header `X-VW-CSRF: 1`.
 - Lệnh chạy, test, CI: `docs/development/setup.md`.
 - Không bắt đầu phase mới khi chưa có xác nhận rõ ràng của chủ dự án.
 - Nguồn thiết kế chính: `docs/` (bắt đầu từ `docs/00-phase0-report.md`). Quyết định: `docs/adr/`.

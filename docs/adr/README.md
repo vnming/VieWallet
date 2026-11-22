@@ -11,7 +11,8 @@
 | [0005](0005-simulator-as-separate-service.md) | Payment Provider Simulator là service riêng | Accepted |
 | [0006](0006-postgres-outbox-and-jobs.md) | Outbox và hàng đợi job trong PostgreSQL; Redis chỉ cho rate limit | Accepted |
 | [0007](0007-frontend-monorepo-separate-admin.md) | Monorepo pnpm, app khách hàng và app admin tách riêng | Accepted |
-| [0008](0008-authentication-tokens-sessions.md) | JWT access ngắn hạn, refresh cookie xoay vòng, session phía server, TOTP cho nhân viên | Accepted |
+| [0008](0008-authentication-tokens-sessions.md) | JWT access ngắn hạn, refresh cookie xoay vòng, session phía server, TOTP cho nhân viên | Superseded bởi 0012 |
 | [0009](0009-ai-orchestration.md) | Tự chạy vòng lặp tool AI sau provider port; chỉ model miễn phí; tool chỉ-đọc | Accepted |
 | [0010](0010-runtime-versions.md) | Python 3.14, PostgreSQL 18, Node 24, Docker Desktop | Accepted |
 | [0011](0011-documentation-language.md) | Tài liệu tiếng Việt; code và commit tiếng Anh; UI ưu tiên tiếng Việt | Accepted |
+| [0012](0012-server-side-session-cookies.md) | Session phía server bằng cookie HttpOnly, không dùng JWT | Accepted |

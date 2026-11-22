@@ -8,7 +8,8 @@
   "nav": {
     "label": "Điều hướng chính",
     "home": "Trang chủ",
-    "design": "Thiết kế"
+    "design": "Thiết kế",
+    "security": "Bảo mật"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -17,8 +18,10 @@
   },
   "home": {
     "title": "Chào mừng đến VieWallet",
-    "intro": "Đây là bản nền tảng của hệ thống. Các tính năng ví (đăng ký, nạp, chuyển tiền) sẽ được bổ sung ở các phase tiếp theo theo roadmap.",
-    "statusTitle": "Trạng thái hệ thống"
+    "intro": "Tạo tài khoản mô phỏng để bắt đầu. Ví, nạp tiền và chuyển tiền sẽ được bổ sung ở các phase tiếp theo.",
+    "statusTitle": "Trạng thái hệ thống",
+    "greeting": "Xin chào, {{name}}",
+    "signedInIntro": "Tài khoản của bạn đã sẵn sàng. Ví, nạp tiền và chuyển tiền sẽ có ở các phase tiếp theo."
   },
   "status": {
     "loading": "Đang tải trạng thái hệ thống",
@@ -46,5 +49,127 @@
   },
   "common": {
     "close": "Đóng"
+  },
+  "errors": {
+    "network": "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.",
+    "generic": "Đã có lỗi xảy ra",
+    "tryLater": "Vui lòng thử lại sau ít phút.",
+    "pinRemaining": "Còn {{count}} lần thử.",
+    "pinResetRequired": "PIN đã bị khóa nhiều lần. Hãy đặt lại PIN bằng mật khẩu và mã gửi qua email."
+  },
+  "auth": {
+    "checkingSession": "Đang kiểm tra phiên đăng nhập",
+    "logout": "Đăng xuất",
+    "fields": {
+      "email": "Email",
+      "password": "Mật khẩu",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Nhập lại mật khẩu mới",
+      "fullName": "Họ và tên",
+      "passwordHint": "Ít nhất 10 ký tự. Nên dùng một cụm từ dễ nhớ nhưng khó đoán; không dùng email hoặc tên của bạn.",
+      "passwordWeak": "Mật khẩu chưa đủ an toàn: cần ít nhất 10 ký tự, không quá phổ biến và không chứa email hoặc tên.",
+      "passwordMismatch": "Hai mật khẩu không khớp",
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu"
+    },
+    "login": {
+      "title": "Đăng nhập",
+      "description": "Đăng nhập để quản lý ví mô phỏng của bạn.",
+      "submit": "Đăng nhập",
+      "cta": "Đăng nhập",
+      "noAccount": "Chưa có tài khoản?",
+      "forgot": "Quên mật khẩu?",
+      "notVerified": "Email của bạn chưa được xác minh.",
+      "verifyNow": "Nhập mã xác minh"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "description": "Chỉ mất một phút. Chúng tôi sẽ gửi mã xác minh tới email của bạn.",
+      "submit": "Tạo tài khoản",
+      "cta": "Tạo tài khoản",
+      "haveAccount": "Đã có tài khoản?",
+      "simulationTitle": "Đây là hệ thống mô phỏng",
+      "simulationBody": "Không dùng tiền thật. Hãy dùng thông tin hư cấu, không nhập dữ liệu cá nhân thật."
+    },
+    "verify": {
+      "title": "Xác minh email",
+      "description": "Nhập mã 6 số trong email chúng tôi vừa gửi.",
+      "code": "Mã xác minh",
+      "codeHint": "Mã có hiệu lực 15 phút.",
+      "submit": "Xác minh",
+      "resend": "Gửi lại mã",
+      "resent": "Nếu email hợp lệ, mã mới đã được gửi.",
+      "done": "Email đã được xác minh. Mời bạn đăng nhập."
+    },
+    "forgot": {
+      "title": "Quên mật khẩu",
+      "description": "Nhập email đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
+      "submit": "Gửi liên kết",
+      "sent": "Đã gửi yêu cầu",
+      "sentBody": "Nếu email có tài khoản, liên kết đặt lại mật khẩu (hiệu lực 30 phút) đã được gửi."
+    },
+    "reset": {
+      "title": "Đặt mật khẩu mới",
+      "description": "Sau khi đổi, mọi thiết bị đang đăng nhập sẽ bị đăng xuất.",
+      "submit": "Đặt mật khẩu mới",
+      "done": "Đã đặt mật khẩu mới. Mời bạn đăng nhập lại.",
+      "missingToken": "Liên kết không hợp lệ. Hãy mở đúng liên kết trong email."
+    }
+  },
+  "pin": {
+    "title": "PIN giao dịch",
+    "rulesTitle": "PIN giao dịch là gì?",
+    "rules": "PIN 6 số dùng để xác nhận mọi giao dịch trừ tiền. Không dùng dãy số dễ đoán như 123456 hay 111111. Nhập sai 5 lần, PIN bị khóa 30 phút.",
+    "new": "PIN mới",
+    "confirm": "Nhập lại PIN",
+    "current": "PIN hiện tại",
+    "mismatch": "Hai PIN không khớp",
+    "passwordHint": "Xác nhận bằng mật khẩu đăng nhập.",
+    "setup": {
+      "title": "Đặt PIN giao dịch",
+      "description": "Bước cuối trước khi dùng ví.",
+      "submit": "Đặt PIN"
+    },
+    "missingTitle": "Bạn chưa đặt PIN giao dịch.",
+    "change": "Đổi PIN",
+    "changed": "Đã đổi PIN giao dịch",
+    "locked": "Đang khóa",
+    "active": "Đang dùng",
+    "resetTitle": "Quên hoặc bị khóa PIN?",
+    "sendResetCode": "Gửi mã đặt lại PIN qua email",
+    "codeSent": "Mã đặt lại PIN đã được gửi tới email của bạn.",
+    "resetSubmit": "Đặt lại PIN",
+    "resetDone": "Đã đặt lại PIN giao dịch"
+  },
+  "security": {
+    "title": "Bảo mật tài khoản",
+    "description": "Quản lý mật khẩu, PIN giao dịch và các thiết bị đang đăng nhập.",
+    "loading": "Đang tải",
+    "password": {
+      "title": "Mật khẩu",
+      "description": "Đổi mật khẩu sẽ đăng xuất mọi thiết bị khác.",
+      "submit": "Đổi mật khẩu",
+      "changed": "Đã đổi mật khẩu"
+    },
+    "sessions": {
+      "title": "Thiết bị đang đăng nhập",
+      "logoutAll": "Đăng xuất tất cả",
+      "current": "Thiết bị này",
+      "revoke": "Đăng xuất thiết bị",
+      "lastSeen": "hoạt động",
+      "unknownDevice": "Thiết bị không xác định"
+    },
+    "history": {
+      "title": "Lịch sử đăng nhập",
+      "empty": "Chưa có lần đăng nhập nào",
+      "results": {
+        "SUCCESS": "Thành công",
+        "BAD_CREDENTIALS": "Sai thông tin",
+        "LOCKED": "Bị khóa",
+        "EMAIL_NOT_VERIFIED": "Chưa xác minh",
+        "DISABLED": "Bị vô hiệu"
+      }
+    }
   }
 }

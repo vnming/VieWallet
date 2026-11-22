@@ -7,7 +7,8 @@
   },
   "nav": {
     "label": "Admin navigation",
-    "overview": "Overview"
+    "overview": "Overview",
+    "audit": "Audit log"
   },
   "language": {
     "label": "Language",
@@ -16,7 +17,7 @@
   },
   "overview": {
     "title": "System overview",
-    "intro": "Foundation build of the admin app. Staff sign-in (MFA) and operations screens arrive in Phase 2 and Phase 8.",
+    "intro": "Service health at a glance. Operations screens (transactions, KYC, risk, reconciliation) arrive in Phase 8.",
     "statusTitle": "Service health"
   },
   "status": {
@@ -45,5 +46,76 @@
   },
   "common": {
     "close": "Close"
+  },
+  "errors": {
+    "network": "Cannot reach the server.",
+    "generic": "Something went wrong"
+  },
+  "auth": {
+    "checkingSession": "Checking your session",
+    "logout": "Sign out",
+    "noPermission": "You do not have permission to view this page.",
+    "fields": {
+      "email": "Staff e-mail",
+      "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "login": {
+      "title": "Admin sign-in",
+      "description": "Staff only. Two-factor authentication is required.",
+      "submit": "Continue"
+    }
+  },
+  "mfa": {
+    "code": "6-digit code from your authenticator app",
+    "recoveryCode": "Recovery code",
+    "setup": {
+      "title": "Set up two-factor authentication",
+      "description": "Scan the QR code with an authenticator app (Google Authenticator, Aegis, 1Password...), then enter the 6-digit code.",
+      "qrAlt": "QR code that adds VieWallet to your authenticator app",
+      "manual": "Or enter it manually:",
+      "submit": "Enable two-factor authentication"
+    },
+    "recovery": {
+      "title": "Recovery codes",
+      "description": "Each code works once if you lose your authenticator device.",
+      "warning": "Store these codes somewhere safe. They are shown only once.",
+      "done": "I saved them, continue"
+    },
+    "verify": {
+      "title": "Two-factor authentication",
+      "description": "Enter the code from your authenticator app to finish signing in.",
+      "submit": "Verify",
+      "useRecovery": "Use a recovery code",
+      "useApp": "Use the authenticator app"
+    },
+    "stepUp": {
+      "title": "Confirm it is you",
+      "description": "This action is sensitive. Enter a fresh code from your authenticator app.",
+      "submit": "Confirm"
+    }
+  },
+  "audit": {
+    "title": "Audit log",
+    "description": "Every important action is recorded and cannot be changed or deleted. The hash chain reveals tampered records.",
+    "verify": "Verify hash chain",
+    "chainOk": "Chain is valid: {{count}} records checked.",
+    "chainBroken": "Chain is broken at record #{{seq}}.",
+    "filterAction": "Filter by action",
+    "apply": "Filter",
+    "loading": "Loading the audit log",
+    "empty": "No matching records",
+    "columns": {
+      "time": "Time",
+      "action": "Action",
+      "actor": "Actor",
+      "target": "Target",
+      "result": "Result"
+    },
+    "pagination": "Pagination",
+    "pageOf": "Page {{page}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

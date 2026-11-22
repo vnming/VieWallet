@@ -25,8 +25,8 @@ Quy mô: S nhỏ, M vừa, L lớn, XL rất lớn (tương đối, không cam k
 | Phase | Tên | Phụ thuộc | Quy mô |
 |---|---|---|---|
 | 0 | Product Discovery & Architecture | — | xong (chờ duyệt) |
-| 1 | Project Foundation | 0 | xong (chờ duyệt) |
-| 2 | Identity & Security | 1 | L |
+| 1 | Project Foundation | 0 | xong |
+| 2 | Identity & Security | 1 | xong |
 | 3 | Wallet & Financial Core | 2 | XL |
 | 4 | Provider Simulator, Deposit & Withdrawal | 3 | L |
 | 5 | Transfer, Payment, Refund, Reversal | 3 (4 cho đảo rút tiền) | L |
@@ -79,6 +79,9 @@ Trạng thái: hoàn tất 2026-11-21, chờ chủ dự án nghiệm thu. Kết 
 - Chưa có tính năng nghiệp vụ; không có màn hình placeholder giả vờ có chức năng.
 
 ### Phase 2 — Identity & Security
+
+Trạng thái: hoàn tất 2026-11-22. Kết quả và điểm lệch: [Báo cáo Phase 2](02-phase2-report.md).
+
 
 User, credentials (Argon2id), đăng ký + xác minh email (Mailpit), đăng nhập, JWT access + session refresh xoay vòng, đăng xuất/đăng xuất mọi phiên, danh sách phiên, lịch sử đăng nhập, rate limit (Redis), khóa tài khoản, đặt lại/đổi mật khẩu, đổi email, bảng RBAC + seed + dependency `require()`, MFA nhân viên (TOTP) + step-up, PIN giao dịch (đặt/đổi/đặt lại/khóa), module audit (hash chain), thông báo bảo mật qua email. UI: đăng nhập, đăng ký, xác minh, quên/đặt lại mật khẩu, đặt PIN, bảo mật tài khoản, phiên; đăng nhập admin + MFA + khung admin có điều hướng theo permission.
 **Nghiệm thu**: các mục auth trong danh mục test bảo mật đạt; có harness test ma trận authZ; audit cho mọi sự kiện bảo mật; không có bí mật dạng plaintext; E2E hành trình 1.

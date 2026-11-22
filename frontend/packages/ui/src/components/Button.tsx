@@ -28,6 +28,21 @@ const sizes: Record<ButtonSize, string> = {
   lg: "h-13 px-6 text-base gap-2",
 };
 
+/** Classes of a Button, for links that must look like buttons (no <a><button> nesting). */
+export function buttonClassName({
+  variant = "primary",
+  size = "md",
+  fullWidth = false,
+}: { variant?: ButtonVariant; size?: ButtonSize; fullWidth?: boolean } = {}): string {
+  return clsx(
+    "inline-flex select-none items-center justify-center rounded-md font-medium",
+    "transition-colors duration-[120ms] ease-(--ease-standard)",
+    variants[variant],
+    sizes[size],
+    fullWidth && "w-full",
+  );
+}
+
 export function Button({
   variant = "primary",
   size = "md",

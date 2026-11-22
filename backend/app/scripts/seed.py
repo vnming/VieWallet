@@ -16,6 +16,7 @@ from app.core.config import get_settings
 from app.core.db import Database
 from app.core.logging import configure_logging
 from app.core.models import CurrencyRecord
+from app.modules.access.public import seed_catalog
 
 logger = structlog.get_logger("app.seed")
 
@@ -37,7 +38,8 @@ async def seed(db: Database) -> None:
                     set_={"exponent": stmt.excluded.exponent},
                 )
             )
-    logger.info("seed_completed", currencies=[c["code"] for c in CURRENCIES])
+        await seed_catalog(session)
+    logger.info("seed_completed", currencies=[c["code"] for c in CURRENCIES], rbac=True)
 
 
 async def _main() -> None:

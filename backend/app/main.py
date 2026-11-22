@@ -21,7 +21,15 @@ from app.core.db import Database
 from app.core.errors import register_exception_handlers
 from app.core.idempotency import IdempotencyStore
 from app.core.logging import configure_logging
-from app.core.middleware import CorrelationIdMiddleware, SecurityHeadersMiddleware
+from app.core.middleware import (
+    CorrelationIdMiddleware,
+    CsrfProtectionMiddleware,
+    SecurityHeadersMiddleware,
+)
+from app.core.rate_limit import RateLimiter
+from app.modules.audit import api as audit_api
+from app.modules.identity import api as identity_api
+from app.modules.identity.context import IdentityServices
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 
@@ -57,6 +65,7 @@ def create_app(settings: Settings | None = None, *, clock: Clock | None = None) 
             ),
             expected_migration_head=migration_head(),
         )
+        app.state.identity = IdentityServices.build(settings, db, clock, RateLimiter(redis, clock))
         try:
             yield
         finally:
@@ -75,19 +84,24 @@ def create_app(settings: Settings | None = None, *, clock: Clock | None = None) 
     )
     register_exception_handlers(app)
 
-    # Order: the last added middleware runs first.
+    # Order: the last added middleware runs first (CSRF runs after CORS handled preflight).
+    app.add_middleware(CsrfProtectionMiddleware, trusted_origins=settings.trusted_origins)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allow_headers=["Authorization", "Content-Type", "Idempotency-Key", "X-Request-ID"],
+        allow_headers=["Content-Type", "Idempotency-Key", "X-Request-ID", "X-VW-CSRF"],
         expose_headers=["X-Request-ID", "Idempotent-Replayed", "Retry-After"],
     )
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(CorrelationIdMiddleware)
 
     app.include_router(health.router)
+    app.include_router(identity_api.auth_router)
+    app.include_router(identity_api.me_router)
+    app.include_router(identity_api.admin_router)
+    app.include_router(audit_api.router)
     return app
 
 

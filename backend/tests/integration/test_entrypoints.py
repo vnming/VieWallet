@@ -70,7 +70,7 @@ async def test_purge_job_removes_expired_keys(
 
 
 async def test_worker_starts_and_stops_cleanly(app_settings: Settings) -> None:
-    assert build_registry().topics == []
+    assert build_registry(app_settings).topics == ["notifications.email.requested"]
     stop = asyncio.Event()
     task = asyncio.create_task(run_worker(app_settings, stop))
     await asyncio.sleep(0.3)

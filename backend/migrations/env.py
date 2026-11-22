@@ -13,7 +13,10 @@ from sqlalchemy import create_engine, pool, text
 import app.core.idempotency
 import app.core.jobs
 import app.core.models
-import app.core.outbox  # noqa: F401
+import app.core.outbox
+import app.modules.access.models
+import app.modules.audit.models
+import app.modules.identity.models  # noqa: F401
 from app.core.db import APP_SCHEMA, Base
 
 config = context.config

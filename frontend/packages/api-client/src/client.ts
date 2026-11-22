@@ -36,6 +36,8 @@ function isProblem(value: unknown): value is ProblemDetails {
   return typeof value === "object" && value !== null && "code" in value && "status" in value;
 }
 
+const UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 export interface ApiClientOptions {
   /** Empty string = same origin (the dev server and nginx proxy /api to the backend). */
   baseUrl?: string;
@@ -49,14 +51,18 @@ export function createApiClient({ baseUrl = "", getLocale, fetch }: ApiClientOpt
     baseUrl,
     ...(fetch ? { fetch } : {}),
     headers: { Accept: "application/json" },
+    credentials: "same-origin",
   });
-  const locale: Middleware = {
+  const middleware: Middleware = {
     onRequest({ request }) {
       if (getLocale) request.headers.set("Accept-Language", getLocale());
+      // Cookie sessions need CSRF protection: the API rejects state-changing requests
+      // without this header (ADR-0012). Cross-site pages cannot add it.
+      if (UNSAFE_METHODS.has(request.method)) request.headers.set("X-VW-CSRF", "1");
       return request;
     },
   };
-  client.use(locale);
+  client.use(middleware);
   return client;
 }
 
@@ -73,4 +79,18 @@ export function unwrap<T>(result: { data?: T; error?: unknown; response: Respons
     );
   }
   return result.data as T;
+}
+
+/** Field-level validation messages keyed by field name (first message per field). */
+export function fieldErrors(error: unknown): Record<string, string> {
+  if (!(error instanceof ApiError) || !error.problem?.errors) return {};
+  const result: Record<string, string> = {};
+  for (const item of error.problem.errors) {
+    result[item.field] ??= item.message;
+  }
+  return result;
+}
+
+export function isApiError(error: unknown, code?: string): error is ApiError {
+  return error instanceof ApiError && (code === undefined || error.code === code);
 }

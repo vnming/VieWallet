@@ -1,13 +1,58 @@
-import { useSystemStatus } from "@viewallet/api-client";
+import { useIdentityApi, useStaffMe, useSystemStatus } from "@viewallet/api-client";
 import { isLocale, rememberLocale } from "@viewallet/shared";
-import { Badge } from "@viewallet/ui";
+import { Badge, Button } from "@viewallet/ui";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, type LucideIcon, ScrollText } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router";
 
-const NAV_ITEMS = [{ to: "/", key: "nav.overview", icon: LayoutDashboard, end: true }] as const;
+interface NavItem {
+  to: string;
+  key: string;
+  icon: LucideIcon;
+  end: boolean;
+  /** Shown only when the staff member holds this permission (the API enforces it anyway). */
+  permission?: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: "/", key: "nav.overview", icon: LayoutDashboard, end: true },
+  { to: "/audit", key: "nav.audit", icon: ScrollText, end: false, permission: "audit:read:any" },
+];
+
+function StaffMenu() {
+  const { t } = useTranslation();
+  const me = useStaffMe();
+  const api = useIdentityApi();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const logout = useMutation({
+    mutationFn: api.staffLogout,
+    onSettled: () => {
+      queryClient.clear();
+      void navigate("/login", { replace: true });
+    },
+  });
+  if (!me.data) return null;
+  return (
+    <div className="flex items-center gap-3">
+      <span className="hidden text-right text-sm leading-tight sm:block">
+        <span className="block font-medium text-fg">{me.data.full_name}</span>
+        <span className="block text-xs text-fg-muted">{me.data.roles.join(", ")}</span>
+      </span>
+      <Button
+        size="sm"
+        variant="secondary"
+        loading={logout.isPending}
+        onClick={() => logout.mutate()}
+      >
+        {t("auth.logout")}
+      </Button>
+    </div>
+  );
+}
 
 function EnvironmentBadge() {
   const { t } = useTranslation();
@@ -21,7 +66,7 @@ function EnvironmentBadge() {
   );
 }
 
-function LanguageSwitch() {
+export function LanguageSwitch() {
   const { t, i18n } = useTranslation();
   return (
     <label className="flex items-center gap-2 text-sm">
@@ -47,6 +92,11 @@ function LanguageSwitch() {
 /** Staff shell: collapsible-ready left sidebar, top bar with environment badge, wide content. */
 export function AdminShell() {
   const { t, i18n } = useTranslation();
+  const me = useStaffMe();
+  const permissions = me.data?.permissions ?? [];
+  const navItems = NAV_ITEMS.filter(
+    (item) => !item.permission || permissions.includes(item.permission),
+  );
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
@@ -69,7 +119,7 @@ export function AdminShell() {
           </span>
         </div>
         <nav aria-label={t("nav.label")} className="flex gap-1 md:flex-col">
-          {NAV_ITEMS.map(({ to, key, icon: Icon, end }) => (
+          {navItems.map(({ to, key, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -92,7 +142,10 @@ export function AdminShell() {
       <div className="flex min-w-0 flex-col">
         <header className="flex h-14 items-center justify-between gap-4 border-b border-border bg-surface px-4 md:px-8">
           <EnvironmentBadge />
-          <LanguageSwitch />
+          <div className="flex items-center gap-3">
+            <LanguageSwitch />
+            <StaffMenu />
+          </div>
         </header>
         <main id="main" tabIndex={-1} className="flex-1 px-4 py-6 md:px-8">
           <div className="mx-auto w-full max-w-[1440px]">

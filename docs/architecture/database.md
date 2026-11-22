@@ -92,11 +92,13 @@ Index: `status`, `created_at`. Nhân viên và khách hàng dùng chung bảng; 
 
 **mfa_factors** — `user_id`, `type` (TOTP), `secret_encrypted BYTEA` (AES-GCM bằng khóa ứng dụng), `confirmed_at`, `last_used_step BIGINT` (chống phát lại). `UNIQUE(user_id, type)`.
 
-**sessions** — `user_id`, `audience` (WEB, ADMIN), `refresh_token_hash` (SHA-256), `family_id UUID` (họ xoay vòng), `rotated_from UUID NULL`, `user_agent`, `ip`, `device_label`, `created_at`, `last_used_at`, `expires_at`, `revoked_at`, `revoke_reason`. Index: `UNIQUE(refresh_token_hash)`, `(user_id, revoked_at)`, `family_id`.
+**sessions** (đã cài đặt, migration `0002`) — `user_id`, `audience` (WEB, ADMIN), `state` (ACTIVE, MFA_PENDING), `token_hash` (SHA-256, UNIQUE), `created_at`, `last_seen_at`, `idle_expires_at`, `absolute_expires_at`, `revoked_at`, `revoke_reason`, `mfa_verified_at`, `mfa_failed_attempts`, `ip`, `user_agent`. Index `(user_id, revoked_at)`.
 
 **login_history** (chỉ-thêm) — `user_id NULL` (lần thử với email không tồn tại lưu email đã hash), `email_hash`, `audience`, `result` (SUCCESS, BAD_CREDENTIALS, LOCKED, MFA_REQUIRED, MFA_FAILED), `ip`, `user_agent`, `at`.
 
-**email_tokens** — `user_id`, `purpose` (VERIFY_EMAIL, RESET_PASSWORD, RESET_PIN, CHANGE_EMAIL), `token_hash`, `expires_at`, `used_at`. `UNIQUE(token_hash)`.
+**verification_tokens** (đã cài đặt) — `user_id`, `purpose` (VERIFY_EMAIL, RESET_PASSWORD, RESET_PIN, CHANGE_EMAIL), `secret_hash` (HMAC cho mã 6 số, SHA-256 cho link; UNIQUE), `target_email` (đổi email), `attempts`, `created_at`, `expires_at`, `consumed_at`.
+
+**mfa_recovery_codes** (đã cài đặt) — `user_id`, `code_hash` (UNIQUE), `used_at`.
 
 **transaction_pins** — `user_id PK`, `pin_hash` (Argon2id trên HMAC-SHA256(pepper, pin)), `failed_attempts`, `locked_until`, `lock_count`, `changed_at`, `reset_at`.
 

@@ -21,17 +21,19 @@
 
 ### 2.1 Thông tin đăng nhập
 
-- Mật khẩu: Argon2id (`argon2-cffi`), tham số m=64 MiB, t=3, p=4 (chỉnh để mất khoảng 100–250 ms trên máy mục tiêu); hash lại khi đăng nhập nếu tham số thay đổi.
-- Chính sách mật khẩu: tối thiểu 10, tối đa 128 ký tự, kiểm tra với danh sách 100k mật khẩu bị lộ phổ biến lưu local (không gọi dịch vụ ngoài), không ép quy tắc tổ hợp ký tự (theo NIST SP 800-63B).
+- Mật khẩu: Argon2id (`argon2-cffi`), tham số m=64 MiB, t=3, p=4 (chỉnh để mất khoảng 100–250 ms trên máy mục tiêu); hash lại khi đăng nhập nếu tham số thay đổi. Việc hash chạy trong thread (`SecretHasher.ahash/averify`) để không chặn event loop.
+- Chính sách mật khẩu: tối thiểu 10, tối đa 128 ký tự, từ chối mật khẩu quá phổ biến (danh sách tích hợp khoảng 60 mật khẩu yếu phổ biến, thay được bằng danh sách lớn hơn lưu local mà không đổi code), từ chối mật khẩu chứa phần trước `@` của email hoặc tên, không ép quy tắc tổ hợp ký tự (theo NIST SP 800-63B).
 - Không lộ email tồn tại: email không tồn tại và sai mật khẩu nhận cùng response với thời gian tương đương (verify một hash giả).
 
-### 2.2 Token và session (ADR-0008)
+### 2.2 Session phía server (ADR-0012, đã cài đặt ở Phase 2)
 
-- **Access token**: JWT, EdDSA (Ed25519) hoặc HS256 có key id xoay vòng; sống 10 phút; claim `sub, sid, aud (web|admin), roles_version, iat, exp, jti`. Chỉ giữ **trong bộ nhớ** của SPA.
-- **Refresh token**: 256 bit ngẫu nhiên, lưu SHA-256 hash trong `sessions`; gửi qua cookie `vw_rt` — `HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth`. Thời hạn: web 30 ngày trượt (nhàn rỗi 7 ngày), admin 8 giờ tuyệt đối (nhàn rỗi 30 phút).
-- **Xoay vòng có phát hiện dùng lại**: mỗi lần refresh cấp token mới và đánh dấu token cũ đã dùng; dùng lại token đã dùng sẽ thu hồi toàn bộ họ token và phát cảnh báo bảo mật.
-- **Kiểm tra session mỗi request**: `sid` được kiểm tra với `sessions.revoked_at` (cache Redis ≤ 30 giây). Nhờ đó "đăng xuất mọi phiên" và thu hồi của nhân viên có hiệu lực trong vài giây, trong khi access token vẫn ngắn.
-- Tách audience: token admin bị route khách hàng từ chối và ngược lại. Tài khoản nhân viên không dùng được app khách hàng.
+- **Token phiên**: 32 byte ngẫu nhiên; DB chỉ lưu SHA-256 trong `sessions.token_hash`.
+- **Cookie**: `vw_session` (web) và `vw_admin_session` (admin): `HttpOnly; SameSite=Strict; Path=/api`, `Secure` theo `VW_COOKIE_SECURE` (stack local chạy HTTP nên tắt; production-like bật).
+- **Thời hạn**: web nhàn rỗi 7 ngày, tuyệt đối 30 ngày; admin nhàn rỗi 30 phút, tuyệt đối 8 giờ. `last_seen_at` cập nhật tối đa mỗi 60 giây.
+- **Kiểm tra mỗi request**: tra session theo hash; session bị thu hồi, hết hạn, sai audience hoặc user không còn ACTIVE ⇒ 401 `SESSION_EXPIRED`. Đăng xuất / đăng xuất mọi phiên / thu hồi một thiết bị có hiệu lực ngay.
+- **Nhân viên**: đăng nhập tạo session `MFA_PENDING` (10 phút) chỉ dùng được cho endpoint MFA; xác thực xong thì session cũ bị thu hồi và cấp token mới (chống session fixation).
+- **Tách audience**: tài khoản nhân viên không đăng nhập được app khách hàng và ngược lại (trả cùng lỗi `INVALID_CREDENTIALS` để không lộ loại tài khoản); cookie khách hàng không phải phiên admin.
+- JWT/refresh token (ADR-0008) bị hoãn theo quyết định của chủ dự án.
 
 ### 2.3 Brute-force và lạm dụng
 
@@ -48,7 +50,8 @@
 ### 2.5 Đặt lại mật khẩu và khôi phục tài khoản
 
 - Token dùng một lần, sống 30 phút, lưu hash; khi thành công: thu hồi mọi session, gửi email thông báo, chặn rút tiền 24 giờ (thời gian chờ rủi ro).
-- Đổi email: xác nhận qua địa chỉ mới + thông báo tới địa chỉ cũ kèm link "không phải tôi" để khóa tài khoản.
+- Đổi email: xác nhận bằng mã gửi tới địa chỉ mới + thông báo tới địa chỉ cũ. (Link "không phải tôi" để khóa tài khoản: dời sang Phase 7.)
+- Mã xác minh 6 số lưu bằng HMAC-SHA256 với khóa con từ pepper (không brute-force offline được chỉ với DB), sai 5 lần thì mã bị hủy. Mã/link bí mật trong email được mã hóa AES-256-GCM trước khi ghi vào outbox.
 
 ## 3. Bảo mật giao dịch
 
@@ -102,7 +105,7 @@
 ## 6. Bảo mật web
 
 - XSS: React tự escape; không dùng `dangerouslySetInnerHTML` trừ Markdown help center đã làm sạch (DOMPurify); CSP chặt: `default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; connect-src 'self' <api>`.
-- CSRF: access token trong header `Authorization` (trình duyệt không tự gửi). Endpoint xác thực bằng cookie (`/auth/refresh`, `/auth/logout`) yêu cầu `SameSite=Strict` + kiểm tra `Origin` theo allow-list + header tùy chỉnh `X-VW-CSRF: 1`.
+- CSRF: phiên đi bằng cookie nên mọi request ghi (`POST/PUT/PATCH/DELETE`) dưới `/api/` phải có header `X-VW-CSRF: 1` (middleware `CsrfProtectionMiddleware`); nếu trình duyệt gửi `Origin` thì Origin phải nằm trong allow-list; cookie `SameSite=Strict`. Webhook provider được miễn vì xác thực bằng chữ ký.
 - SQL injection: chỉ ORM/query có tham số; sắp xếp động qua map cột cho phép; lint rule chặn `text()` thô ghép f-string.
 - Header: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy` (camera chỉ ở trang quét QR), `Cross-Origin-Opener-Policy: same-origin`.
 - Input: Pydantic strict type, giới hạn độ dài ở mọi nơi, chuẩn hóa Unicode (NFC) cho tên, bỏ ký tự điều khiển trong mô tả.
@@ -120,7 +123,7 @@ Tài sản: số dư/ledger, thông tin đăng nhập/session/PIN, PII/dữ li�
 | T2 | Phát lại confirm hoặc callback | S/T | Bắt được request | Idempotency, CAS, chữ ký + timestamp + event_id unique cho callback | Thấp |
 | T3 | Giả mạo callback provider để ghi có ví | S | Kẻ tấn công POST vào callback URL | Chữ ký HMAC, so sánh constant-time, số tiền/mã phải khớp operation, allow-list IP provider ở prod | Thấp |
 | T4 | Chiếm tài khoản bằng credential stuffing | S | Mật khẩu bị lộ | Rate limit, khóa, kiểm tra mật khẩu bị lộ, thông báo thiết bị mới, PIN cho trừ tiền | Trung bình (khách không có 2FA SMS) |
-| T5 | Đánh cắp session (XSS) | I/S | Script độc | CSP, React escape, access token trong bộ nhớ, refresh cookie HttpOnly, TTL ngắn | Thấp |
+| T5 | Đánh cắp session (XSS) | I/S | Script độc | CSP, React escape, cookie phiên HttpOnly (script không đọc được), thu hồi phiên tức thì, phiên admin ngắn | Thấp |
 | T6 | BOLA: đọc giao dịch của người khác | I | Đổi id | Kiểm tra chủ sở hữu trong service, id UUID, test cho từng endpoint | Thấp |
 | T7 | Nhân viên lạm quyền (tự điều chỉnh ví mình) | E/T | Đặc quyền admin | Nhân viên không sở hữu ví khách; maker-checker; audit hash chain; tách nhiệm vụ | Thấp |
 | T8 | Sửa audit log | T/R | Truy cập DB | Trigger chỉ-thêm, không cấp quyền, job kiểm tra hash chain | Thấp (superuser DB ngoài phạm vi) |

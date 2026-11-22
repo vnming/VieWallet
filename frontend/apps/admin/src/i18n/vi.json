@@ -7,7 +7,8 @@
   },
   "nav": {
     "label": "Điều hướng quản trị",
-    "overview": "Tổng quan"
+    "overview": "Tổng quan",
+    "audit": "Nhật ký audit"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -16,7 +17,7 @@
   },
   "overview": {
     "title": "Tổng quan hệ thống",
-    "intro": "Bản nền tảng của ứng dụng quản trị. Đăng nhập nhân viên (MFA) và các màn hình vận hành sẽ có từ Phase 2 và Phase 8.",
+    "intro": "Theo dõi sức khỏe dịch vụ. Các màn hình vận hành (giao dịch, KYC, rủi ro, đối soát) sẽ được bổ sung ở Phase 8.",
     "statusTitle": "Sức khỏe dịch vụ"
   },
   "status": {
@@ -45,5 +46,76 @@
   },
   "common": {
     "close": "Đóng"
+  },
+  "errors": {
+    "network": "Không kết nối được máy chủ.",
+    "generic": "Đã có lỗi xảy ra"
+  },
+  "auth": {
+    "checkingSession": "Đang kiểm tra phiên đăng nhập",
+    "logout": "Đăng xuất",
+    "noPermission": "Bạn không có quyền xem trang này.",
+    "fields": {
+      "email": "Email nhân viên",
+      "password": "Mật khẩu",
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu"
+    },
+    "login": {
+      "title": "Đăng nhập quản trị",
+      "description": "Chỉ dành cho nhân viên. Bắt buộc xác thực hai lớp.",
+      "submit": "Tiếp tục"
+    }
+  },
+  "mfa": {
+    "code": "Mã 6 số từ ứng dụng xác thực",
+    "recoveryCode": "Mã khôi phục",
+    "setup": {
+      "title": "Thiết lập xác thực hai lớp",
+      "description": "Quét mã QR bằng ứng dụng xác thực (Google Authenticator, Aegis, 1Password...), rồi nhập mã 6 số.",
+      "qrAlt": "Mã QR để thêm tài khoản VieWallet vào ứng dụng xác thực",
+      "manual": "Hoặc nhập thủ công:",
+      "submit": "Bật xác thực hai lớp"
+    },
+    "recovery": {
+      "title": "Mã khôi phục",
+      "description": "Mỗi mã dùng được một lần khi bạn mất thiết bị xác thực.",
+      "warning": "Lưu các mã này ở nơi an toàn. Chúng chỉ hiển thị một lần.",
+      "done": "Tôi đã lưu mã, tiếp tục"
+    },
+    "verify": {
+      "title": "Xác thực hai lớp",
+      "description": "Nhập mã trong ứng dụng xác thực để hoàn tất đăng nhập.",
+      "submit": "Xác thực",
+      "useRecovery": "Dùng mã khôi phục",
+      "useApp": "Dùng ứng dụng xác thực"
+    },
+    "stepUp": {
+      "title": "Xác thực lại",
+      "description": "Thao tác này nhạy cảm. Nhập mã mới từ ứng dụng xác thực.",
+      "submit": "Xác nhận"
+    }
+  },
+  "audit": {
+    "title": "Nhật ký audit",
+    "description": "Mọi thao tác quan trọng được ghi lại, không thể sửa hay xóa. Chuỗi hash cho phép phát hiện bản ghi bị can thiệp.",
+    "verify": "Kiểm tra chuỗi hash",
+    "chainOk": "Chuỗi hợp lệ: đã kiểm tra {{count}} bản ghi.",
+    "chainBroken": "Chuỗi bị phá vỡ tại bản ghi #{{seq}}.",
+    "filterAction": "Lọc theo hành động",
+    "apply": "Lọc",
+    "loading": "Đang tải nhật ký",
+    "empty": "Không có bản ghi phù hợp",
+    "columns": {
+      "time": "Thời gian",
+      "action": "Hành động",
+      "actor": "Người thực hiện",
+      "target": "Đối tượng",
+      "result": "Kết quả"
+    },
+    "pagination": "Phân trang",
+    "pageOf": "Trang {{page}}/{{total}}",
+    "previous": "Trước",
+    "next": "Sau"
   }
 }

@@ -8,7 +8,8 @@
   "nav": {
     "label": "Main navigation",
     "home": "Home",
-    "design": "Design"
+    "design": "Design",
+    "security": "Security"
   },
   "language": {
     "label": "Language",
@@ -17,8 +18,10 @@
   },
   "home": {
     "title": "Welcome to VieWallet",
-    "intro": "This is the foundation build. Wallet features (sign-up, deposits, transfers) arrive in later phases according to the roadmap.",
-    "statusTitle": "System status"
+    "intro": "Create a simulated account to get started. Wallet, deposits and transfers arrive in the next phases.",
+    "statusTitle": "System status",
+    "greeting": "Hello, {{name}}",
+    "signedInIntro": "Your account is ready. Wallet, deposits and transfers arrive in the next phases."
   },
   "status": {
     "loading": "Loading system status",
@@ -46,5 +49,127 @@
   },
   "common": {
     "close": "Close"
+  },
+  "errors": {
+    "network": "Cannot reach the server. Check your connection and try again.",
+    "generic": "Something went wrong",
+    "tryLater": "Please try again in a few minutes.",
+    "pinRemaining": "{{count}} attempts left.",
+    "pinResetRequired": "The PIN was locked several times. Reset it with your password and an e-mail code."
+  },
+  "auth": {
+    "checkingSession": "Checking your session",
+    "logout": "Sign out",
+    "fields": {
+      "email": "E-mail",
+      "password": "Password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Repeat the new password",
+      "fullName": "Full name",
+      "passwordHint": "At least 10 characters. A memorable phrase works well; do not use your e-mail or name.",
+      "passwordWeak": "Password is not strong enough: at least 10 characters, not a common one, and not containing your e-mail or name.",
+      "passwordMismatch": "The passwords do not match",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "login": {
+      "title": "Sign in",
+      "description": "Sign in to manage your simulated wallet.",
+      "submit": "Sign in",
+      "cta": "Sign in",
+      "noAccount": "No account yet?",
+      "forgot": "Forgot password?",
+      "notVerified": "Your e-mail is not verified yet.",
+      "verifyNow": "Enter the verification code"
+    },
+    "register": {
+      "title": "Create an account",
+      "description": "It takes a minute. We will e-mail you a verification code.",
+      "submit": "Create account",
+      "cta": "Create account",
+      "haveAccount": "Already have an account?",
+      "simulationTitle": "This is a simulation",
+      "simulationBody": "No real money is involved. Use fictional details, never real personal data."
+    },
+    "verify": {
+      "title": "Verify your e-mail",
+      "description": "Enter the 6-digit code we just sent you.",
+      "code": "Verification code",
+      "codeHint": "The code is valid for 15 minutes.",
+      "submit": "Verify",
+      "resend": "Send a new code",
+      "resent": "If the address is valid, a new code was sent.",
+      "done": "E-mail verified. Please sign in."
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "description": "Enter your e-mail and we will send a reset link.",
+      "submit": "Send link",
+      "sent": "Request sent",
+      "sentBody": "If the address has an account, a reset link (valid for 30 minutes) was sent."
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "description": "After the change every signed-in device is signed out.",
+      "submit": "Set new password",
+      "done": "Password changed. Please sign in again.",
+      "missingToken": "Invalid link. Open the exact link from the e-mail."
+    }
+  },
+  "pin": {
+    "title": "Transaction PIN",
+    "rulesTitle": "What is the transaction PIN?",
+    "rules": "A 6-digit PIN confirms every payment out of your wallet. Avoid easy sequences like 123456 or 111111. Five wrong tries lock it for 30 minutes.",
+    "new": "New PIN",
+    "confirm": "Repeat PIN",
+    "current": "Current PIN",
+    "mismatch": "The PINs do not match",
+    "passwordHint": "Confirm with your sign-in password.",
+    "setup": {
+      "title": "Set your transaction PIN",
+      "description": "Last step before using the wallet.",
+      "submit": "Set PIN"
+    },
+    "missingTitle": "You have not set a transaction PIN yet.",
+    "change": "Change PIN",
+    "changed": "Transaction PIN changed",
+    "locked": "Locked",
+    "active": "Active",
+    "resetTitle": "Forgot or locked PIN?",
+    "sendResetCode": "E-mail me a PIN reset code",
+    "codeSent": "A PIN reset code was sent to your e-mail.",
+    "resetSubmit": "Reset PIN",
+    "resetDone": "Transaction PIN reset"
+  },
+  "security": {
+    "title": "Account security",
+    "description": "Manage your password, transaction PIN and signed-in devices.",
+    "loading": "Loading",
+    "password": {
+      "title": "Password",
+      "description": "Changing the password signs out every other device.",
+      "submit": "Change password",
+      "changed": "Password changed"
+    },
+    "sessions": {
+      "title": "Signed-in devices",
+      "logoutAll": "Sign out everywhere",
+      "current": "This device",
+      "revoke": "Sign out device",
+      "lastSeen": "active",
+      "unknownDevice": "Unknown device"
+    },
+    "history": {
+      "title": "Sign-in history",
+      "empty": "No sign-ins yet",
+      "results": {
+        "SUCCESS": "Success",
+        "BAD_CREDENTIALS": "Wrong details",
+        "LOCKED": "Locked",
+        "EMAIL_NOT_VERIFIED": "Not verified",
+        "DISABLED": "Disabled"
+      }
+    }
   }
 }

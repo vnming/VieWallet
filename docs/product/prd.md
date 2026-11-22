@@ -70,9 +70,9 @@ ID được tham chiếu từ test và roadmap. Độ ưu tiên: **M** = bắt b
 
 | ID | Yêu cầu | Ưu tiên |
 |---|---|---|
-| FR-ID-01 | Đăng ký bằng email, mật khẩu, họ tên, SĐT (tùy chọn). Xác minh email bằng mã/link dùng một lần (gửi về hộp thư dev). | M |
+| FR-ID-01 | Đăng ký bằng email, mật khẩu, họ tên (SĐT tùy chọn dời sang hồ sơ ở Phase 7). Xác minh email bằng mã 6 số dùng một lần (gửi về hộp thư dev). | M |
 | FR-ID-02 | Đăng nhập bằng email + mật khẩu. Thông báo lỗi chung chung khi thất bại (không lộ email có tồn tại). | M |
-| FR-ID-03 | Access token ngắn hạn, refresh token xoay vòng trong cookie httpOnly, bản ghi session ở server. | M |
+| FR-ID-03 | Phiên phía server mang bằng cookie HttpOnly (ADR-0012; JWT tạm hoãn), có hạn nhàn rỗi và hạn tuyệt đối, thu hồi được ngay. | M |
 | FR-ID-04 | Đăng xuất (phiên hiện tại) và đăng xuất mọi phiên; liệt kê phiên đang hoạt động kèm thiết bị và lần hoạt động cuối; thu hồi từng phiên. | M |
 | FR-ID-05 | Giới hạn tần suất đăng nhập theo IP và theo tài khoản; khóa tăng dần khi sai nhiều lần; gửi thông báo bảo mật khi bị khóa. | M |
 | FR-ID-06 | Đặt lại mật khẩu bằng token qua email (dùng một lần, hết hạn sau 30 phút); thu hồi mọi phiên sau khi đặt lại. | M |

@@ -15,18 +15,29 @@ import structlog
 
 from app.core.clock import Clock, SystemClock
 from app.core.config import Settings, get_settings
+from app.core.crypto import DataCipher
 from app.core.db import Database
 from app.core.idempotency import IdempotencyStore
 from app.core.jobs import JobScheduler, JobSpec
 from app.core.logging import configure_logging
 from app.core.outbox import HandlerRegistry, OutboxDispatcher
+from app.modules.notifications.public import EmailSender, SmtpEmailSender
+from app.modules.notifications.public import register_handlers as register_email_handlers
 
 logger = structlog.get_logger("app.worker")
 
 
-def build_registry() -> HandlerRegistry:
+def build_registry(
+    settings: Settings, *, email_sender: EmailSender | None = None
+) -> HandlerRegistry:
     """Event handlers of all modules are registered here as modules are implemented."""
-    return HandlerRegistry()
+    registry = HandlerRegistry()
+    cipher = DataCipher.from_setting(settings.data_encryption_key)
+    sender = email_sender or SmtpEmailSender(
+        settings.smtp_host, settings.smtp_port, settings.smtp_from
+    )
+    register_email_handlers(registry, cipher, sender)
+    return registry
 
 
 def build_jobs(db: Database, clock: Clock, settings: Settings) -> list[JobSpec]:
@@ -43,7 +54,7 @@ def build_jobs(db: Database, clock: Clock, settings: Settings) -> list[JobSpec]:
 async def run_worker(settings: Settings, stop: asyncio.Event) -> None:
     clock = SystemClock()
     db = Database(settings.database_url, pool_size=5, application_name="viewallet-worker")
-    registry = build_registry()
+    registry = build_registry(settings)
     dispatcher = OutboxDispatcher(
         db,
         registry,
