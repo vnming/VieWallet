@@ -242,6 +242,91 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/kyc/documents/{document_id}/content": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Document Content */
+    get: operations["document_content_api_v1_admin_kyc_documents__document_id__content_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/kyc/submissions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Review Queue */
+    get: operations["review_queue_api_v1_admin_kyc_submissions_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/kyc/submissions/{submission_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Review Detail */
+    get: operations["review_detail_api_v1_admin_kyc_submissions__submission_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/kyc/submissions/{submission_id}/claim": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Claim */
+    post: operations["claim_api_v1_admin_kyc_submissions__submission_id__claim_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/kyc/submissions/{submission_id}/decision": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Decide */
+    post: operations["decide_api_v1_admin_kyc_submissions__submission_id__decision_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/me": {
     parameters: {
       query?: never;
@@ -311,6 +396,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/risk/alerts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Alerts */
+    get: operations["alerts_api_v1_admin_risk_alerts_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/risk/alerts/{alert_id}/resolve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Resolve */
+    post: operations["resolve_api_v1_admin_risk_alerts__alert_id__resolve_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/risk/holds": {
     parameters: {
       query?: never;
@@ -362,6 +481,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/risk/rules": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Rules */
+    get: operations["rules_api_v1_admin_risk_rules_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/risk/rules/{code}/versions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Rule */
+    post: operations["propose_rule_api_v1_admin_risk_rules__code__versions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/transactions/{reference}": {
     parameters: {
       query?: never;
@@ -391,6 +544,41 @@ export interface paths {
     /** Propose Reversal */
     post: operations["propose_reversal_api_v1_admin_transactions__reference__reversals_post"];
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users/{user_id}/risk-flags": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** User Flags */
+    get: operations["user_flags_api_v1_admin_users__user_id__risk_flags_get"];
+    put?: never;
+    /** Add Flag */
+    post: operations["add_flag_api_v1_admin_users__user_id__risk_flags_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users/{user_id}/risk-flags/{flag}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Flag */
+    delete: operations["delete_flag_api_v1_admin_users__user_id__risk_flags__flag__delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -614,6 +802,74 @@ export interface paths {
     get: operations["get_deposit_api_v1_deposits__reference__get"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/kyc": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** My Kyc */
+    get: operations["my_kyc_api_v1_kyc_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/kyc/draft": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Save Draft */
+    put: operations["save_draft_api_v1_kyc_draft_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/kyc/draft/documents/{kind}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Upload Document */
+    put: operations["upload_document_api_v1_kyc_draft_documents__kind__put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/kyc/submit": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Submit */
+    post: operations["submit_api_v1_kyc_submit_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1326,6 +1582,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/wallet/limits": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** My Limits */
+    get: operations["my_limits_api_v1_wallet_limits_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/wallet/qr": {
     parameters: {
       query?: never;
@@ -1483,7 +1756,7 @@ export interface components {
      * ActionType
      * @enum {string}
      */
-    ActionType: "ADJUSTMENT" | "WALLET_UNFREEZE" | "REVERSAL";
+    ActionType: "ADJUSTMENT" | "WALLET_UNFREEZE" | "REVERSAL" | "RISK_RULE_CHANGE";
     /** AdjustmentCreatedOut */
     AdjustmentCreatedOut: {
       approval: components["schemas"]["ApprovalOut"];
@@ -1525,6 +1798,108 @@ export interface components {
      * @enum {string}
      */
     AdjustmentReason: "GOODWILL" | "CORRECTION" | "RECONCILIATION" | "DEMO_FUNDING";
+    /** AdminDocumentOut */
+    AdminDocumentOut: {
+      /** Content Type */
+      content_type: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      kind: components["schemas"]["DocumentKind"];
+      /** Size Bytes */
+      size_bytes: number;
+      /**
+       * Uploaded At
+       * Format: date-time
+       */
+      uploaded_at: string;
+      /**
+       * Url
+       * @description Signed link, valid a few minutes, bound to the viewer
+       */
+      url: string;
+    };
+    /** AdminSubmissionDetailOut */
+    AdminSubmissionDetailOut: {
+      /** Address */
+      address: string;
+      /** Can Decide */
+      can_decide: boolean;
+      /** Claimed At */
+      claimed_at: string | null;
+      /** Claimed By */
+      claimed_by: string | null;
+      /**
+       * Date Of Birth
+       * Format: date
+       */
+      date_of_birth: string;
+      /** Decided At */
+      decided_at: string | null;
+      /** Document Number Masked */
+      document_number_masked: string;
+      document_type: components["schemas"]["DocumentType"];
+      /** Documents */
+      documents: components["schemas"]["AdminDocumentOut"][];
+      /**
+       * Duplicate Document Accounts
+       * @description Other accounts that submitted the same document number
+       */
+      duplicate_document_accounts: number;
+      /** Full Name */
+      full_name: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Reviews */
+      reviews: components["schemas"]["ReviewOut"][];
+      status: components["schemas"]["SubmissionStatus"];
+      /** Submitted At */
+      submitted_at: string | null;
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string;
+    };
+    /** AdminSubmissionOut */
+    AdminSubmissionOut: {
+      /** Address */
+      address: string;
+      /** Claimed At */
+      claimed_at: string | null;
+      /** Claimed By */
+      claimed_by: string | null;
+      /**
+       * Date Of Birth
+       * Format: date
+       */
+      date_of_birth: string;
+      /** Decided At */
+      decided_at: string | null;
+      /** Document Number Masked */
+      document_number_masked: string;
+      document_type: components["schemas"]["DocumentType"];
+      /** Full Name */
+      full_name: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      status: components["schemas"]["SubmissionStatus"];
+      /** Submitted At */
+      submitted_at: string | null;
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string;
+    };
     /** AdminTransactionEventOut */
     AdminTransactionEventOut: {
       /** Actor Id */
@@ -1618,6 +1993,53 @@ export interface components {
       status_reason: string | null;
       /** Wallet Number */
       wallet_number: string;
+    };
+    /** AlertOut */
+    AlertOut: {
+      /** Assigned To */
+      assigned_to: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Detail */
+      detail: {
+        [key: string]: unknown;
+      };
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Resolution Note */
+      resolution_note: string | null;
+      /** Resolved At */
+      resolved_at: string | null;
+      /** Severity */
+      severity: string;
+      /** Status */
+      status: string;
+      /** Transaction Id */
+      transaction_id: string | null;
+      /** Type */
+      type: string;
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string;
+    };
+    /** AlertPageOut */
+    AlertPageOut: {
+      /** Items */
+      items: components["schemas"]["AlertOut"][];
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total */
+      total: number;
     };
     /** Amount */
     Amount: {
@@ -1828,11 +2250,6 @@ export interface components {
       /** Wallet Number Masked */
       wallet_number_masked?: string | null;
     };
-    /** DecisionIn */
-    DecisionIn: {
-      /** Note */
-      note?: string | null;
-    };
     /** DepositIn */
     DepositIn: {
       /**
@@ -1894,6 +2311,49 @@ export interface components {
       /** Name */
       name: string;
     };
+    /**
+     * DocumentKind
+     * @enum {string}
+     */
+    DocumentKind: "FRONT" | "BACK" | "SELFIE";
+    /** DocumentOut */
+    DocumentOut: {
+      /** Content Type */
+      content_type: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      kind: components["schemas"]["DocumentKind"];
+      /** Size Bytes */
+      size_bytes: number;
+      /**
+       * Uploaded At
+       * Format: date-time
+       */
+      uploaded_at: string;
+    };
+    /**
+     * DocumentType
+     * @enum {string}
+     */
+    DocumentType: "NATIONAL_ID" | "PASSPORT" | "DRIVER_LICENSE";
+    /** DraftIn */
+    DraftIn: {
+      /** Address */
+      address: string;
+      /**
+       * Date Of Birth
+       * Format: date
+       */
+      date_of_birth: string;
+      /** Document Number */
+      document_number: string;
+      document_type: components["schemas"]["DocumentType"];
+      /** Full Name */
+      full_name: string;
+    };
     /** EmailOnlyRequest */
     EmailOnlyRequest: {
       /**
@@ -1901,6 +2361,46 @@ export interface components {
        * Format: email
        */
       email: string;
+    };
+    /** FlagIn */
+    FlagIn: {
+      /** Expires In Days */
+      expires_in_days?: number | null;
+      /**
+       * Flag
+       * @description One of WATCHLIST, CHARGEBACK_HISTORY, DUPLICATE_DOCUMENT
+       */
+      flag: string;
+      /** Reason */
+      reason: string;
+    };
+    /** FlagOut */
+    FlagOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Expires At */
+      expires_at: string | null;
+      /** Flag */
+      flag: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Reason */
+      reason: string;
+      /** Removed At */
+      removed_at: string | null;
+      /** Set By */
+      set_by: string | null;
+    };
+    /** FlagRemoveIn */
+    FlagRemoveIn: {
+      /** Reason */
+      reason: string;
     };
     /** FreezeIn */
     FreezeIn: {
@@ -1981,6 +2481,52 @@ export interface components {
      * @enum {string}
      */
     IssuerType: "MERCHANT" | "USER";
+    /** KycStatusOut */
+    KycStatusOut: {
+      /** Approved At */
+      approved_at: string | null;
+      /** Expires At */
+      expires_at: string | null;
+      status: components["schemas"]["ProfileStatus"];
+      /** @description The open or most recent submission */
+      submission: components["schemas"]["SubmissionOut"] | null;
+      /** Tier */
+      tier: number;
+    };
+    /** LimitOut */
+    LimitOut: {
+      /**
+       * Max Amount
+       * @description Integer minor units; null = no amount limit
+       */
+      max_amount: string | null;
+      /** Max Count */
+      max_count: number | null;
+      /**
+       * Period
+       * @enum {string}
+       */
+      period: "PER_TXN" | "DAILY" | "MONTHLY";
+      /** Remaining Amount */
+      remaining_amount: string | null;
+      /** Used Amount */
+      used_amount: string;
+      /** Used Count */
+      used_count: number;
+    };
+    /** LimitsOut */
+    LimitsOut: {
+      /** Balance */
+      balance: string;
+      /** Balance Cap */
+      balance_cap: string | null;
+      /** Currency */
+      currency: string;
+      /** Kyc Tier */
+      kyc_tier: number;
+      /** Types */
+      types: components["schemas"]["TypeLimitsOut"][];
+    };
     /** LiveResponse */
     LiveResponse: {
       /**
@@ -2316,6 +2862,22 @@ export interface components {
       /** Requires Reset */
       requires_reset: boolean;
     };
+    /**
+     * ProfileStatus
+     * @enum {string}
+     */
+    ProfileStatus: "NOT_STARTED" | "PENDING" | "IN_REVIEW" | "APPROVED" | "REJECTED" | "EXPIRED";
+    /** QueueOut */
+    QueueOut: {
+      /** Items */
+      items: components["schemas"]["AdminSubmissionOut"][];
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total */
+      total: number;
+    };
     /** ReadyResponse */
     ReadyResponse: {
       checks: components["schemas"]["Checks"];
@@ -2505,6 +3067,11 @@ export interface components {
       /** Note */
       note: string;
     };
+    /**
+     * RejectReason
+     * @enum {string}
+     */
+    RejectReason: "BLURRY_IMAGE" | "MISMATCH" | "EXPIRED_DOCUMENT" | "SUSPECTED_FRAUD" | "OTHER";
     /** RenameIn */
     RenameIn: {
       /** Nickname */
@@ -2522,6 +3089,16 @@ export interface components {
       /** Token */
       token: string;
     };
+    /** ResolveIn */
+    ResolveIn: {
+      /** Note */
+      note: string;
+      /**
+       * Outcome
+       * @enum {string}
+       */
+      outcome: "ACKNOWLEDGED" | "RESOLVED" | "FALSE_POSITIVE";
+    };
     /** ReversalCreatedOut */
     ReversalCreatedOut: {
       approval: components["schemas"]["ApprovalOut"];
@@ -2532,6 +3109,90 @@ export interface components {
     ReversalIn: {
       /** Reason */
       reason: string;
+    };
+    /** ReviewOut */
+    ReviewOut: {
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string;
+      /** Decision */
+      decision: string;
+      /** Note */
+      note: string | null;
+      reason_code: components["schemas"]["RejectReason"] | null;
+      /**
+       * Reviewer Id
+       * Format: uuid
+       */
+      reviewer_id: string;
+    };
+    /** RuleOut */
+    RuleOut: {
+      /** Activated At */
+      activated_at: string | null;
+      /** Block */
+      block: boolean;
+      /** Code */
+      code: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Created By */
+      created_by: string | null;
+      /** Description */
+      description: string;
+      /** Enabled */
+      enabled: boolean;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Params */
+      params: {
+        [key: string]: unknown;
+      };
+      /** Score */
+      score: number;
+      /** Status */
+      status: string;
+      /** Version */
+      version: number;
+    };
+    /** RuleProposedOut */
+    RuleProposedOut: {
+      approval: components["schemas"]["ApprovalOut"];
+      rule: components["schemas"]["RuleOut"];
+    };
+    /** RuleVersionIn */
+    RuleVersionIn: {
+      /**
+       * Block
+       * @default false
+       */
+      block: boolean;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /**
+       * Enabled
+       * @default true
+       */
+      enabled: boolean;
+      /** Params */
+      params?: {
+        [key: string]: number;
+      };
+      /** Reason */
+      reason: string;
+      /** Score */
+      score: number;
     };
     /** SaveRecipientIn */
     SaveRecipientIn: {
@@ -2670,6 +3331,41 @@ export interface components {
        */
       session_expires_at: string;
     };
+    /** SubmissionOut */
+    SubmissionOut: {
+      /** Address */
+      address: string;
+      /**
+       * Date Of Birth
+       * Format: date
+       */
+      date_of_birth: string;
+      /** Decided At */
+      decided_at: string | null;
+      /** Document Number Masked */
+      document_number_masked: string;
+      document_type: components["schemas"]["DocumentType"];
+      /** Documents */
+      documents: components["schemas"]["DocumentOut"][];
+      /** Full Name */
+      full_name: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      reject_reason: components["schemas"]["RejectReason"] | null;
+      /** Required Documents */
+      required_documents: components["schemas"]["DocumentKind"][];
+      status: components["schemas"]["SubmissionStatus"];
+      /** Submitted At */
+      submitted_at: string | null;
+    };
+    /**
+     * SubmissionStatus
+     * @enum {string}
+     */
+    SubmissionStatus: "DRAFT" | "PENDING" | "IN_REVIEW" | "APPROVED" | "REJECTED";
     /** SystemStatus */
     SystemStatus: {
       checks: components["schemas"]["Checks"];
@@ -2817,6 +3513,17 @@ export interface components {
      */
     TxnType:
       "DEPOSIT" | "WITHDRAWAL" | "TRANSFER" | "PAYMENT" | "REFUND" | "REVERSAL" | "ADJUSTMENT";
+    /** TypeLimitsOut */
+    TypeLimitsOut: {
+      /**
+       * Allowed
+       * @description False when the tier forbids this type (e.g. withdrawals)
+       */
+      allowed: boolean;
+      /** Limits */
+      limits: components["schemas"]["LimitOut"][];
+      type: components["schemas"]["TxnType"];
+    };
     /** UnfreezeIn */
     UnfreezeIn: {
       /** Pin */
@@ -2898,6 +3605,19 @@ export interface components {
        * Format: uuid
        */
       destination_id: string;
+    };
+    /** DecisionIn */
+    app__modules__kyc__api__DecisionIn: {
+      /** Decision */
+      decision: string;
+      /** Note */
+      note?: string | null;
+      reason_code?: components["schemas"]["RejectReason"] | null;
+    };
+    /** DecisionIn */
+    app__modules__operations__api__DecisionIn: {
+      /** Note */
+      note?: string | null;
     };
     /** AmountOut */
     app__modules__payments__api__AmountOut: {
@@ -3036,7 +3756,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DecisionIn"];
+        "application/json": components["schemas"]["app__modules__operations__api__DecisionIn"];
       };
     };
     responses: {
@@ -3348,6 +4068,170 @@ export interface operations {
       };
     };
   };
+  document_content_api_v1_admin_kyc_documents__document_id__content_get: {
+    parameters: {
+      query: {
+        exp: number;
+        sig: string;
+      };
+      header?: never;
+      path: {
+        document_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  review_queue_api_v1_admin_kyc_submissions_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["SubmissionStatus"] | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["QueueOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  review_detail_api_v1_admin_kyc_submissions__submission_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        submission_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdminSubmissionDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  claim_api_v1_admin_kyc_submissions__submission_id__claim_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        submission_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdminSubmissionDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  decide_api_v1_admin_kyc_submissions__submission_id__decision_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        submission_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["app__modules__kyc__api__DecisionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AdminSubmissionDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   staff_me_api_v1_admin_me_get: {
     parameters: {
       query?: never;
@@ -3484,6 +4368,74 @@ export interface operations {
       };
     };
   };
+  alerts_api_v1_admin_risk_alerts_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AlertPageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  resolve_api_v1_admin_risk_alerts__alert_id__resolve_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        alert_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResolveIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AlertOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   list_holds_api_v1_admin_risk_holds_get: {
     parameters: {
       query?: never;
@@ -3574,6 +4526,61 @@ export interface operations {
       };
     };
   };
+  rules_api_v1_admin_risk_rules_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RuleOut"][];
+        };
+      };
+    };
+  };
+  propose_rule_api_v1_admin_risk_rules__code__versions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RuleVersionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RuleProposedOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   admin_get_transaction_api_v1_admin_transactions__reference__get: {
     parameters: {
       query?: never;
@@ -3631,6 +4638,106 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["ReversalCreatedOut"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  user_flags_api_v1_admin_users__user_id__risk_flags_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FlagOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  add_flag_api_v1_admin_users__user_id__risk_flags_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FlagIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FlagOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_flag_api_v1_admin_users__user_id__risk_flags__flag__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+        flag: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FlagRemoveIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {
@@ -4039,6 +5146,117 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  my_kyc_api_v1_kyc_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KycStatusOut"];
+        };
+      };
+    };
+  };
+  save_draft_api_v1_kyc_draft_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DraftIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KycStatusOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  upload_document_api_v1_kyc_draft_documents__kind__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        kind: components["schemas"]["DocumentKind"];
+      };
+      cookie?: never;
+    };
+    /** @description The raw file (JPEG, PNG or PDF, at most 5 MB) */
+    requestBody: {
+      content: {
+        "application/pdf": string;
+        "image/jpeg": string;
+        "image/png": string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DocumentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  submit_api_v1_kyc_submit_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KycStatusOut"];
         };
       };
     };
@@ -5442,6 +6660,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  my_limits_api_v1_wallet_limits_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LimitsOut"];
         };
       };
     };

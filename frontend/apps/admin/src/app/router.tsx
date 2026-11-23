@@ -14,6 +14,7 @@ import {
 import { MfaSetupPage, MfaVerifyPage, StaffLoginPage } from "../routes/auth/StaffLoginPages";
 import { NotFoundPage } from "../routes/NotFoundPage";
 import { OverviewPage } from "../routes/OverviewPage";
+import { KycReviewPage, RiskPage } from "../routes/RiskKycPages";
 
 export const routes: RouteObject[] = [
   {
@@ -76,6 +77,22 @@ export const routes: RouteObject[] = [
             element: (
               <RequirePermission permission="reconciliation:manage:any">
                 <ReconciliationPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "kyc",
+            element: (
+              <RequirePermission permission="kyc:review:any">
+                <KycReviewPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "risk",
+            element: (
+              <RequirePermission permission="risk_hold:decide:any">
+                <RiskPage />
               </RequirePermission>
             ),
           },

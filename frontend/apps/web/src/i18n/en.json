@@ -17,7 +17,8 @@
     "notifications": "Notifications",
     "transfer": "Send money",
     "scan": "Scan QR",
-    "merchant": "Shop"
+    "merchant": "Shop",
+    "kyc": "Verify"
   },
   "language": {
     "label": "Language",
@@ -327,7 +328,8 @@
     "processing": "Being sent to your bank",
     "reversed": "The bank returned the payout. Amount and fee were credited back.",
     "expired": "The quote expired",
-    "cooldownUntil": "Usable from {{time}}"
+    "cooldownUntil": "Usable from {{time}}",
+    "kycStart": "Verify now"
   },
   "destinations": {
     "title": "Bank accounts",
@@ -480,5 +482,73 @@
     "reason": "Reason",
     "refunded": "Refund sent",
     "refundFailed": "Refund failed"
+  },
+  "kyc": {
+    "title": "Identity verification (KYC)",
+    "description": "Verify to withdraw and to get higher limits.",
+    "simulatedTitle": "Simulated verification",
+    "simulatedBody": "Do not upload a real identity document. Use fictional details and sample images.",
+    "step1": "1. Details",
+    "step2": "2. Document photos",
+    "fullName": "Full name",
+    "dateOfBirth": "Date of birth",
+    "documentType": "Document type",
+    "documentNumber": "Document number",
+    "numberSaved": "Saved: {{masked}}. Type it again to change it.",
+    "address": "Address",
+    "save": "Save details",
+    "saved": "Details saved",
+    "type": {
+      "NATIONAL_ID": "National ID",
+      "PASSPORT": "Passport",
+      "DRIVER_LICENSE": "Driving licence"
+    },
+    "kind": {
+      "FRONT": "Front",
+      "BACK": "Back",
+      "SELFIE": "Selfie"
+    },
+    "uploaded": "Uploaded",
+    "missing": "Missing",
+    "uploading": "Uploading…",
+    "tooLarge": "The file is larger than 5 MB.",
+    "fileHint": "JPEG, PNG or PDF up to 5 MB. Images are re-encoded and EXIF data is removed.",
+    "submit": "Submit",
+    "submitted": "Submitted",
+    "submittedAt": "Submitted at {{time}}",
+    "status": {
+      "PENDING": "Waiting for review",
+      "IN_REVIEW": "Under review"
+    },
+    "waitingBody": "Staff will check your simulated submission. You will be notified of the result.",
+    "approved": "Verified (tier 1)",
+    "validUntil": "Valid until {{time}}",
+    "rejectedTitle": "Submission not approved",
+    "tryAgain": "You can correct it and submit again.",
+    "expired": "Your verification expired. Please submit again.",
+    "reason": {
+      "BLURRY_IMAGE": "The image is blurry.",
+      "MISMATCH": "The details do not match the document.",
+      "EXPIRED_DOCUMENT": "The document has expired.",
+      "SUSPECTED_FRAUD": "The submission needs further checks.",
+      "OTHER": "Other reason."
+    }
+  },
+  "limits": {
+    "title": "Limits",
+    "description": "What is left for your verification tier.",
+    "tier": "Verification tier: {{tier}}",
+    "upgrade": "Verify to raise your limits",
+    "balanceCap": "Maximum balance:",
+    "notAllowed": "Identity verification is required for this.",
+    "period": "Period",
+    "max": "Maximum",
+    "used": "Used",
+    "remaining": "Left",
+    "periods": {
+      "PER_TXN": "Per transaction",
+      "DAILY": "Today",
+      "MONTHLY": "This month"
+    }
   }
 }

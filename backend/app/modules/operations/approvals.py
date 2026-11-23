@@ -24,6 +24,7 @@ from app.core.idempotency import request_fingerprint
 from app.core.ids import new_id
 from app.modules.audit.public import AuditEntry, record
 from app.modules.operations.models import ActionType, ApprovalRequest, ApprovalStatus
+from app.modules.risk.public import activate_version, reject_version
 from app.modules.transactions.public import SYSTEM, Actor, adjustment, reversal
 from app.modules.wallet.public import WalletStateConflictError, unfreeze
 
@@ -56,6 +57,7 @@ APPROVE_PERMISSION: dict[ActionType, str] = {
     ActionType.ADJUSTMENT: "adjustment:approve:any",
     ActionType.WALLET_UNFREEZE: "wallet:unfreeze:any",
     ActionType.REVERSAL: "reversal:approve:any",
+    ActionType.RISK_RULE_CHANGE: "risk_rule:approve:any",
 }
 
 
@@ -190,6 +192,8 @@ async def _compensate(
         await adjustment.cancel(
             session, clock, uuid.UUID(request.target_id), actor=actor, reason_code=reason
         )
+    elif request.action_type == ActionType.RISK_RULE_CHANGE.value:
+        await reject_version(session, uuid.UUID(str(request.payload["rule_id"])))
     elif request.action_type == ActionType.REVERSAL.value:
         await reversal.cancel(
             session,
@@ -263,6 +267,10 @@ async def approve(
             approval_request_id=request.id,
         )
         failure = reversed_outcome.failure_code
+    elif request.action_type == ActionType.RISK_RULE_CHANGE.value:
+        failure = await activate_version(
+            session, clock, uuid.UUID(str(request.payload["rule_id"])), checker_id=checker.id
+        )
     elif request.action_type == ActionType.WALLET_UNFREEZE.value:
         try:
             async with session.begin_nested():

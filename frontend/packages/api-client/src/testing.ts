@@ -27,6 +27,11 @@ export interface MockFetch {
   on: (route: string, handler: MockHandler | Response) => void;
 }
 
+/** JSON bodies are parsed; anything else (file uploads) is kept as text. */
+function parseBody(text: string, contentType: string | null): unknown {
+  return contentType?.includes("json") ? (JSON.parse(text) as unknown) : text;
+}
+
 export function mockFetch(routes: Record<string, MockHandler | Response> = {}): MockFetch {
   const table = new Map(Object.entries(routes));
   const calls: MockFetch["calls"] = [];
@@ -37,7 +42,7 @@ export function mockFetch(routes: Record<string, MockHandler | Response> = {}): 
     calls.push({
       method: request.method,
       path: url.pathname,
-      body: text ? (JSON.parse(text) as unknown) : undefined,
+      body: text ? parseBody(text, request.headers.get("content-type")) : undefined,
       headers: request.headers,
     });
     const handler = table.get(`${request.method} ${url.pathname}`);

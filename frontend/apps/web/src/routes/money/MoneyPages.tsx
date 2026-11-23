@@ -232,7 +232,10 @@ export function WithdrawPage() {
       <div className="flex flex-col gap-6">
         <PageHeader title={t("withdraw.title")} description={t("withdraw.description")} />
         <InlineAlert tone="warning" title={t("withdraw.kycRequired")}>
-          {t("withdraw.kycBody")}
+          {t("withdraw.kycBody")}{" "}
+          <Link to="/kyc" className="font-medium underline">
+            {t("withdraw.kycStart")}
+          </Link>
         </InlineAlert>
       </div>
     );

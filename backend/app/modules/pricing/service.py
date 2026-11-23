@@ -23,6 +23,7 @@ from app.modules.pricing.domain import (
     Subject,
     Usage,
     check_limits,
+    effective_limit_rules,
     quote_fee,
 )
 from app.modules.pricing.models import FeeRule, LimitRule
@@ -98,6 +99,35 @@ async def limit_breach(
     return check_limits(
         rules, txn_type=txn_type, direction=direction, amount=amount, subject=subject, usage=usage
     )
+
+
+async def effective_limits(
+    session: AsyncSession,
+    *,
+    txn_type: str,
+    direction: LimitDirection,
+    subject: Subject,
+    currency: str,
+) -> list[LimitRuleSpec]:
+    """The limit rules that apply to this subject (most specific per period)."""
+    rules = await active_limit_rules(session, currency)
+    return effective_limit_rules(rules, txn_type, direction, subject)
+
+
+async def daily_limit(
+    session: AsyncSession, *, txn_type: str, subject: Subject, currency: str
+) -> int | None:
+    """Outgoing daily amount limit (risk rule VELOCITY_AMOUNT compares against it)."""
+    for rule in await effective_limits(
+        session,
+        txn_type=txn_type,
+        direction=LimitDirection.OUT,
+        subject=subject,
+        currency=currency,
+    ):
+        if rule.period is LimitPeriod.DAILY:
+            return rule.max_amount_minor
+    return None
 
 
 # ---------------------------------------------------------------- seed

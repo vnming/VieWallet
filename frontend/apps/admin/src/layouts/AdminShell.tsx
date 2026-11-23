@@ -4,11 +4,13 @@ import { Badge, Button } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
 import {
+  BadgeCheck,
   ClipboardCheck,
   LayoutDashboard,
   type LucideIcon,
   Scale,
   ScrollText,
+  ShieldAlert,
   SlidersHorizontal,
   WalletCards,
 } from "lucide-react";
@@ -56,6 +58,14 @@ const NAV_ITEMS: NavItem[] = [
     icon: Scale,
     end: false,
     permission: ["reconciliation:manage:any"],
+  },
+  { to: "/kyc", key: "nav.kyc", icon: BadgeCheck, end: false, permission: ["kyc:review:any"] },
+  {
+    to: "/risk",
+    key: "nav.risk",
+    icon: ShieldAlert,
+    end: false,
+    permission: ["risk_hold:decide:any"],
   },
   { to: "/audit", key: "nav.audit", icon: ScrollText, end: false, permission: ["audit:read:any"] },
 ];

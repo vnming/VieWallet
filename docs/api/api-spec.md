@@ -150,6 +150,27 @@ Mã lỗi mới: `WALLET_NOT_FOUND`, `WALLET_NOT_ACTIVE`, `WALLET_STATE_CONFLICT
 
 Mã lỗi mới: `RECIPIENT_NOT_FOUND`, `RECIPIENT_IS_SELF`, `RECIPIENT_LIMIT_REACHED`, `RECIPIENT_UNAVAILABLE`, `WALLET_FROZEN`, `PAYMENT_REQUEST_NOT_FOUND`, `PAYMENT_REQUEST_CLOSED`, `PAYMENT_REQUEST_AMOUNT_MISMATCH`, `PAYMENT_REQUEST_NOT_FOR_YOU`, `MERCHANT_NOT_FOUND`, `MERCHANT_NOT_ACTIVE`, `REFUND_EXCEEDS_REMAINING`.
 
+## 3d. KYC, hạn mức, rủi ro (đã cài đặt ở Phase 6)
+
+| Method | Path | Ghi chú |
+|---|---|---|
+| GET | `/api/v1/kyc` | `status` (NOT_STARTED, PENDING, IN_REVIEW, APPROVED, REJECTED, EXPIRED), `tier`, `expires_at`, hồ sơ mở/gần nhất (giấy tờ đã tải, giấy tờ cần có, lý do từ chối) |
+| PUT | `/api/v1/kyc/draft` | `{full_name, date_of_birth, document_type, document_number, address}`. Đang chờ duyệt ⇒ 409 `KYC_IN_REVIEW`; đã xác minh ⇒ 409 `KYC_ALREADY_VERIFIED` |
+| PUT | `/api/v1/kyc/draft/documents/{FRONT\|BACK\|SELFIE}` | Body = tệp thô, `Content-Type: image/jpeg\|image/png\|application/pdf`, ≤ 5 MB ⇒ `KYC_FILE_TOO_LARGE`, `KYC_FILE_INVALID` |
+| POST | `/api/v1/kyc/submit` | Thiếu ảnh ⇒ 422 `KYC_DOCUMENTS_MISSING`; quá 5 lần/30 ngày ⇒ 429 `KYC_TOO_MANY_ATTEMPTS` |
+| GET | `/api/v1/wallet/limits` | Tier, trần số dư, theo loại (TRANSFER, PAYMENT, WITHDRAWAL, DEPOSIT): `allowed`, mỗi kỳ `max_amount`, `used_amount`, `remaining_amount` |
+| GET | `/api/v1/admin/kyc/submissions?status=` | `kyc:review:any`; mặc định PENDING + IN_REVIEW |
+| GET | `/api/v1/admin/kyc/submissions/{id}` | Kèm link ký cho từng tệp, lịch sử quyết định, `duplicate_document_accounts`, `can_decide` |
+| POST | `/api/v1/admin/kyc/submissions/{id}/claim` | Người khác đã nhận ⇒ 409 `KYC_CLAIMED_BY_OTHER` |
+| POST | `/api/v1/admin/kyc/submissions/{id}/decision` | `{decision: APPROVE\|REJECT, reason_code?, note?}`; từ chối cần `reason_code` |
+| GET | `/api/v1/admin/kyc/documents/{id}/content?exp=&sig=` | Link ký, gắn với người xem, 5 phút; hết hạn/sai ⇒ 403 `KYC_LINK_EXPIRED` |
+| GET | `/api/v1/admin/risk/alerts?status=` · POST `/{id}/resolve` | `risk_alert:manage:any`; `{outcome, note}` |
+| GET/POST | `/api/v1/admin/users/{id}/risk-flags` · DELETE `/{flag}` | `{flag, reason, expires_in_days?}` / `{reason}` |
+| GET | `/api/v1/admin/risk/rules` | Mọi phiên bản |
+| POST | `/api/v1/admin/risk/rules/{code}/versions` | `risk_rule:propose:any`; `{score, block, enabled, params, description, reason}` ⇒ approval `RISK_RULE_CHANGE` |
+
+Mã lỗi mới: `KYC_NOT_FOUND`, `KYC_ALREADY_VERIFIED`, `KYC_IN_REVIEW`, `KYC_INVALID_STATE`, `KYC_DOCUMENTS_MISSING`, `KYC_TOO_MANY_ATTEMPTS`, `KYC_CLAIMED_BY_OTHER`, `KYC_LINK_EXPIRED`, `KYC_FILE_INVALID`, `KYC_FILE_TOO_LARGE`, `RISK_RULE_NOT_FOUND`, `RISK_RULE_INVALID`, `RISK_ALERT_NOT_FOUND`, `RISK_ALERT_CLOSED`, `RISK_FLAG_EXISTS`, `RISK_FLAG_NOT_FOUND`.
+
 ## 4. KYC
 
 `GET /kyc` (trạng thái, tier, lịch sử) · `POST /kyc/submissions` (thông tin) · `POST /kyc/submissions/{id}/documents` (multipart, ≤ 5 MB) · `POST /kyc/submissions/{id}/submit`.

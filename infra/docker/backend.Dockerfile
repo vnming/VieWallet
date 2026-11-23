@@ -14,7 +14,8 @@ COPY backend/pyproject.toml backend/uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked uv sync --frozen --no-dev --no-install-project
 
 FROM base AS runtime
-RUN groupadd --system app && useradd --system --gid app --home /srv app
+RUN groupadd --system app && useradd --system --gid app --home /srv app \
+    && mkdir -p /var/lib/viewallet/kyc && chown app:app /var/lib/viewallet/kyc
 COPY --from=deps /opt/venv /opt/venv
 COPY backend/alembic.ini ./
 COPY backend/migrations ./migrations

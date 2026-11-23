@@ -17,7 +17,8 @@
     "notifications": "Thông báo",
     "transfer": "Chuyển tiền",
     "scan": "Quét QR",
-    "merchant": "Cửa hàng"
+    "merchant": "Cửa hàng",
+    "kyc": "Xác minh"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -327,7 +328,8 @@
     "processing": "Đang chuyển tới ngân hàng",
     "reversed": "Ngân hàng đã trả lại khoản tiền. Tiền và phí đã hoàn về ví.",
     "expired": "Báo giá đã hết hạn",
-    "cooldownUntil": "Dùng được từ {{time}}"
+    "cooldownUntil": "Dùng được từ {{time}}",
+    "kycStart": "Xác minh ngay"
   },
   "destinations": {
     "title": "Tài khoản nhận tiền",
@@ -480,5 +482,73 @@
     "reason": "Lý do",
     "refunded": "Đã hoàn tiền cho khách",
     "refundFailed": "Hoàn tiền không thành công"
+  },
+  "kyc": {
+    "title": "Xác minh danh tính (KYC)",
+    "description": "Xác minh để rút tiền và dùng hạn mức cao hơn.",
+    "simulatedTitle": "Xác minh mô phỏng",
+    "simulatedBody": "Không tải lên giấy tờ tùy thân thật. Dùng thông tin hư cấu và ảnh giả lập.",
+    "step1": "1. Thông tin",
+    "step2": "2. Ảnh giấy tờ",
+    "fullName": "Họ và tên",
+    "dateOfBirth": "Ngày sinh",
+    "documentType": "Loại giấy tờ",
+    "documentNumber": "Số giấy tờ",
+    "numberSaved": "Đã lưu: {{masked}}. Nhập lại nếu muốn sửa.",
+    "address": "Địa chỉ",
+    "save": "Lưu thông tin",
+    "saved": "Đã lưu thông tin",
+    "type": {
+      "NATIONAL_ID": "CCCD",
+      "PASSPORT": "Hộ chiếu",
+      "DRIVER_LICENSE": "Giấy phép lái xe"
+    },
+    "kind": {
+      "FRONT": "Mặt trước",
+      "BACK": "Mặt sau",
+      "SELFIE": "Ảnh chân dung"
+    },
+    "uploaded": "Đã tải",
+    "missing": "Chưa có",
+    "uploading": "Đang tải lên…",
+    "tooLarge": "Tệp lớn hơn 5 MB.",
+    "fileHint": "JPEG, PNG hoặc PDF, tối đa 5 MB. Ảnh được xử lý lại và xóa thông tin EXIF.",
+    "submit": "Gửi hồ sơ",
+    "submitted": "Đã gửi hồ sơ",
+    "submittedAt": "Gửi lúc {{time}}",
+    "status": {
+      "PENDING": "Hồ sơ đang chờ duyệt",
+      "IN_REVIEW": "Hồ sơ đang được duyệt"
+    },
+    "waitingBody": "Nhân viên sẽ kiểm tra hồ sơ mô phỏng của bạn. Bạn sẽ nhận thông báo khi có kết quả.",
+    "approved": "Đã xác minh (cấp 1)",
+    "validUntil": "Hiệu lực tới {{time}}",
+    "rejectedTitle": "Hồ sơ chưa được duyệt",
+    "tryAgain": "Bạn có thể sửa và gửi lại.",
+    "expired": "Xác minh đã hết hạn. Vui lòng gửi lại hồ sơ.",
+    "reason": {
+      "BLURRY_IMAGE": "Ảnh bị mờ.",
+      "MISMATCH": "Thông tin không khớp với giấy tờ.",
+      "EXPIRED_DOCUMENT": "Giấy tờ đã hết hạn.",
+      "SUSPECTED_FRAUD": "Hồ sơ cần kiểm tra thêm.",
+      "OTHER": "Lý do khác."
+    }
+  },
+  "limits": {
+    "title": "Hạn mức",
+    "description": "Hạn mức còn lại theo cấp xác minh của bạn.",
+    "tier": "Cấp xác minh: {{tier}}",
+    "upgrade": "Xác minh để nâng hạn mức",
+    "balanceCap": "Số dư tối đa:",
+    "notAllowed": "Cần xác minh danh tính để dùng chức năng này.",
+    "period": "Kỳ",
+    "max": "Tối đa",
+    "used": "Đã dùng",
+    "remaining": "Còn lại",
+    "periods": {
+      "PER_TXN": "Mỗi giao dịch",
+      "DAILY": "Trong ngày",
+      "MONTHLY": "Trong tháng"
+    }
   }
 }

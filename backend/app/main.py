@@ -30,9 +30,11 @@ from app.core.rate_limit import RateLimiter
 from app.modules.audit import api as audit_api
 from app.modules.identity import api as identity_api
 from app.modules.identity.context import IdentityServices
+from app.modules.kyc import api as kyc_api
+from app.modules.kyc.public import KycKeys, LocalEncryptedStore
 from app.modules.notifications import api as notifications_api
 from app.modules.operations import api as operations_api
-from app.modules.operations import holds_api
+from app.modules.operations import holds_api, risk_api
 from app.modules.payments import api as payments_api
 from app.modules.providers import api as providers_api
 from app.modules.providers.public import (
@@ -42,7 +44,7 @@ from app.modules.providers.public import (
     SimulatorProvider,
 )
 from app.modules.transactions import api as transactions_api
-from app.modules.transactions import money_api, spend_api
+from app.modules.transactions import limits_api, money_api, spend_api
 from app.modules.transactions.public import FinanceContext
 from app.modules.wallet import api as wallet_api
 from app.modules.wallet import recipients_api
@@ -67,6 +69,14 @@ def build_providers(settings: Settings) -> dict[str, PaymentProvider]:
             max_age_seconds=settings.provider_callback_max_age_seconds,
         )
     }
+
+
+def build_kyc(settings: Settings, identity: IdentityServices) -> kyc_api.KycContext:
+    return kyc_api.KycContext(
+        KycKeys(identity.cipher, identity.lookup_key, identity.link_key),
+        LocalEncryptedStore(Path(settings.kyc_storage_dir), identity.cipher),
+        timedelta(seconds=settings.kyc_document_link_seconds),
+    )
 
 
 def create_app(
@@ -102,6 +112,7 @@ def create_app(
         app.state.idempotency = app.state.vw.idempotency
         identity = IdentityServices.build(settings, db, clock, RateLimiter(redis, clock))
         app.state.identity = identity
+        app.state.kyc = build_kyc(settings, identity)
         owned = providers is None
         provider_map = build_providers(settings) if providers is None else providers
         provider_services = ProviderServices(
@@ -144,6 +155,11 @@ def create_app(
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(CorrelationIdMiddleware)
 
+    _include_routers(app)
+    return app
+
+
+def _include_routers(app: FastAPI) -> None:
     app.include_router(health.router)
     app.include_router(identity_api.auth_router)
     app.include_router(identity_api.me_router)
@@ -157,12 +173,15 @@ def create_app(
     app.include_router(transactions_api.admin_router)
     app.include_router(operations_api.router)
     app.include_router(holds_api.router)
+    app.include_router(risk_api.router)
+    app.include_router(kyc_api.router)
+    app.include_router(kyc_api.admin_router)
+    app.include_router(limits_api.router)
     app.include_router(money_api.router)
     app.include_router(spend_api.router)
     app.include_router(payments_api.router)
     app.include_router(notifications_api.router)
     app.include_router(providers_api.router)
-    return app
 
 
 def app_factory() -> FastAPI:

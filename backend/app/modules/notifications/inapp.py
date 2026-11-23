@@ -314,11 +314,87 @@ async def notify_transaction(db: Database, clock: Clock, message: OutboxMessage)
             )
 
 
+KYC_TOPIC = "kyc.status_changed"
+KYC_TEMPLATES: dict[str, InAppTemplate] = {
+    "PENDING": InAppTemplate(
+        {"vi": "Đã nhận hồ sơ xác minh", "en": "Verification received"},
+        {
+            "vi": "Hồ sơ KYC (mô phỏng) của bạn đang chờ duyệt.",
+            "en": "Your (simulated) KYC submission is waiting for review.",
+        },
+    ),
+    "APPROVED": InAppTemplate(
+        {"vi": "Xác minh danh tính thành công", "en": "Identity verified"},
+        {
+            "vi": "Tài khoản đã lên hạn mức cấp 1: rút tiền và hạn mức cao hơn đã mở.",
+            "en": "Your account is now tier 1: withdrawals and higher limits are open.",
+        },
+        priority="HIGH",
+    ),
+    "REJECTED": InAppTemplate(
+        {"vi": "Hồ sơ xác minh chưa được duyệt", "en": "Verification not approved"},
+        {
+            "vi": "Lý do: $reason. Bạn có thể nộp lại hồ sơ.",
+            "en": "Reason: $reason. You can submit again.",
+        },
+        priority="HIGH",
+    ),
+    "EXPIRED": InAppTemplate(
+        {"vi": "Xác minh danh tính đã hết hạn", "en": "Verification expired"},
+        {
+            "vi": "Vui lòng xác minh lại để giữ hạn mức cấp 1.",
+            "en": "Please verify again to keep tier 1 limits.",
+        },
+        priority="HIGH",
+    ),
+}
+KYC_REASONS = {
+    "BLURRY_IMAGE": {"vi": "ảnh mờ", "en": "blurry image"},
+    "MISMATCH": {"vi": "thông tin không khớp giấy tờ", "en": "details do not match"},
+    "EXPIRED_DOCUMENT": {"vi": "giấy tờ hết hạn", "en": "expired document"},
+    "SUSPECTED_FRAUD": {"vi": "cần kiểm tra thêm", "en": "needs further checks"},
+    "OTHER": {"vi": "khác", "en": "other"},
+}
+
+
+async def notify_kyc(db: Database, clock: Clock, message: OutboxMessage) -> None:
+    payload = message.payload
+    status = str(payload["status"])
+    template = KYC_TEMPLATES.get(status)
+    if template is None:
+        return
+    locale = str(payload.get("locale", "vi"))
+    lang = locale if locale in ("vi", "en") else "vi"
+    reason = KYC_REASONS.get(str(payload.get("reason_code") or "OTHER"), KYC_REASONS["OTHER"])
+    title, body = render(template, locale, {"reason": reason[lang]})
+    async with db.transaction() as session:
+        await session.execute(
+            insert(Notification)
+            .values(
+                id=new_id(),
+                user_id=uuid.UUID(str(payload["user_id"])),
+                category="KYC",
+                type=f"kyc.{status.lower()}",
+                title=title,
+                body=body,
+                data={"link": "/kyc", "status": status},
+                priority=template.priority,
+                source_event_id=message.id,
+                created_at=clock.now(),
+            )
+            .on_conflict_do_nothing(index_elements=["source_event_id", "user_id"])
+        )
+
+
 def register_inapp_handlers(registry: HandlerRegistry, db: Database, clock: Clock) -> None:
     async def handler(message: OutboxMessage) -> None:
         await notify_transaction(db, clock, message)
 
+    async def kyc_handler(message: OutboxMessage) -> None:
+        await notify_kyc(db, clock, message)
+
     registry.register(TRANSACTION_TOPIC, handler)
+    registry.register(KYC_TOPIC, kyc_handler)
 
 
 # ---------------------------------------------------------------- queries for the API

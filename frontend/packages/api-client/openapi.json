@@ -17,7 +17,8 @@
         "enum": [
           "ADJUSTMENT",
           "WALLET_UNFREEZE",
-          "REVERSAL"
+          "REVERSAL",
+          "RISK_RULE_CHANGE"
         ],
         "title": "ActionType",
         "type": "string"
@@ -112,6 +113,275 @@
         ],
         "title": "AdjustmentReason",
         "type": "string"
+      },
+      "AdminDocumentOut": {
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DocumentKind"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "uploaded_at": {
+            "format": "date-time",
+            "title": "Uploaded At",
+            "type": "string"
+          },
+          "url": {
+            "description": "Signed link, valid a few minutes, bound to the viewer",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "content_type",
+          "size_bytes",
+          "uploaded_at",
+          "url"
+        ],
+        "title": "AdminDocumentOut",
+        "type": "object"
+      },
+      "AdminSubmissionDetailOut": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "can_decide": {
+            "title": "Can Decide",
+            "type": "boolean"
+          },
+          "claimed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimed At"
+          },
+          "claimed_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimed By"
+          },
+          "date_of_birth": {
+            "format": "date",
+            "title": "Date Of Birth",
+            "type": "string"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "document_number_masked": {
+            "title": "Document Number Masked",
+            "type": "string"
+          },
+          "document_type": {
+            "$ref": "#/components/schemas/DocumentType"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/AdminDocumentOut"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "duplicate_document_accounts": {
+            "description": "Other accounts that submitted the same document number",
+            "title": "Duplicate Document Accounts",
+            "type": "integer"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewOut"
+            },
+            "title": "Reviews",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubmissionStatus"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "status",
+          "full_name",
+          "date_of_birth",
+          "document_type",
+          "document_number_masked",
+          "address",
+          "submitted_at",
+          "claimed_by",
+          "claimed_at",
+          "decided_at",
+          "documents",
+          "reviews",
+          "duplicate_document_accounts",
+          "can_decide"
+        ],
+        "title": "AdminSubmissionDetailOut",
+        "type": "object"
+      },
+      "AdminSubmissionOut": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "claimed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimed At"
+          },
+          "claimed_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimed By"
+          },
+          "date_of_birth": {
+            "format": "date",
+            "title": "Date Of Birth",
+            "type": "string"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "document_number_masked": {
+            "title": "Document Number Masked",
+            "type": "string"
+          },
+          "document_type": {
+            "$ref": "#/components/schemas/DocumentType"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubmissionStatus"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "status",
+          "full_name",
+          "date_of_birth",
+          "document_type",
+          "document_number_masked",
+          "address",
+          "submitted_at",
+          "claimed_by",
+          "claimed_at",
+          "decided_at"
+        ],
+        "title": "AdminSubmissionOut",
+        "type": "object"
       },
       "AdminTransactionEventOut": {
         "properties": {
@@ -412,6 +682,135 @@
           "created_at"
         ],
         "title": "AdminWalletOut",
+        "type": "object"
+      },
+      "AlertOut": {
+        "properties": {
+          "assigned_to": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned To"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "detail": {
+            "additionalProperties": true,
+            "title": "Detail",
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "resolution_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Note"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "transaction_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Id"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "transaction_id",
+          "type",
+          "severity",
+          "detail",
+          "status",
+          "assigned_to",
+          "resolution_note",
+          "created_at",
+          "resolved_at"
+        ],
+        "title": "AlertOut",
+        "type": "object"
+      },
+      "AlertPageOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AlertOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "AlertPageOut",
         "type": "object"
       },
       "Amount": {
@@ -1009,24 +1408,6 @@
         "title": "Counterparty",
         "type": "object"
       },
-      "DecisionIn": {
-        "properties": {
-          "note": {
-            "anyOf": [
-              {
-                "maxLength": 500,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Note"
-          }
-        },
-        "title": "DecisionIn",
-        "type": "object"
-      },
       "DepositIn": {
         "properties": {
           "amount": {
@@ -1151,6 +1532,97 @@
         "title": "DestinationSnapshot",
         "type": "object"
       },
+      "DocumentKind": {
+        "enum": [
+          "FRONT",
+          "BACK",
+          "SELFIE"
+        ],
+        "title": "DocumentKind",
+        "type": "string"
+      },
+      "DocumentOut": {
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DocumentKind"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "uploaded_at": {
+            "format": "date-time",
+            "title": "Uploaded At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "content_type",
+          "size_bytes",
+          "uploaded_at"
+        ],
+        "title": "DocumentOut",
+        "type": "object"
+      },
+      "DocumentType": {
+        "enum": [
+          "NATIONAL_ID",
+          "PASSPORT",
+          "DRIVER_LICENSE"
+        ],
+        "title": "DocumentType",
+        "type": "string"
+      },
+      "DraftIn": {
+        "properties": {
+          "address": {
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Address",
+            "type": "string"
+          },
+          "date_of_birth": {
+            "format": "date",
+            "title": "Date Of Birth",
+            "type": "string"
+          },
+          "document_number": {
+            "maxLength": 20,
+            "minLength": 8,
+            "title": "Document Number",
+            "type": "string"
+          },
+          "document_type": {
+            "$ref": "#/components/schemas/DocumentType"
+          },
+          "full_name": {
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Full Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "full_name",
+          "date_of_birth",
+          "document_type",
+          "document_number",
+          "address"
+        ],
+        "title": "DraftIn",
+        "type": "object"
+      },
       "EmailOnlyRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1165,6 +1637,124 @@
           "email"
         ],
         "title": "EmailOnlyRequest",
+        "type": "object"
+      },
+      "FlagIn": {
+        "properties": {
+          "expires_in_days": {
+            "anyOf": [
+              {
+                "maximum": 365.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires In Days"
+          },
+          "flag": {
+            "description": "One of WATCHLIST, CHARGEBACK_HISTORY, DUPLICATE_DOCUMENT",
+            "title": "Flag",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "flag",
+          "reason"
+        ],
+        "title": "FlagIn",
+        "type": "object"
+      },
+      "FlagOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "flag": {
+            "title": "Flag",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "removed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removed At"
+          },
+          "set_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Set By"
+          }
+        },
+        "required": [
+          "id",
+          "flag",
+          "reason",
+          "set_by",
+          "created_at",
+          "expires_at",
+          "removed_at"
+        ],
+        "title": "FlagOut",
+        "type": "object"
+      },
+      "FlagRemoveIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "FlagRemoveIn",
         "type": "object"
       },
       "FreezeIn": {
@@ -1377,6 +1967,169 @@
         ],
         "title": "IssuerType",
         "type": "string"
+      },
+      "KycStatusOut": {
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProfileStatus"
+          },
+          "submission": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SubmissionOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The open or most recent submission"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "status",
+          "tier",
+          "approved_at",
+          "expires_at",
+          "submission"
+        ],
+        "title": "KycStatusOut",
+        "type": "object"
+      },
+      "LimitOut": {
+        "properties": {
+          "max_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Integer minor units; null = no amount limit",
+            "title": "Max Amount"
+          },
+          "max_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Count"
+          },
+          "period": {
+            "enum": [
+              "PER_TXN",
+              "DAILY",
+              "MONTHLY"
+            ],
+            "title": "Period",
+            "type": "string"
+          },
+          "remaining_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remaining Amount"
+          },
+          "used_amount": {
+            "title": "Used Amount",
+            "type": "string"
+          },
+          "used_count": {
+            "title": "Used Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "period",
+          "max_amount",
+          "used_amount",
+          "remaining_amount",
+          "max_count",
+          "used_count"
+        ],
+        "title": "LimitOut",
+        "type": "object"
+      },
+      "LimitsOut": {
+        "properties": {
+          "balance": {
+            "title": "Balance",
+            "type": "string"
+          },
+          "balance_cap": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance Cap"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "kyc_tier": {
+            "title": "Kyc Tier",
+            "type": "integer"
+          },
+          "types": {
+            "items": {
+              "$ref": "#/components/schemas/TypeLimitsOut"
+            },
+            "title": "Types",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kyc_tier",
+          "currency",
+          "balance_cap",
+          "balance",
+          "types"
+        ],
+        "title": "LimitsOut",
+        "type": "object"
       },
       "LiveResponse": {
         "properties": {
@@ -2267,6 +3020,49 @@
         "title": "PinStatusResponse",
         "type": "object"
       },
+      "ProfileStatus": {
+        "enum": [
+          "NOT_STARTED",
+          "PENDING",
+          "IN_REVIEW",
+          "APPROVED",
+          "REJECTED",
+          "EXPIRED"
+        ],
+        "title": "ProfileStatus",
+        "type": "string"
+      },
+      "QueueOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminSubmissionOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "QueueOut",
+        "type": "object"
+      },
       "ReadyResponse": {
         "properties": {
           "checks": {
@@ -2725,6 +3521,17 @@
         "title": "RejectIn",
         "type": "object"
       },
+      "RejectReason": {
+        "enum": [
+          "BLURRY_IMAGE",
+          "MISMATCH",
+          "EXPIRED_DOCUMENT",
+          "SUSPECTED_FRAUD",
+          "OTHER"
+        ],
+        "title": "RejectReason",
+        "type": "string"
+      },
       "RenameIn": {
         "properties": {
           "nickname": {
@@ -2777,6 +3584,31 @@
         "title": "ResetPasswordRequest",
         "type": "object"
       },
+      "ResolveIn": {
+        "properties": {
+          "note": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Note",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "ACKNOWLEDGED",
+              "RESOLVED",
+              "FALSE_POSITIVE"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome",
+          "note"
+        ],
+        "title": "ResolveIn",
+        "type": "object"
+      },
       "ReversalCreatedOut": {
         "properties": {
           "approval": {
@@ -2807,6 +3639,202 @@
           "reason"
         ],
         "title": "ReversalIn",
+        "type": "object"
+      },
+      "ReviewOut": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "decision": {
+            "title": "Decision",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RejectReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reviewer_id": {
+            "format": "uuid",
+            "title": "Reviewer Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reviewer_id",
+          "decision",
+          "reason_code",
+          "note",
+          "at"
+        ],
+        "title": "ReviewOut",
+        "type": "object"
+      },
+      "RuleOut": {
+        "properties": {
+          "activated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "block": {
+            "title": "Block",
+            "type": "boolean"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "version",
+          "description",
+          "score",
+          "block",
+          "enabled",
+          "params",
+          "status",
+          "created_by",
+          "created_at",
+          "activated_at"
+        ],
+        "title": "RuleOut",
+        "type": "object"
+      },
+      "RuleProposedOut": {
+        "properties": {
+          "approval": {
+            "$ref": "#/components/schemas/ApprovalOut"
+          },
+          "rule": {
+            "$ref": "#/components/schemas/RuleOut"
+          }
+        },
+        "required": [
+          "rule",
+          "approval"
+        ],
+        "title": "RuleProposedOut",
+        "type": "object"
+      },
+      "RuleVersionIn": {
+        "properties": {
+          "block": {
+            "default": false,
+            "title": "Block",
+            "type": "boolean"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Description",
+            "type": "string"
+          },
+          "enabled": {
+            "default": true,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "params": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Params",
+            "type": "object"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          },
+          "score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "score",
+          "reason"
+        ],
+        "title": "RuleVersionIn",
         "type": "object"
       },
       "SaveRecipientIn": {
@@ -3196,6 +4224,113 @@
         ],
         "title": "StaffMeResponse",
         "type": "object"
+      },
+      "SubmissionOut": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "date_of_birth": {
+            "format": "date",
+            "title": "Date Of Birth",
+            "type": "string"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "document_number_masked": {
+            "title": "Document Number Masked",
+            "type": "string"
+          },
+          "document_type": {
+            "$ref": "#/components/schemas/DocumentType"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentOut"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RejectReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "required_documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentKind"
+            },
+            "title": "Required Documents",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubmissionStatus"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "full_name",
+          "date_of_birth",
+          "document_type",
+          "document_number_masked",
+          "address",
+          "documents",
+          "required_documents",
+          "submitted_at",
+          "decided_at",
+          "reject_reason"
+        ],
+        "title": "SubmissionOut",
+        "type": "object"
+      },
+      "SubmissionStatus": {
+        "enum": [
+          "DRAFT",
+          "PENDING",
+          "IN_REVIEW",
+          "APPROVED",
+          "REJECTED"
+        ],
+        "title": "SubmissionStatus",
+        "type": "string"
       },
       "SystemStatus": {
         "properties": {
@@ -3592,6 +4727,32 @@
         "title": "TxnType",
         "type": "string"
       },
+      "TypeLimitsOut": {
+        "properties": {
+          "allowed": {
+            "description": "False when the tier forbids this type (e.g. withdrawals)",
+            "title": "Allowed",
+            "type": "boolean"
+          },
+          "limits": {
+            "items": {
+              "$ref": "#/components/schemas/LimitOut"
+            },
+            "title": "Limits",
+            "type": "array"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TxnType"
+          }
+        },
+        "required": [
+          "type",
+          "allowed",
+          "limits"
+        ],
+        "title": "TypeLimitsOut",
+        "type": "object"
+      },
       "UnfreezeIn": {
         "properties": {
           "pin": {
@@ -3831,6 +4992,60 @@
           "amount"
         ],
         "title": "WithdrawalIn",
+        "type": "object"
+      },
+      "app__modules__kyc__api__DecisionIn": {
+        "properties": {
+          "decision": {
+            "pattern": "^(APPROVE|REJECT)$",
+            "title": "Decision",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RejectReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "DecisionIn",
+        "type": "object"
+      },
+      "app__modules__operations__api__DecisionIn": {
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "title": "DecisionIn",
         "type": "object"
       },
       "app__modules__payments__api__AmountOut": {
@@ -4075,7 +5290,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DecisionIn"
+                "$ref": "#/components/schemas/app__modules__operations__api__DecisionIn"
               }
             }
           },
@@ -4535,6 +5750,277 @@
         ]
       }
     },
+    "/api/v1/admin/kyc/documents/{document_id}/content": {
+      "get": {
+        "operationId": "document_content_api_v1_admin_kyc_documents__document_id__content_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Document Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exp",
+            "required": true,
+            "schema": {
+              "title": "Exp",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sig",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "title": "Sig",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Document Content",
+        "tags": [
+          "admin-kyc"
+        ]
+      }
+    },
+    "/api/v1/admin/kyc/submissions": {
+      "get": {
+        "operationId": "review_queue_api_v1_admin_kyc_submissions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SubmissionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueueOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Queue",
+        "tags": [
+          "admin-kyc"
+        ]
+      }
+    },
+    "/api/v1/admin/kyc/submissions/{submission_id}": {
+      "get": {
+        "operationId": "review_detail_api_v1_admin_kyc_submissions__submission_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Submission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSubmissionDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Detail",
+        "tags": [
+          "admin-kyc"
+        ]
+      }
+    },
+    "/api/v1/admin/kyc/submissions/{submission_id}/claim": {
+      "post": {
+        "operationId": "claim_api_v1_admin_kyc_submissions__submission_id__claim_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Submission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSubmissionDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Claim",
+        "tags": [
+          "admin-kyc"
+        ]
+      }
+    },
+    "/api/v1/admin/kyc/submissions/{submission_id}/decision": {
+      "post": {
+        "operationId": "decide_api_v1_admin_kyc_submissions__submission_id__decision_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Submission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__modules__kyc__api__DecisionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSubmissionDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide",
+        "tags": [
+          "admin-kyc"
+        ]
+      }
+    },
     "/api/v1/admin/me": {
       "get": {
         "operationId": "staff_me_api_v1_admin_me_get",
@@ -4748,6 +6234,133 @@
         ]
       }
     },
+    "/api/v1/admin/risk/alerts": {
+      "get": {
+        "operationId": "alerts_api_v1_admin_risk_alerts_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^(OPEN|ACKNOWLEDGED|RESOLVED|FALSE_POSITIVE)$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "OPEN",
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertPageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Alerts",
+        "tags": [
+          "admin-risk"
+        ]
+      }
+    },
+    "/api/v1/admin/risk/alerts/{alert_id}/resolve": {
+      "post": {
+        "operationId": "resolve_api_v1_admin_risk_alerts__alert_id__resolve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alert_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Alert Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resolve",
+        "tags": [
+          "admin-risk"
+        ]
+      }
+    },
     "/api/v1/admin/risk/holds": {
       "get": {
         "operationId": "list_holds_api_v1_admin_risk_holds_get",
@@ -4877,6 +6490,83 @@
         ]
       }
     },
+    "/api/v1/admin/risk/rules": {
+      "get": {
+        "operationId": "rules_api_v1_admin_risk_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RuleOut"
+                  },
+                  "title": "Response Rules Api V1 Admin Risk Rules Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Rules",
+        "tags": [
+          "admin-risk"
+        ]
+      }
+    },
+    "/api/v1/admin/risk/rules/{code}/versions": {
+      "post": {
+        "operationId": "propose_rule_api_v1_admin_risk_rules__code__versions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleVersionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleProposedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Propose Rule",
+        "tags": [
+          "admin-risk"
+        ]
+      }
+    },
     "/api/v1/admin/transactions/{reference}": {
       "get": {
         "operationId": "admin_get_transaction_api_v1_admin_transactions__reference__get",
@@ -4986,6 +6676,159 @@
         "summary": "Propose Reversal",
         "tags": [
           "admin-holds-reversals"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}/risk-flags": {
+      "get": {
+        "operationId": "user_flags_api_v1_admin_users__user_id__risk_flags_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FlagOut"
+                  },
+                  "title": "Response User Flags Api V1 Admin Users  User Id  Risk Flags Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "User Flags",
+        "tags": [
+          "admin-risk"
+        ]
+      },
+      "post": {
+        "operationId": "add_flag_api_v1_admin_users__user_id__risk_flags_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlagOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Flag",
+        "tags": [
+          "admin-risk"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}/risk-flags/{flag}": {
+      "delete": {
+        "operationId": "delete_flag_api_v1_admin_users__user_id__risk_flags__flag__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "flag",
+            "required": true,
+            "schema": {
+              "title": "Flag",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagRemoveIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Flag",
+        "tags": [
+          "admin-risk"
         ]
       }
     },
@@ -5503,6 +7346,154 @@
         "summary": "Get Deposit",
         "tags": [
           "money-movement"
+        ]
+      }
+    },
+    "/api/v1/kyc": {
+      "get": {
+        "operationId": "my_kyc_api_v1_kyc_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KycStatusOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Kyc",
+        "tags": [
+          "kyc"
+        ]
+      }
+    },
+    "/api/v1/kyc/draft": {
+      "put": {
+        "operationId": "save_draft_api_v1_kyc_draft_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KycStatusOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Draft",
+        "tags": [
+          "kyc"
+        ]
+      }
+    },
+    "/api/v1/kyc/draft/documents/{kind}": {
+      "put": {
+        "operationId": "upload_document_api_v1_kyc_draft_documents__kind__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DocumentKind"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            }
+          },
+          "description": "The raw file (JPEG, PNG or PDF, at most 5 MB)",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload Document",
+        "tags": [
+          "kyc"
+        ]
+      }
+    },
+    "/api/v1/kyc/submit": {
+      "post": {
+        "operationId": "submit_api_v1_kyc_submit_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KycStatusOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Submit",
+        "tags": [
+          "kyc"
         ]
       }
     },
@@ -7521,6 +9512,27 @@
           }
         },
         "summary": "Freeze My Wallet",
+        "tags": [
+          "wallet"
+        ]
+      }
+    },
+    "/api/v1/wallet/limits": {
+      "get": {
+        "operationId": "my_limits_api_v1_wallet_limits_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LimitsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Limits",
         "tags": [
           "wallet"
         ]

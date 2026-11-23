@@ -22,7 +22,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.money import Money
-from app.modules.identity.public import User, credentials_changed_at, kyc_tier_of
+from app.modules.identity.public import User, kyc_tier_of
 from app.modules.ledger.public import (
     AccountCode,
     InsufficientBalanceError,
@@ -43,7 +43,7 @@ from app.modules.payments.public import (
     mark_paid,
 )
 from app.modules.pricing.public import LimitCode, LimitDirection
-from app.modules.risk.public import Decision, RiskContext, assess
+from app.modules.risk.public import Decision, assess
 from app.modules.transactions import service
 from app.modules.transactions.domain.state_machine import TxnStatus, TxnType
 from app.modules.transactions.models import Transaction
@@ -52,8 +52,8 @@ from app.modules.transactions.use_cases.common import (
     COUNTED_STATUSES,
     FinanceContext,
     check_limits,
-    recent_activity,
 )
+from app.modules.transactions.use_cases.risk_context import build_context, gather_facts
 from app.modules.wallet.public import Wallet, WalletStatus, WalletType, lock_wallets, touch_saved
 
 SPEND_TYPES = frozenset({TxnType.TRANSFER.value, TxnType.PAYMENT.value})
@@ -215,27 +215,33 @@ async def confirm_locked(
 
     assert txn.source_wallet_id is not None  # noqa: S101 - CHECK wallets_match_type
     assert txn.destination_wallet_id is not None  # noqa: S101
+    # Slow-moving risk facts first, so the wallet locks below are held only briefly.
+    facts = await gather_facts(
+        session,
+        txn,
+        user_id=user_id,
+        wallet_id=txn.source_wallet_id,
+        now=now,
+        counterparty_wallet_id=txn.destination_wallet_id,
+    )
     wallets = await lock_wallets(session, [txn.source_wallet_id, txn.destination_wallet_id])
     sender, receiver = wallets[txn.source_wallet_id], wallets[txn.destination_wallet_id]
     failure = await _precheck(session, ctx, txn, sender, receiver, user_id)
     if failure is not None:
         return await fail(session, ctx, txn, failure, actor)
 
-    count_10m, amount_1h, failed_30m = await recent_activity(session, sender.id, now)
     risk = await assess(
         session,
-        RiskContext(
+        await build_context(
+            session,
+            txn,
+            facts,
             user_id=user_id,
-            txn_type=txn.type,
-            amount_minor=txn.amount_minor,
-            currency=txn.currency,
+            wallet_id=sender.id,
             now=now,
+            timezone=ctx.settings.business_timezone,
             counterparty_wallet_id=receiver.id,
-            outgoing_count_10m=count_10m,
-            outgoing_amount_1h_minor=amount_1h,
-            failed_count_30m=failed_30m,
-            same_amount_same_counterparty_2m=await _same_pattern_count(session, txn),
-            credentials_changed_at=await credentials_changed_at(session, user_id),
+            same_pattern_count=await _same_pattern_count(session, txn),
         ),
         transaction_id=txn.id,
     )

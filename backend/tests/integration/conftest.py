@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import os
 from collections.abc import AsyncIterator
+from pathlib import Path
 
 import httpx
 import pytest
@@ -36,11 +37,14 @@ MUTABLE_TABLES = (
     "reconciliation_runs",
     "provider_operations",
     "recovery_cases",
+    "risk_alerts",
+    "account_risk_flags",
+    "risk_rules",
     "users",  # cascades to wallets, transactions, approval_requests, transaction_events
 )
 # Append-only children reached by the cascade. The test fixture (table owner) lifts their
 # TRUNCATE guard inside its own transaction; the application role can never do this.
-CASCADED_APPEND_ONLY = ("transaction_events",)
+CASCADED_APPEND_ONLY = ("transaction_events", "kyc_reviews")
 
 SIM_TABLES = ("sim_callbacks", "sim_operations", "sim_settings", "sim_logs")
 SIM_API_KEY = "test-sim-api-key"  # gitleaks:allow (throwaway test value)
@@ -205,7 +209,7 @@ async def provider(sim_app: FastAPI, clock: FixedClock) -> AsyncIterator[Simulat
 
 
 @pytest.fixture
-def app_settings(migrated: IntegrationSettings) -> Settings:
+def app_settings(migrated: IntegrationSettings, tmp_path: Path) -> Settings:
     assert migrated.database_url
     assert migrated.redis_url
     return Settings(
@@ -225,6 +229,7 @@ def app_settings(migrated: IntegrationSettings) -> Settings:
         simulator_api_key=SIM_API_KEY,
         simulator_webhook_secret=SIM_WEBHOOK_SECRET,
         provider_callback_base_url="http://viewallet.test",
+        kyc_storage_dir=str(tmp_path / "kyc"),
         cookie_secure=False,
         # Cheap Argon2 parameters keep the suite fast; production uses the defaults.
         argon2_time_cost=1,

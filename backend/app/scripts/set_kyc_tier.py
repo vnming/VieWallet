@@ -17,6 +17,7 @@ from app.core.db import Database
 from app.core.errors import AppError
 from app.core.logging import configure_logging
 from app.modules.identity.public import set_kyc_tier
+from app.modules.kyc.public import record_simulated_tier
 
 ALLOWED = {Environment.DEVELOPMENT, Environment.SIMULATION, Environment.TEST}
 
@@ -33,13 +34,15 @@ async def run(argv: list[str]) -> str:
     db = Database(settings.database_url, pool_size=1, application_name="viewallet-set-kyc-tier")
     try:
         async with db.transaction() as session:
+            clock = SystemClock()
             user_id = await set_kyc_tier(
                 session,
-                SystemClock(),
+                clock,
                 email=args.email,
                 tier=args.tier,
-                reason="simulated KYC (CLI, before Phase 6)",
+                reason="simulated KYC (development CLI)",
             )
+            await record_simulated_tier(session, clock, user_id, tier=args.tier)
     finally:
         await db.dispose()
     return str(user_id)

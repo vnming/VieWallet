@@ -166,6 +166,18 @@ Tài sản: số dư/ledger, thông tin đăng nhập/session/PIN, PII/dữ li�
 
 Handler sau giao dịch tạo `risk_alerts` cho mẫu hành vi không cần chặn đồng bộ (dồn tiền: nhiều người gửi vào một ví trong thời gian ngắn; chuyển vòng tiền; khóa PIN lặp lại). Analyst xử lý hàng đợi cảnh báo; mọi thao tác bị audit.
 
+### 8.4 Trạng thái cài đặt (Phase 6)
+
+| Phần | Nơi cài đặt | Ghi chú |
+|---|---|---|
+| Danh mục rule §8.2 (đủ 11 rule) | `risk/domain.py` | Mỗi rule đọc điểm, ngưỡng, BLOCK/không, bật/tắt từ `RuleConfig`; mỗi lần khớp trả về bằng chứng. `CREDENTIAL_CHANGE_COOLDOWN` luôn BLOCK với rút tiền (quy tắc sản phẩm cố định) |
+| Phiên bản rule | Bảng `risk_rules`, `operations/risk_api.py` | Một phiên bản ACTIVE mỗi rule (index duy nhất có điều kiện). RISK_ANALYST đề xuất phiên bản mới ⇒ approval `RISK_RULE_CHANGE` ⇒ người thứ hai có `risk_rule:approve:any` duyệt (MFA còn hiệu lực) ⇒ phiên bản cũ RETIRED. Tham số được kiểm tra đúng tập khóa, số nguyên không âm. Rule chưa có trong bảng dùng mặc định trong code |
+| Ngữ cảnh | `transactions/use_cases/risk_context.py` | Dữ kiện chậm thay đổi (trung vị chi 90 ngày, tuổi tài khoản, cờ, hạn mức ngày, đổi thông tin đăng nhập, người nhận lần đầu) đọc **trước** khi khóa ví; đếm vận tốc đọc trong vùng khóa |
+| Bằng chứng | `risk_assessments` | `rules_version` = dấu vân tay `rs-…` của tập (mã, phiên bản, bật/tắt) đã dùng |
+| Cờ tài khoản | `account_risk_flags` | WATCHLIST, CHARGEBACK_HISTORY, DUPLICATE_DOCUMENT (tự gắn khi số giấy tờ KYC trùng tài khoản khác); gỡ cờ cần lý do; có hạn tùy chọn; audit |
+| Giám sát bất đồng bộ §8.3 | `transactions/use_cases/monitoring.py` | Từ outbox: FAN_IN (≥ 5 ví khác nhau chuyển vào một ví trong 1 giờ), ROUND_TRIP (A→B rồi B→A cùng số tiền trong 1 giờ), REPEATED_PIN_LOCK (khóa PIN lần thứ 2 trong cửa sổ). Khử trùng theo `dedup_key`, không bao giờ chặn giao dịch |
+| Hàng đợi | `GET /admin/risk/alerts`, `/resolve` | ACKNOWLEDGED, RESOLVED, FALSE_POSITIVE (ghi chú bắt buộc, audit) |
+
 ## 9. KYC mô phỏng
 
 - Module riêng; port provider `KycVerifier` (cài đặt mô phỏng; eKYC thật sau này).
@@ -173,3 +185,17 @@ Handler sau giao dịch tạo `risk_alerts` cho mẫu hành vi không cần ch�
 - Kiểm tra tự động mô phỏng (tùy chọn) trả về "độ tin cậy" và quyết định gợi ý cho reviewer; quyết định của người vẫn là quyết định cuối.
 - UI và tài liệu ghi rõ "Xác minh mô phỏng – không tải lên giấy tờ tùy thân thật". Seed có ảnh giấy tờ mẫu hư cấu.
 - Audit: mọi đổi trạng thái, mọi lần nhân viên mở file.
+
+### 9.1 Trạng thái cài đặt (Phase 6)
+
+| Phần | Nơi cài đặt | Ghi chú |
+|---|---|---|
+| Vòng đời | `kyc/service.py` | NOT_STARTED → bản nháp → PENDING → IN_REVIEW (reviewer nhận) → APPROVED (tier 1, 730 ngày) / REJECTED (mã lý do bắt buộc) → nộp lại. Tối đa một hồ sơ mở mỗi người (index duy nhất có điều kiện); tối đa 5 lần nộp mỗi 30 ngày (429). Reviewer khác không duyệt được hồ sơ người khác đã nhận. Job `expire_kyc_approvals` hạ về tier 0 khi hết hạn |
+| Hạng | `identity.set_tier_for_user` | Nơi duy nhất ghi `users.kyc_tier` (duyệt, hết hạn, CLI dev), có audit |
+| Dữ liệu | `kyc_submissions` | Số giấy tờ mã hóa AES-GCM (associated data = id hồ sơ), hiển thị che `••••1234`, HMAC để phát hiện trùng. Kiểm tra định dạng theo loại giấy tờ, ≥ 18 tuổi |
+| Tệp | `kyc/documents.py` | Body là tệp thô (không multipart), đọc stream, cắt ở 5 MB. Ảnh JPEG/PNG được Pillow giải mã và mã hóa lại (mất EXIF, dữ liệu nối đuôi; ảnh giả bị từ chối; chống decompression bomb; cạnh dài tối đa 4000 px). PDF bị từ chối nếu có JavaScript/OpenAction/Launch/EmbeddedFile, luôn tải về dạng attachment. Tệp mã hóa AES-GCM trước khi ghi đĩa, khóa lưu trữ ngẫu nhiên, kiểm SHA-256 khi đọc |
+| Xem tệp | `GET /admin/kyc/documents/{id}/content?exp&sig` | Cần `kyc:review:any` **và** chữ ký HMAC gắn với đúng nhân viên, hết hạn sau 5 phút; mỗi lần xem ghi audit; `Cache-Control: no-store`, CSP `default-src 'none'; sandbox` |
+| Thông báo | `notifications/inapp.py` | `kyc.status_changed`: đã nhận, đã duyệt, bị từ chối (kèm lý do), hết hạn |
+| Bảng | `kyc_reviews` chỉ-thêm; ứng dụng không DELETE hồ sơ, tệp, quyết định | |
+
+Kiểm tra tự động mô phỏng (§9 "tùy chọn") chưa làm: reviewer quyết định hoàn toàn bằng tay.

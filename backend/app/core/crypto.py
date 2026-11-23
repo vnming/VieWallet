@@ -98,6 +98,9 @@ class SecretHasher:
         await asyncio.to_thread(self.dummy_verify, secret)
 
 
+_FILE_MAGIC = b"VWE1"
+
+
 class DataCipher:
     """AES-256-GCM with a key id prefix so keys can be rotated.
 
@@ -126,6 +129,29 @@ class DataCipher:
         )
         token = base64.urlsafe_b64encode(nonce + sealed).decode().rstrip("=")
         return f"v1.{self._current}.{token}"
+
+    def encrypt_bytes(self, plaintext: bytes, *, associated_data: str = "") -> bytes:
+        """Binary form for files: ``VWE1 | len(key_id) | key_id | nonce | ciphertext+tag``."""
+        nonce = secrets.token_bytes(NONCE_BYTES)
+        sealed = self._keys[self._current].encrypt(nonce, plaintext, associated_data.encode())
+        key_id = self._current.encode()
+        return _FILE_MAGIC + bytes([len(key_id)]) + key_id + nonce + sealed
+
+    def decrypt_bytes(self, blob: bytes, *, associated_data: str = "") -> bytes:
+        if not blob.startswith(_FILE_MAGIC) or len(blob) < len(_FILE_MAGIC) + 1:
+            raise CryptoError("malformed encrypted file")
+        offset = len(_FILE_MAGIC)
+        key_len = blob[offset]
+        key_id = blob[offset + 1 : offset + 1 + key_len].decode(errors="replace")
+        if key_id not in self._keys:
+            raise CryptoError("unknown key id")
+        body = blob[offset + 1 + key_len :]
+        try:
+            return self._keys[key_id].decrypt(
+                body[:NONCE_BYTES], body[NONCE_BYTES:], associated_data.encode()
+            )
+        except (InvalidTag, ValueError) as exc:
+            raise CryptoError("encrypted file cannot be decrypted") from exc
 
     def decrypt(self, token: str, *, associated_data: str = "") -> str:
         try:

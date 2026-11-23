@@ -25,6 +25,7 @@ from app.core.outbox import HandlerRegistry, OutboxDispatcher, OutboxMessage
 from app.core.rate_limit import RateLimiter
 from app.main import build_providers
 from app.modules.identity.public import IdentityServices
+from app.modules.kyc.public import expire_approvals as expire_kyc_approvals
 from app.modules.notifications.public import EmailSender, SmtpEmailSender, register_inapp_handlers
 from app.modules.notifications.public import register_handlers as register_email_handlers
 from app.modules.operations.public import expire_due, register_recovery_handlers, run_internal
@@ -123,6 +124,12 @@ def build_jobs(
         async with db.transaction() as session:
             await expire_payment_requests(session, clock)
 
+    async def expire_kyc() -> None:
+        async with db.transaction() as session:
+            expired = await expire_kyc_approvals(session, clock)
+        if expired:
+            logger.info("kyc_approvals_expired", count=expired)
+
     async def expire_review_holds() -> None:
         cancelled = await review.expire_holds(finance)
         if cancelled:
@@ -138,6 +145,7 @@ def build_jobs(
         JobSpec("expire_spend_quotes", timedelta(minutes=1), expire_spend_quotes),
         JobSpec("expire_payment_requests", timedelta(minutes=5), expire_requests),
         JobSpec("expire_risk_holds", timedelta(minutes=15), expire_review_holds),
+        JobSpec("expire_kyc_approvals", timedelta(hours=1), expire_kyc),
     ]
 
 

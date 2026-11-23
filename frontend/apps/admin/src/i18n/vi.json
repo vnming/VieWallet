@@ -12,7 +12,9 @@
     "wallets": "Tra cứu ví",
     "adjustments": "Điều chỉnh số dư",
     "approvals": "Phê duyệt",
-    "reconciliation": "Đối soát"
+    "reconciliation": "Đối soát",
+    "kyc": "Duyệt KYC",
+    "risk": "Rủi ro"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -224,5 +226,78 @@
     "subject": "Đối tượng",
     "expected": "Kỳ vọng",
     "actual": "Thực tế"
+  },
+  "kyc": {
+    "title": "Duyệt KYC",
+    "description": "Hồ sơ xác minh mô phỏng chờ duyệt. Mở giấy tờ được ghi audit.",
+    "queue": "Hàng đợi",
+    "empty": "Không có hồ sơ chờ duyệt.",
+    "pick": "Chọn một hồ sơ trong hàng đợi.",
+    "dob": "Ngày sinh",
+    "document": "Giấy tờ",
+    "address": "Địa chỉ",
+    "submittedAt": "Gửi lúc",
+    "statusLabel": "Trạng thái",
+    "status": {
+      "PENDING": "Chờ nhận",
+      "IN_REVIEW": "Đang duyệt",
+      "APPROVED": "Đã duyệt",
+      "REJECTED": "Từ chối",
+      "DRAFT": "Nháp"
+    },
+    "type": {
+      "NATIONAL_ID": "CCCD",
+      "PASSPORT": "Hộ chiếu",
+      "DRIVER_LICENSE": "GPLX"
+    },
+    "kind": {
+      "FRONT": "Mặt trước",
+      "BACK": "Mặt sau",
+      "SELFIE": "Chân dung"
+    },
+    "duplicate": "Số giấy tờ trùng tài khoản khác",
+    "duplicateBody": "{{count}} tài khoản khác đã nộp cùng số giấy tờ.",
+    "simulated": "Dữ liệu mô phỏng: không có giấy tờ thật.",
+    "claim": "Nhận hồ sơ",
+    "note": "Ghi chú (không bắt buộc)",
+    "rejectReason": "Lý do nếu từ chối",
+    "reason": {
+      "BLURRY_IMAGE": "Ảnh mờ",
+      "MISMATCH": "Thông tin không khớp",
+      "EXPIRED_DOCUMENT": "Giấy tờ hết hạn",
+      "SUSPECTED_FRAUD": "Nghi gian lận",
+      "OTHER": "Khác"
+    },
+    "approve": "Duyệt (lên cấp 1)",
+    "reject": "Từ chối",
+    "approvedDone": "Đã duyệt hồ sơ",
+    "rejectedDone": "Đã từ chối hồ sơ"
+  },
+  "risk": {
+    "title": "Rủi ro",
+    "description": "Giao dịch đang bị giữ để kiểm tra và cảnh báo từ giám sát bất đồng bộ.",
+    "holds": "Khoản giữ chờ quyết định",
+    "noHolds": "Không có khoản giữ nào.",
+    "holdsError": "Không tải được khoản giữ",
+    "alerts": "Cảnh báo đang mở",
+    "noAlerts": "Không có cảnh báo.",
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "approveTitle": "Duyệt giao dịch bị giữ?",
+    "rejectTitle": "Từ chối và hoàn tiền?",
+    "decisionBody": "Giao dịch {{reference}}. Thao tác được ghi audit.",
+    "note": "Ghi chú (bắt buộc khi từ chối)",
+    "approvedDone": "Đã duyệt, tiền tiếp tục tới người nhận",
+    "rejectedDone": "Đã từ chối, tiền hoàn về người trả",
+    "types": {
+      "TRANSFER": "Chuyển tiền",
+      "PAYMENT": "Thanh toán",
+      "WITHDRAWAL": "Rút tiền"
+    },
+    "alertTypes": {
+      "FAN_IN": "Nhiều người chuyển vào một ví",
+      "ROUND_TRIP": "Chuyển vòng tiền",
+      "REPEATED_PIN_LOCK": "Khóa PIN lặp lại"
+    }
   }
 }

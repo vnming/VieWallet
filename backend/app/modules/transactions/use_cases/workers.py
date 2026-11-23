@@ -30,6 +30,7 @@ from app.modules.transactions import service
 from app.modules.transactions.domain.state_machine import TxnStatus
 from app.modules.transactions.use_cases import deposit, withdrawal
 from app.modules.transactions.use_cases.common import FinanceContext
+from app.modules.transactions.use_cases.monitoring import register_monitoring
 from app.modules.transactions.use_cases.provider_flow import (
     DISPATCH_TOPIC,
     PROVIDER,
@@ -197,3 +198,4 @@ def register_handlers(registry: HandlerRegistry, ctx: FinanceContext) -> None:
 
     registry.register(CALLBACK_TOPIC, on_callback)
     registry.register(DISPATCH_TOPIC, on_dispatch)
+    register_monitoring(registry, ctx.db, ctx.clock)

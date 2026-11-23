@@ -9,6 +9,8 @@ name: viewallet
 
 x-backend-env: &backend-env
   VW_ENVIRONMENT: development
+  # Encrypted KYC files (simulated documents) live on their own volume, outside the DB.
+  VW_KYC_STORAGE_DIR: /var/lib/viewallet/kyc
   VW_LOG_JSON: "true"
   VW_DATABASE_URL: postgresql+psycopg://viewallet_app:${VW_DB_APP_PASSWORD:?set in .env}@postgres:5432/viewallet
   VW_MIGRATION_DATABASE_URL: postgresql+psycopg://viewallet_migrator:${VW_DB_MIGRATOR_PASSWORD:?set in .env}@postgres:5432/viewallet
@@ -124,6 +126,8 @@ services:
       dockerfile: infra/docker/backend.Dockerfile
     environment: *backend-env
     command: ["uvicorn", "--factory", "app.main:app_factory", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*", "--no-access-log"]
+    volumes:
+      - kycdata:/var/lib/viewallet/kyc
     ports:
       - "127.0.0.1:${VW_PORT_API:-8000}:8000"
     depends_on:
@@ -175,3 +179,4 @@ services:
 
 volumes:
   pgdata:
+  kycdata:

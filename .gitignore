@@ -37,3 +37,6 @@ Thumbs.db
 
 # Local Claude settings
 .claude/settings.local.json
+
+# Local encrypted KYC files (development)
+backend/var/

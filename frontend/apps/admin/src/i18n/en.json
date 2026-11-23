@@ -12,7 +12,9 @@
     "wallets": "Wallet lookup",
     "adjustments": "Adjustments",
     "approvals": "Approvals",
-    "reconciliation": "Reconciliation"
+    "reconciliation": "Reconciliation",
+    "kyc": "KYC review",
+    "risk": "Risk"
   },
   "language": {
     "label": "Language",
@@ -224,5 +226,78 @@
     "subject": "Subject",
     "expected": "Expected",
     "actual": "Actual"
+  },
+  "kyc": {
+    "title": "KYC review",
+    "description": "Simulated verification submissions. Opening a document is audited.",
+    "queue": "Queue",
+    "empty": "Nothing waiting for review.",
+    "pick": "Pick a submission from the queue.",
+    "dob": "Date of birth",
+    "document": "Document",
+    "address": "Address",
+    "submittedAt": "Submitted",
+    "statusLabel": "Status",
+    "status": {
+      "PENDING": "Waiting",
+      "IN_REVIEW": "In review",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "DRAFT": "Draft"
+    },
+    "type": {
+      "NATIONAL_ID": "National ID",
+      "PASSPORT": "Passport",
+      "DRIVER_LICENSE": "Driving licence"
+    },
+    "kind": {
+      "FRONT": "Front",
+      "BACK": "Back",
+      "SELFIE": "Selfie"
+    },
+    "duplicate": "Document number used by another account",
+    "duplicateBody": "{{count}} other account(s) submitted the same document number.",
+    "simulated": "Simulated data: no real documents.",
+    "claim": "Claim",
+    "note": "Note (optional)",
+    "rejectReason": "Reason if rejected",
+    "reason": {
+      "BLURRY_IMAGE": "Blurry image",
+      "MISMATCH": "Details do not match",
+      "EXPIRED_DOCUMENT": "Expired document",
+      "SUSPECTED_FRAUD": "Suspected fraud",
+      "OTHER": "Other"
+    },
+    "approve": "Approve (tier 1)",
+    "reject": "Reject",
+    "approvedDone": "Submission approved",
+    "rejectedDone": "Submission rejected"
+  },
+  "risk": {
+    "title": "Risk",
+    "description": "Transactions held for review and alerts from asynchronous monitoring.",
+    "holds": "Holds awaiting a decision",
+    "noHolds": "No holds.",
+    "holdsError": "Could not load holds",
+    "alerts": "Open alerts",
+    "noAlerts": "No alerts.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve the held transaction?",
+    "rejectTitle": "Reject and return the money?",
+    "decisionBody": "Transaction {{reference}}. The action is audited.",
+    "note": "Note (required to reject)",
+    "approvedDone": "Approved; the money continues to the receiver",
+    "rejectedDone": "Rejected; the money went back to the payer",
+    "types": {
+      "TRANSFER": "Transfer",
+      "PAYMENT": "Payment",
+      "WITHDRAWAL": "Withdrawal"
+    },
+    "alertTypes": {
+      "FAN_IN": "Many senders into one wallet",
+      "ROUND_TRIP": "Round-trip transfers",
+      "REPEATED_PIN_LOCK": "Repeated PIN locks"
+    }
   }
 }

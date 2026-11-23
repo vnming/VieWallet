@@ -17,6 +17,7 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.1.9",
     "structlog>=26.1.0",
     "uvicorn[standard]>=0.54.0",
+    "pillow>=13.0.0",
 ]
 
 [dependency-groups]
@@ -120,7 +121,7 @@ layers = [
     "app.modules.operations",
     "app.modules.transactions",
     "app.modules.payments",
-    "app.modules.wallet",
+    "app.modules.wallet | app.modules.kyc",
     "app.modules.identity | app.modules.ledger | app.modules.pricing | app.modules.risk | app.modules.providers",
     "app.modules.notifications | app.modules.audit | app.modules.access",
 ]

@@ -94,6 +94,12 @@ class Settings(BaseSettings):
     )
     deposit_inquiry_after_minutes: int = Field(default=30, ge=1)
     withdrawal_quote_minutes: int = Field(default=10, ge=1)
+    # --- KYC (simulated) ----------------------------------------------------------------------
+    kyc_storage_dir: str = Field(
+        default="var/kyc", description="Encrypted KYC files (a Docker volume in compose)."
+    )
+    kyc_document_link_seconds: int = Field(default=300, ge=30, le=3600)
+
     spend_quote_minutes: int = Field(default=10, ge=1, description="Transfer/payment quotes.")
 
     @property

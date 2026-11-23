@@ -33,6 +33,7 @@ class ActionType(StrEnum):
     ADJUSTMENT = "ADJUSTMENT"
     WALLET_UNFREEZE = "WALLET_UNFREEZE"
     REVERSAL = "REVERSAL"
+    RISK_RULE_CHANGE = "RISK_RULE_CHANGE"
 
 
 def _in(column: str, values: list[str]) -> str:

@@ -111,6 +111,15 @@ Worker chạy thêm: `provider_status_inquiries` (10 giây), `expire_withdrawal_
 
 Worker chạy thêm: `expire_spend_quotes` (1 phút), `expire_payment_requests` (5 phút), `expire_risk_holds` (15 phút, hủy khoản giữ quá 72 giờ).
 
+## 3b3. KYC, hạn mức, rủi ro (Phase 6)
+
+- **KYC**: app khách hàng → Xác minh → nhập thông tin hư cấu → tải ảnh giả lập (mặt trước, mặt sau, chân dung) → Gửi hồ sơ. Nhân viên `KYC_REVIEWER` duyệt ở app admin → Duyệt KYC (nhận hồ sơ → duyệt/từ chối). Tệp nằm trên volume `kycdata` (đã mã hóa); chạy ngoài Docker thì ở `backend/var/kyc` (`VW_KYC_STORAGE_DIR`).
+- CLI `set_kyc_tier` vẫn dùng được ở development/simulation (E2E rút tiền), giờ cập nhật luôn hồ sơ KYC như một lần duyệt mô phỏng.
+- **Hạn mức còn lại**: Ví → Hạn mức (`GET /api/v1/wallet/limits`).
+- **Bàn rủi ro**: nhân viên `RISK_ANALYST` → Rủi ro: khoản giữ chờ quyết định (duyệt/từ chối) và cảnh báo. Đổi tham số rule: `POST /api/v1/admin/risk/rules/{code}/versions`, người thứ hai duyệt ở Phê duyệt. Rule mặc định được seed (`python -m app.scripts.seed`).
+
+Worker chạy thêm: `expire_kyc_approvals` (1 giờ). Handler mới: giám sát rủi ro trên `transaction.status_changed` và `identity.pin_locked`; thông báo KYC trên `kyc.status_changed`.
+
 ## 3c. Tạo số dư demo
 
 Chưa có nạp tiền (Phase 4), nên số dư demo được tạo bằng **điều chỉnh số dư** qua maker-checker, đúng như mọi thay đổi số dư khác:

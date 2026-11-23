@@ -7,6 +7,7 @@ import {
   ArrowDownToLine,
   ArrowLeftRight,
   ArrowUpFromLine,
+  BadgeCheck,
   History,
   Home,
   type LucideIcon,
@@ -42,6 +43,7 @@ function useNavItems(signedIn: boolean): NavItem[] {
           { to: "/withdraw", key: "nav.withdraw", icon: ArrowUpFromLine, end: true },
           { to: "/history", key: "nav.history", icon: History, end: false },
           ...(merchant ? [{ to: "/merchant", key: "nav.merchant", icon: Store, end: true }] : []),
+          { to: "/kyc", key: "nav.kyc", icon: BadgeCheck, end: true },
           { to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false },
         ]
       : []),

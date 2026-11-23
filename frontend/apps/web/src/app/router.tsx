@@ -10,6 +10,7 @@ import { RegisterPage } from "../routes/auth/RegisterPage";
 import { VerifyEmailPage } from "../routes/auth/VerifyEmailPage";
 import { DesignPage } from "../routes/DesignPage";
 import { HomePage } from "../routes/HomePage";
+import { KycPage, LimitsPage } from "../routes/kyc/KycPages";
 import { NotFoundPage } from "../routes/NotFoundPage";
 import {
   DepositPage,
@@ -63,6 +64,8 @@ export const routes: RouteObject[] = [
           { path: "receive", element: <ReceivePage /> },
           { path: "request", element: <RequestMoneyPage /> },
           { path: "merchant", element: <MerchantPage /> },
+          { path: "kyc", element: <KycPage /> },
+          { path: "wallet/limits", element: <LimitsPage /> },
         ],
       },
       // Style guide with sample data: development builds only.

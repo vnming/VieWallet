@@ -14,6 +14,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import NotFoundError
+from app.core.outbox import publish
 from app.modules.identity.context import EMAIL_CODE_TTL, IdentityServices, RequestMeta
 from app.modules.identity.domain import pin_policy
 from app.modules.identity.errors import (
@@ -36,6 +37,9 @@ class PinStatus:
     locked_until: datetime | None
     requires_reset: bool
     reset_at: datetime | None
+
+
+PIN_LOCKED_TOPIC = "identity.pin_locked"
 
 
 def _state(row: TransactionPin) -> pin_policy.PinState:
@@ -161,6 +165,15 @@ async def verify_pin(
                 locale=user.locale,
                 params={"name": user.full_name, "detail": detail.get(user.locale, detail["vi"])},
                 aggregate_id=str(user_id),
+            )
+            # Risk monitoring raises an alert for repeated locks (security.md §8.3).
+            await publish(
+                session,
+                ctx.clock,
+                topic=PIN_LOCKED_TOPIC,
+                aggregate_type="user",
+                aggregate_id=str(user_id),
+                payload={"user_id": str(user_id), "lock_count": outcome.state.lock_count},
             )
             await ctx.audit(
                 session,

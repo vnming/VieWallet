@@ -30,7 +30,7 @@ Quy mô: S nhỏ, M vừa, L lớn, XL rất lớn (tương đối, không cam k
 | 3 | Wallet & Financial Core | 2 | xong |
 | 4 | Provider Simulator, Deposit & Withdrawal | 3 | xong |
 | 5 | Transfer, Payment, Refund, Reversal | 3 (4 cho đảo rút tiền) | xong |
-| 6 | KYC, Risk & Limits | 3, 5 | L |
+| 6 | KYC, Risk & Limits | 3, 5 | xong |
 | 7 | Hoàn thiện app khách hàng | 2–6 | M |
 | 8 | Admin & Operations | 2–6 | XL |
 | 9 | Notifications (Push) & PWA | 4, 7 | M |

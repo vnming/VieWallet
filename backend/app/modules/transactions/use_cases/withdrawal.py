@@ -21,7 +21,6 @@ from app.core.errors import IdempotencyKeyReusedError
 from app.core.money import Money
 from app.modules.identity.public import (
     RequestMeta,
-    credentials_changed_at,
     kyc_tier_of,
     verify_pin,
 )
@@ -50,7 +49,7 @@ from app.modules.providers.public import (
     next_inquiry_delay,
     operation_for,
 )
-from app.modules.risk.public import Decision, RiskContext, assess
+from app.modules.risk.public import Decision, assess
 from app.modules.transactions import service
 from app.modules.transactions.domain.state_machine import TxnStatus, TxnType
 from app.modules.transactions.models import Transaction
@@ -59,7 +58,6 @@ from app.modules.transactions.use_cases.common import (
     FinanceContext,
     LimitExceededError,
     check_limits,
-    recent_activity,
     require_step,
 )
 from app.modules.transactions.use_cases.provider_flow import (
@@ -69,6 +67,7 @@ from app.modules.transactions.use_cases.provider_flow import (
     release_withdrawal,
     request_dispatch,
 )
+from app.modules.transactions.use_cases.risk_context import build_context, gather_facts
 from app.modules.wallet.public import (
     BANKS,
     BankDestination,
@@ -265,6 +264,9 @@ async def _confirm_locked(
             changes={"extra": txn.extra},
         )
     assert txn.source_wallet_id is not None  # noqa: S101
+    facts = await gather_facts(
+        session, txn, user_id=user_id, wallet_id=txn.source_wallet_id, now=now
+    )  # before the lock: keeps it short
     wallet = (await lock_wallets(session, [txn.source_wallet_id]))[txn.source_wallet_id]
     try:
         ensure_active(wallet)
@@ -291,19 +293,16 @@ async def _confirm_locked(
     if breach is not None:
         return await _fail(session, ctx, txn, breach.code.value, user_id)
 
-    count_10m, amount_1h, failed_30m = await recent_activity(session, wallet.id, now)
     risk = await assess(
         session,
-        RiskContext(
+        await build_context(
+            session,
+            txn,
+            facts,
             user_id=user_id,
-            txn_type=TxnType.WITHDRAWAL.value,
-            amount_minor=txn.amount_minor,
-            currency=txn.currency,
+            wallet_id=wallet.id,
             now=now,
-            outgoing_count_10m=count_10m,
-            outgoing_amount_1h_minor=amount_1h,
-            failed_count_30m=failed_30m,
-            credentials_changed_at=await credentials_changed_at(session, user_id),
+            timezone=ctx.settings.business_timezone,
             destination_added_at=destination.created_at,
             destination_cooldown=timedelta(minutes=ctx.settings.new_destination_cooldown_minutes),
         ),

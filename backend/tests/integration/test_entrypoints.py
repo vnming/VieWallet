@@ -75,6 +75,7 @@ async def test_purge_job_removes_expired_keys(
         "expire_spend_quotes",
         "expire_payment_requests",
         "expire_risk_holds",
+        "expire_kyc_approvals",
     ]
     assert await JobScheduler(db, clock, jobs).run_due() == names
     async with db.transaction() as session:
@@ -83,6 +84,8 @@ async def test_purge_job_removes_expired_keys(
 
 async def test_worker_starts_and_stops_cleanly(app_settings: Settings, app: FastAPI) -> None:
     assert build_registry(app_settings, app.state.finance).topics == [
+        "identity.pin_locked",
+        "kyc.status_changed",
         "notifications.email.requested",
         "provider.callback_received",
         "reconciliation.violation_found",

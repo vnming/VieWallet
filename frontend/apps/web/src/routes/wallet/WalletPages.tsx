@@ -233,6 +233,9 @@ export function WalletPage() {
             <Link to="/wallet/destinations" className={buttonClassName({ variant: "ghost" })}>
               {t("destinations.title")}
             </Link>
+            <Link to="/wallet/limits" className={buttonClassName({ variant: "ghost" })}>
+              {t("limits.title")}
+            </Link>
           </nav>
           {wallet.data && (
             <FreezeControls status={wallet.data.status} freezeSource={wallet.data.freeze_source} />
