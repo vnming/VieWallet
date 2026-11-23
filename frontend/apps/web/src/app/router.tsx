@@ -11,6 +11,14 @@ import { VerifyEmailPage } from "../routes/auth/VerifyEmailPage";
 import { DesignPage } from "../routes/DesignPage";
 import { HomePage } from "../routes/HomePage";
 import { NotFoundPage } from "../routes/NotFoundPage";
+import {
+  DepositPage,
+  DepositResultPage,
+  DestinationsPage,
+  WithdrawalResultPage,
+  WithdrawPage,
+} from "../routes/money/MoneyPages";
+import { NotificationsPage } from "../routes/NotificationsPage";
 import { HistoryPage, TransactionDetailPage, WalletPage } from "../routes/wallet/WalletPages";
 
 export const routes: RouteObject[] = [
@@ -31,6 +39,12 @@ export const routes: RouteObject[] = [
           { path: "wallet", element: <WalletPage /> },
           { path: "history", element: <HistoryPage /> },
           { path: "history/:reference", element: <TransactionDetailPage /> },
+          { path: "deposit", element: <DepositPage /> },
+          { path: "deposits/:reference", element: <DepositResultPage /> },
+          { path: "withdraw", element: <WithdrawPage /> },
+          { path: "withdrawals/:reference", element: <WithdrawalResultPage /> },
+          { path: "wallet/destinations", element: <DestinationsPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
         ],
       },
       // Style guide with sample data: development builds only.

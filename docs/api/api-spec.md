@@ -103,6 +103,27 @@ Các mục 5, 6, 13 bên dưới là thiết kế đầy đủ; bảng này là 
 
 Mã lỗi mới: `WALLET_NOT_FOUND`, `WALLET_NOT_ACTIVE`, `WALLET_STATE_CONFLICT`, `TXN_NOT_FOUND`, `TXN_INVALID_STATE`, `TXN_CONCURRENT_UPDATE`, `INSUFFICIENT_BALANCE`, `ALREADY_REVERSED`, `APPROVAL_NOT_FOUND`, `APPROVAL_NOT_PENDING`, `APPROVAL_SELF_DECISION`, `APPROVAL_EXPIRED`, `APPROVAL_DUPLICATE`.
 
+## 3b. Nạp tiền, rút tiền, tài khoản nhận, thông báo (đã cài đặt ở Phase 4)
+
+| Method | Path | Ghi chú |
+|---|---|---|
+| POST | `/api/v1/deposits` [I] | `{amount, method: "SIMBANK"}`. Bội của 1.000 ₫; hạn mức nạp và trần số dư theo tier. ⇒ `MoneyFlowOut` với `next_action = REDIRECT` và `checkout_url` (trang SimBank), hoặc `FAILED` + `failure_code` (`INSUFFICIENT_FUNDS`, `PROVIDER_UNAVAILABLE`, ...) |
+| GET | `/api/v1/deposits/{reference}` | Trạng thái để polling (2 giây, tối đa 60 giây) |
+| POST | `/api/v1/withdrawals` [I] | Báo giá `{destination_id, amount}` ⇒ `CREATED`, `fee`, `total`, `quote_expires_at` (10 phút). Tier 0 ⇒ 422 `TXN_TYPE_NOT_ALLOWED` |
+| POST | `/api/v1/withdrawals/{reference}/confirm` [I] | `{pin}`. Sai PIN ⇒ 422 `PIN_INVALID`, báo giá giữ `CREATED`. Lỗi nghiệp vụ (số dư, hạn mức, rủi ro, ví khóa) ⇒ 200 với `status = FAILED` và `failure_code`. Gửi lại cùng key ⇒ trạng thái hiện tại; key khác sau khi đã xác nhận ⇒ 409 `TXN_INVALID_STATE` |
+| POST | `/api/v1/withdrawals/{reference}/cancel` | `CREATED`, hoặc `PENDING` khi chưa gửi sang ngân hàng (hoàn giữ) |
+| GET | `/api/v1/withdrawals/{reference}` | Trạng thái + timeline |
+| GET | `/api/v1/wallet/banks` | Danh sách ngân hàng hư cấu |
+| GET/POST | `/api/v1/wallet/destinations` | Tối đa 5; trả số tài khoản đã che và `usable_from` (sau thời gian chờ) |
+| DELETE | `/api/v1/wallet/destinations/{id}` | Xóa mềm; của người khác ⇒ 404 |
+| GET | `/api/v1/notifications` | `cursor`, `limit`, `unread` |
+| GET | `/api/v1/notifications/unread-count` | |
+| POST | `/api/v1/notifications/{id}/read` · `/read-all` | |
+| POST | `/api/v1/webhooks/providers/{provider_code}` | Không cần header CSRF; xác thực bằng `X-Sim-Timestamp` (lệch ≤ 5 phút) + `X-Sim-Signature`. Sai ⇒ 401 (vẫn lưu với kết quả `REJECTED`); trùng ⇒ 200 `duplicate` |
+| GET | `/api/v1/admin/recovery-cases` | `transaction:read:any`; `status` (mặc định OPEN) |
+
+`MoneyFlowOut.next_action`: `REDIRECT` (mở `checkout_url`), `WAIT_PROVIDER`, `WAIT_REVIEW` (rút tiền chờ kiểm tra rủi ro), `NONE`. `GET /api/v1/me` có thêm `kyc_tier`.
+
 ## 4. KYC
 
 `GET /kyc` (trạng thái, tier, lịch sử) · `POST /kyc/submissions` (thông tin) · `POST /kyc/submissions/{id}/documents` (multipart, ≤ 5 MB) · `POST /kyc/submissions/{id}/submit`.

@@ -22,6 +22,25 @@ x-backend-env: &backend-env
   VW_COOKIE_SECURE: "false"
   VW_SMTP_HOST: mailpit
   VW_SMTP_PORT: "1025"
+  # Payment Provider Simulator: reached inside the network; callbacks come back to the api.
+  VW_SIMULATOR_URL: http://simulator:8090
+  VW_SIMULATOR_API_KEY: ${VW_SIMULATOR_API_KEY:?set in .env}
+  VW_SIMULATOR_WEBHOOK_SECRET: ${VW_SIMULATOR_WEBHOOK_SECRET:?set in .env}
+  VW_PROVIDER_CALLBACK_BASE_URL: http://api:8000
+  # 60 minutes by default; the E2E run sets 0 so a new bank account is usable at once.
+  VW_NEW_DESTINATION_COOLDOWN_MINUTES: ${VW_NEW_DESTINATION_COOLDOWN_MINUTES:-60}
+
+x-sim-env: &sim-env
+  SIM_ENVIRONMENT: development
+  SIM_DATABASE_URL: postgresql+psycopg://viewallet_sim:${VW_DB_SIM_PASSWORD:?set in .env}@postgres:5432/viewallet_sim
+  SIM_API_KEY: ${VW_SIMULATOR_API_KEY:?set in .env}
+  SIM_WEBHOOK_SECRET: ${VW_SIMULATOR_WEBHOOK_SECRET:?set in .env}
+  SIM_ADMIN_KEY: ${VW_SIMULATOR_ADMIN_KEY:?set in .env}
+  SIM_PUBLIC_BASE_URL: http://127.0.0.1:${VW_PORT_SIMULATOR:-8090}
+  SIM_ALLOWED_RETURN_ORIGINS: '["http://127.0.0.1:${VW_PORT_WEB:-8080}","http://localhost:${VW_PORT_WEB:-8080}"]'
+  SIM_PENDING_DELAY_SECONDS: ${SIM_PENDING_DELAY_SECONDS:-120}
+  SIM_SLOW_RESPONSE_SECONDS: ${SIM_SLOW_RESPONSE_SECONDS:-30}
+  SIM_RETURN_DELAY_SECONDS: ${SIM_RETURN_DELAY_SECONDS:-300}
 
 services:
   postgres:
@@ -30,6 +49,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
       VW_DB_MIGRATOR_PASSWORD: ${VW_DB_MIGRATOR_PASSWORD:?set in .env}
       VW_DB_APP_PASSWORD: ${VW_DB_APP_PASSWORD:?set in .env}
+      VW_DB_SIM_PASSWORD: ${VW_DB_SIM_PASSWORD:?set in .env}
     volumes:
       - pgdata:/var/lib/postgresql
       - ./infra/docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
@@ -70,6 +90,34 @@ services:
         condition: service_healthy
     restart: "no"
 
+  sim-migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment: *sim-env
+    command: ["alembic", "-c", "sim_alembic.ini", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  simulator:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment: *sim-env
+    command: ["uvicorn", "--factory", "sim.main:app_factory", "--host", "0.0.0.0", "--port", "8090", "--no-access-log"]
+    ports:
+      - "127.0.0.1:${VW_PORT_SIMULATOR:-8090}:8090"
+    depends_on:
+      sim-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8090/health').status == 200 else 1)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   api:
     build:
       context: .
@@ -82,6 +130,8 @@ services:
       migrate:
         condition: service_completed_successfully
       redis:
+        condition: service_healthy
+      simulator:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready').status == 200 else 1)"]

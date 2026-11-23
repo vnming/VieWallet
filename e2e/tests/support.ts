@@ -106,3 +106,19 @@ export function totp(secret: string, at = Date.now(), stepOffset = 0): string {
   const code = (digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000;
   return code.toString().padStart(6, "0");
 }
+
+/** Simulated KYC (Phase 4 stand-in for the Phase 6 flow): raise a customer to tier 1. */
+export function setKycTier(email: string, tier: 0 | 1): void {
+  compose([
+    "exec",
+    "-T",
+    "api",
+    "python",
+    "-m",
+    "app.scripts.set_kyc_tier",
+    "--email",
+    email,
+    "--tier",
+    String(tier),
+  ]);
+}

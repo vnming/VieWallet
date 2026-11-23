@@ -11,7 +11,10 @@
     "design": "Thiết kế",
     "security": "Bảo mật",
     "wallet": "Ví",
-    "history": "Lịch sử"
+    "history": "Lịch sử",
+    "deposit": "Nạp tiền",
+    "withdraw": "Rút tiền",
+    "notifications": "Thông báo"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -23,7 +26,7 @@
     "intro": "Tạo tài khoản mô phỏng để bắt đầu. Ví, nạp tiền và chuyển tiền sẽ được bổ sung ở các phase tiếp theo.",
     "statusTitle": "Trạng thái hệ thống",
     "greeting": "Xin chào, {{name}}",
-    "signedInIntro": "Số dư và giao dịch gần đây của bạn ở bên dưới. Nạp, rút và chuyển tiền sẽ có ở các phase tiếp theo."
+    "signedInIntro": "Số dư và giao dịch gần đây của bạn ở bên dưới."
   },
   "status": {
     "loading": "Đang tải trạng thái hệ thống",
@@ -200,7 +203,7 @@
     "recent": "Giao dịch gần đây",
     "viewAll": "Xem tất cả",
     "loadError": "Không tải được thông tin ví",
-    "comingSoon": "Nạp tiền, rút tiền và chuyển tiền sẽ có ở các phase tiếp theo.",
+    "comingSoon": "Chuyển tiền và thanh toán QR sẽ có ở các phase tiếp theo.",
     "status": {
       "ACTIVE": "Đang hoạt động",
       "FROZEN": "Đang khóa",
@@ -246,5 +249,89 @@
     "copy": "Sao chép mã giao dịch",
     "copied": "Đã sao chép mã giao dịch",
     "failure": "Lý do"
+  },
+  "money": {
+    "amount": "Số tiền (₫)",
+    "amountHint": "Bội của 1.000 ₫.",
+    "presets": "Chọn nhanh",
+    "simulationTitle": "Ngân hàng mô phỏng",
+    "scenarioHint": "Số tiền quyết định kịch bản của SimBank: …111.000 ₫ thất bại, …222.000 ₫ hoàn tất sau 2 phút, …777.000 ₫ ngân hàng không khả dụng. Số khác: thành công.",
+    "timeline": "Tiến trình",
+    "reference": "Mã giao dịch",
+    "backHome": "Về trang chủ",
+    "viewDetail": "Xem chi tiết giao dịch",
+    "stillWaiting": "Vẫn đang xử lý. Bạn có thể rời trang này; chúng tôi sẽ thông báo khi có kết quả.",
+    "failure": {
+      "INSUFFICIENT_FUNDS": "Ngân hàng báo tài khoản không đủ tiền.",
+      "CUSTOMER_DECLINED": "Bạn đã từ chối thanh toán tại ngân hàng.",
+      "PROVIDER_UNAVAILABLE": "Ngân hàng tạm thời không khả dụng. Vui lòng thử lại sau.",
+      "PROVIDER_REJECTED": "Ngân hàng từ chối yêu cầu.",
+      "ACCOUNT_CLOSED": "Tài khoản nhận đã đóng hoặc không hợp lệ.",
+      "INSUFFICIENT_BALANCE": "Số dư không đủ cho số tiền và phí.",
+      "RISK_BLOCKED": "Giao dịch bị tạm chặn vì lý do an toàn. Tài khoản nhận mới cần chờ 1 giờ.",
+      "WALLET_NOT_ACTIVE": "Ví đang bị khóa.",
+      "DESTINATION_REMOVED": "Tài khoản nhận đã bị xóa.",
+      "QUOTE_EXPIRED": "Báo giá đã hết hạn.",
+      "PAYOUT_FAILED": "Ngân hàng không nhận khoản tiền."
+    }
+  },
+  "deposit": {
+    "title": "Nạp tiền",
+    "description": "Nạp tiền mô phỏng từ SimBank vào ví.",
+    "submit": "Tiếp tục tới SimBank",
+    "redirecting": "Đang chuyển tới SimBank…",
+    "resultTitle": "Kết quả nạp tiền",
+    "completed": "Nạp tiền thành công",
+    "failed": "Nạp tiền không thành công",
+    "expired": "Phiên nạp tiền đã hết hạn",
+    "pending": "Đang chờ ngân hàng xác nhận",
+    "openCheckout": "Mở lại trang SimBank"
+  },
+  "withdraw": {
+    "title": "Rút tiền",
+    "description": "Rút tiền mô phỏng về tài khoản ngân hàng đã lưu.",
+    "kycRequired": "Cần xác minh danh tính (KYC) để rút tiền",
+    "kycBody": "Chức năng KYC sẽ có ở Phase 6. Trong môi trường mô phỏng, nhóm phát triển có thể nâng tier bằng lệnh CLI.",
+    "destination": "Tài khoản nhận",
+    "noDestination": "Bạn chưa lưu tài khoản nhận tiền.",
+    "addDestination": "Thêm tài khoản nhận",
+    "quote": "Xem phí và tổng tiền",
+    "review": "Lệnh rút đang được kiểm tra an toàn",
+    "fee": "Phí",
+    "total": "Tổng trừ khỏi ví",
+    "expiresAt": "Báo giá hiệu lực tới",
+    "confirm": "Xác nhận rút tiền",
+    "cancel": "Hủy lệnh",
+    "cancelled": "Đã hủy lệnh rút tiền",
+    "resultTitle": "Kết quả rút tiền",
+    "completed": "Rút tiền thành công",
+    "failed": "Rút tiền không thành công",
+    "refunded": "Tiền đã được hoàn về ví.",
+    "pending": "Đang giữ tiền, chờ chuyển tới ngân hàng",
+    "processing": "Đang chuyển tới ngân hàng",
+    "reversed": "Ngân hàng đã trả lại khoản tiền. Tiền và phí đã hoàn về ví.",
+    "expired": "Báo giá đã hết hạn",
+    "cooldownUntil": "Dùng được từ {{time}}"
+  },
+  "destinations": {
+    "title": "Tài khoản nhận tiền",
+    "description": "Tối đa 5 tài khoản tại ngân hàng mô phỏng. Tài khoản mới cần chờ 1 giờ trước khi nhận tiền rút.",
+    "bank": "Ngân hàng",
+    "accountNumber": "Số tài khoản",
+    "accountName": "Tên chủ tài khoản",
+    "add": "Lưu tài khoản",
+    "added": "Đã lưu tài khoản nhận",
+    "remove": "Xóa",
+    "removed": "Đã xóa tài khoản",
+    "empty": "Chưa có tài khoản nhận tiền",
+    "fictional": "Chỉ dùng thông tin hư cấu. Không nhập số tài khoản thật."
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "empty": "Chưa có thông báo nào",
+    "markAll": "Đánh dấu đã đọc tất cả",
+    "unread": "{{count}} thông báo chưa đọc",
+    "open": "Mở thông báo",
+    "error": "Không tải được thông báo"
   }
 }

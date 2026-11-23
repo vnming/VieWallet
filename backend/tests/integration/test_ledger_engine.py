@@ -71,7 +71,7 @@ async def test_posting_moves_money_and_keeps_invariants(db: Database, clock: Fix
     assert (await balance(db, a), await balance(db, b)) == (70_000, 30_000)
     async with db.transaction() as session:
         assert await check_invariants(session) == []
-        journal = await session.scalar(select(Journal).order_by(Journal.posted_at.desc()))
+        journal = await session.scalar(select(Journal).order_by(Journal.id.desc()))
         assert journal is not None
         assert journal.created_by == "test"
 

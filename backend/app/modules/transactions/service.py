@@ -16,6 +16,7 @@ from app.core.errors import ConflictError, NotFoundError, register_titles
 from app.core.ids import new_id
 from app.core.money import Money
 from app.core.outbox import publish
+from app.modules.identity.public import User
 from app.modules.transactions.domain.reference import is_reference, new_reference
 from app.modules.transactions.domain.state_machine import (
     InvalidStateTransition,
@@ -24,6 +25,7 @@ from app.modules.transactions.domain.state_machine import (
     check_transition,
 )
 from app.modules.transactions.models import Transaction, TransactionEvent
+from app.modules.wallet.public import Wallet
 
 register_titles(
     {
@@ -198,9 +200,33 @@ async def transition(
             "type": txn.type,
             "from": from_status.value,
             "to": to_status.value,
+            "amount": str(txn.amount_minor),
+            "fee": str(txn.fee_minor),
+            "currency": txn.currency,
+            "failure_code": txn.failure_code,
+            # Consumers (notifications) must not query other modules' tables.
+            "recipients": await _recipients(session, txn),
         },
     )
     return txn
+
+
+async def _recipients(session: AsyncSession, txn: Transaction) -> list[dict[str, str]]:
+    sides = [(txn.source_wallet_id, "OUT"), (txn.destination_wallet_id, "IN")]
+    out = []
+    for wallet_id, direction in sides:
+        if wallet_id is None:
+            continue
+        row = (
+            await session.execute(
+                select(Wallet.owner_user_id, User.locale)
+                .join(User, User.id == Wallet.owner_user_id)
+                .where(Wallet.id == wallet_id)
+            )
+        ).one_or_none()
+        if row is not None:
+            out.append({"user_id": str(row[0]), "locale": row[1], "direction": direction})
+    return out
 
 
 async def lock(session: AsyncSession, transaction_id: uuid.UUID) -> Transaction:

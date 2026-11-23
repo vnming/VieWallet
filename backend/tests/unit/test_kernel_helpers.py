@@ -166,6 +166,8 @@ def test_settings_require_database_url(monkeypatch: pytest.MonkeyPatch) -> None:
         database_url="postgresql+psycopg://u@h/db",
         data_encryption_key="A" * 43 + "=",
         pin_pepper="B" * 43 + "=",
+        simulator_api_key="k",
+        simulator_webhook_secret="s",
         environment=Environment.PRODUCTION_LIKE,
     )
     assert settings.expose_api_docs is False

@@ -12,6 +12,7 @@ import sys
 from datetime import timedelta
 
 import structlog
+from redis.asyncio import Redis
 
 from app.core.clock import Clock, SystemClock
 from app.core.config import Settings, get_settings
@@ -21,15 +22,45 @@ from app.core.idempotency import IdempotencyStore
 from app.core.jobs import JobScheduler, JobSpec
 from app.core.logging import configure_logging
 from app.core.outbox import HandlerRegistry, OutboxDispatcher, OutboxMessage
-from app.modules.notifications.public import EmailSender, SmtpEmailSender
+from app.core.rate_limit import RateLimiter
+from app.main import build_providers
+from app.modules.identity.public import IdentityServices
+from app.modules.notifications.public import EmailSender, SmtpEmailSender, register_inapp_handlers
 from app.modules.notifications.public import register_handlers as register_email_handlers
-from app.modules.operations.public import expire_due, run_internal
+from app.modules.operations.public import expire_due, register_recovery_handlers, run_internal
+from app.modules.providers.public import PaymentProvider, ProviderServices, SimulatorProvider
+from app.modules.transactions.public import (
+    FinanceContext,
+    resubmit_stalled_deposits,
+    run_inquiries,
+    withdrawal,
+)
+from app.modules.transactions.public import register_handlers as register_transaction_handlers
 
 logger = structlog.get_logger("app.worker")
 
 
+def build_finance(
+    settings: Settings,
+    db: Database,
+    clock: Clock,
+    redis: Redis,
+    *,
+    providers: dict[str, PaymentProvider] | None = None,
+) -> FinanceContext:
+    identity = IdentityServices.build(settings, db, clock, RateLimiter(redis, clock))
+    provider_map = providers if providers is not None else build_providers(settings)
+    return FinanceContext(
+        identity,
+        ProviderServices(db, clock, provider_map, settings.provider_callback_base_url),
+    )
+
+
 def build_registry(
-    settings: Settings, *, email_sender: EmailSender | None = None
+    settings: Settings,
+    finance: FinanceContext,
+    *,
+    email_sender: EmailSender | None = None,
 ) -> HandlerRegistry:
     """Event handlers of all modules are registered here as modules are implemented."""
     registry = HandlerRegistry()
@@ -38,17 +69,21 @@ def build_registry(
         settings.smtp_host, settings.smtp_port, settings.smtp_from
     )
     register_email_handlers(registry, cipher, sender)
+    register_inapp_handlers(registry, finance.db, finance.clock)
+    register_recovery_handlers(registry, finance.db, finance.clock)
+    register_transaction_handlers(registry, finance)
 
     async def log_event(message: OutboxMessage) -> None:
-        # Consumers (in-app notifications, analytics) subscribe from Phase 4 on.
+        # Further consumers (analytics, push) subscribe in later phases.
         logger.info("domain_event", topic=message.topic, aggregate_id=message.aggregate_id)
 
-    for topic in ("transaction.status_changed", "reconciliation.violation_found"):
-        registry.register(topic, log_event)
+    registry.register("reconciliation.violation_found", log_event)
     return registry
 
 
-def build_jobs(db: Database, clock: Clock, settings: Settings) -> list[JobSpec]:
+def build_jobs(
+    db: Database, clock: Clock, settings: Settings, finance: FinanceContext
+) -> list[JobSpec]:
     store = IdempotencyStore(clock, ttl=timedelta(hours=settings.idempotency_ttl_hours))
 
     async def purge_idempotency_keys() -> None:
@@ -67,17 +102,33 @@ def build_jobs(db: Database, clock: Clock, settings: Settings) -> list[JobSpec]:
         if expired:
             logger.info("approvals_expired", count=expired)
 
+    async def provider_inquiries() -> None:
+        asked = await run_inquiries(finance)
+        if asked:
+            logger.info("provider_inquiries", count=asked)
+
+    async def expire_withdrawal_quotes() -> None:
+        await withdrawal.expire_quotes(finance)
+
+    async def resubmit_deposits() -> None:
+        await resubmit_stalled_deposits(finance)
+
     return [
         JobSpec("purge_expired_idempotency_keys", timedelta(hours=1), purge_idempotency_keys),
         JobSpec("internal_reconciliation", timedelta(hours=1), reconcile_ledger),
         JobSpec("expire_approval_requests", timedelta(minutes=5), expire_approvals),
+        JobSpec("provider_status_inquiries", timedelta(seconds=10), provider_inquiries),
+        JobSpec("expire_withdrawal_quotes", timedelta(minutes=1), expire_withdrawal_quotes),
+        JobSpec("resubmit_stalled_deposits", timedelta(minutes=1), resubmit_deposits),
     ]
 
 
 async def run_worker(settings: Settings, stop: asyncio.Event) -> None:
     clock = SystemClock()
     db = Database(settings.database_url, pool_size=5, application_name="viewallet-worker")
-    registry = build_registry(settings)
+    redis = Redis.from_url(settings.redis_url, socket_timeout=2, socket_connect_timeout=2)
+    finance = build_finance(settings, db, clock, redis)
+    registry = build_registry(settings, finance)
     dispatcher = OutboxDispatcher(
         db,
         registry,
@@ -85,7 +136,7 @@ async def run_worker(settings: Settings, stop: asyncio.Event) -> None:
         batch_size=settings.outbox_batch_size,
         max_attempts=settings.outbox_max_attempts,
     )
-    scheduler = JobScheduler(db, clock, build_jobs(db, clock, settings))
+    scheduler = JobScheduler(db, clock, build_jobs(db, clock, settings, finance))
     logger.info("worker_started", topics=registry.topics)
     try:
         await asyncio.gather(
@@ -93,6 +144,10 @@ async def run_worker(settings: Settings, stop: asyncio.Event) -> None:
             scheduler.run_forever(stop),
         )
     finally:
+        for provider in finance.providers.providers.values():
+            if isinstance(provider, SimulatorProvider):
+                await provider.aclose()
+        await redis.aclose()
         await db.dispose()
         logger.info("worker_stopped")
 

@@ -2,7 +2,7 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Phản ánh code Phase 3 |
+| Trạng thái | Phản ánh code Phase 4 |
 | Cập nhật | 2026-11-23 |
 | Liên quan | [Kiến trúc §7](../architecture/architecture.md#7-góc-nhìn-triển-khai), [ADR-0010](../adr/0010-runtime-versions.md) |
 
@@ -36,6 +36,13 @@ Lần đầu container Postgres khởi động, script `infra/docker/postgres/in
 - role `viewallet_app` (API và worker; chỉ có quyền DML do migration cấp);
 - database `viewallet` (dev) và `viewallet_test` (integration test), cùng extension `pg_trgm`, `citext`.
 
+Script `02-simulator.sh` tạo role `viewallet_sim` và database `viewallet_sim`, `viewallet_sim_test` cho Payment Provider Simulator (ADR-0005). Volume đã có từ trước Phase 4 thì chạy tay một lần (không xóa dữ liệu):
+
+```bash
+docker compose cp infra/docker/postgres/initdb/02-simulator.sh postgres:/tmp/02-simulator.sh
+docker compose exec -e VW_DB_SIM_PASSWORD=<giá trị trong .env> postgres bash /tmp/02-simulator.sh
+```
+
 Script chỉ chạy khi volume `pgdata` còn trống. Muốn chạy lại thì phải xóa volume (`docker compose down -v`). **Lệnh này xóa toàn bộ dữ liệu local.**
 
 ## 3. Chạy toàn bộ stack trong Docker
@@ -51,6 +58,7 @@ bash e2e/wait-for-stack.sh
 | App admin | <http://127.0.0.1:8081> |
 | API, tài liệu OpenAPI | <http://127.0.0.1:8000/api/docs> |
 | Mailpit (email dev) | <http://127.0.0.1:8025> |
+| Payment Provider Simulator (SimBank) | <http://127.0.0.1:8090/health> |
 | Postgres | `127.0.0.1:55432` |
 
 Service `migrate` chạy `alembic upgrade head` rồi seed dữ liệu tham chiếu (tiền tệ, RBAC, tài khoản ledger hệ thống cho VND, phí và hạn mức mặc định), sau đó thoát với mã 0. Seed không ghi đè rule đã có. `api` và `worker` chỉ khởi động khi `migrate` thành công.
@@ -70,7 +78,21 @@ Role hợp lệ: SUPPORT, OPERATIONS, FINANCE, RISK_ANALYST, KYC_REVIEWER, ADMIN
 
 Email xác minh, đặt lại mật khẩu và thông báo bảo mật xem tại Mailpit: <http://127.0.0.1:8025>.
 
-## 3b. Tạo số dư demo
+## 3b. Nạp, rút tiền mô phỏng
+
+- **Nạp tiền**: app khách hàng → Nạp tiền → trang SimBank (`127.0.0.1:8090`) → Duyệt. Số tiền quyết định kịch bản: `…111.000 ₫` thất bại, `…222.000 ₫` hoàn tất sau 2 phút, `…333.000 ₫` phản hồi chậm (timeout rồi truy vấn trạng thái), `…555.000 ₫` callback trùng, `…666.000 ₫` callback đầu sai chữ ký, `…777.000 ₫` ngân hàng không khả dụng, `…999.000 ₫` (rút) bị trả lại sau 5 phút. Danh sách đủ ở [simulator §4](../architecture/payment-provider-simulator.md#4-kịch-bản).
+- **Rút tiền** cần KYC tier 1. Trước Phase 6 nâng tier bằng CLI (chỉ development/simulation, có audit):
+
+  ```bash
+  docker compose exec -T api python -m app.scripts.set_kyc_tier --email lan@example.com --tier 1
+  ```
+
+  Tài khoản nhận mới phải chờ 60 phút (`VW_NEW_DESTINATION_COOLDOWN_MINUTES`).
+- **Điều khiển simulator** (header `X-Sim-Admin-Key: $VW_SIMULATOR_ADMIN_KEY`): `PUT /v1/admin/settings {"mode": "OUTAGE"}`, `GET /v1/admin/operations`, `POST /v1/admin/operations/{key}/actions {"action": "SUCCEED"}`.
+
+Worker chạy thêm: `provider_status_inquiries` (10 giây), `expire_withdrawal_quotes` (1 phút), `resubmit_stalled_deposits` (1 phút).
+
+## 3c. Tạo số dư demo
 
 Chưa có nạp tiền (Phase 4), nên số dư demo được tạo bằng **điều chỉnh số dư** qua maker-checker, đúng như mọi thay đổi số dư khác:
 
@@ -94,6 +116,11 @@ uv run uvicorn --factory app.main:app_factory --reload --port 8000
 # worker (terminal 2)
 cd backend && uv run python -m app.worker
 
+# provider simulator (terminal 2b)
+cd backend
+uv run alembic -c sim_alembic.ini upgrade head
+uv run uvicorn --factory sim.main:app_factory --port 8090
+
 # frontend (terminal 3, 4)
 cd frontend && pnpm dev:web      # http://127.0.0.1:5173
 cd frontend && pnpm dev:admin    # http://127.0.0.1:5174
@@ -115,11 +142,12 @@ uv run pytest --cov --cov-fail-under=90     # integration test cần postgres + 
 cd frontend
 pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 
-# e2e (cần stack ở mục 3)
+# e2e: dựng stack với thời gian chờ rút ngắn như CI, rồi chạy Playwright
+VW_NEW_DESTINATION_COOLDOWN_MINUTES=0 SIM_PENDING_DELAY_SECONDS=5 SIM_SLOW_RESPONSE_SECONDS=15   docker compose up -d --build
 cd e2e && pnpm test
 ```
 
-Integration test đọc `VW_TEST_DATABASE_URL`, `VW_TEST_MIGRATION_DATABASE_URL`, `VW_TEST_REDIS_URL` từ `backend/.env`. Nếu thiếu, pytest bỏ qua các test này và in rõ lý do. Mỗi phiên test dựng lại schema của `viewallet_test` bằng `alembic downgrade base` rồi `upgrade head`, nên cũng kiểm tra luôn chiều downgrade của migration.
+Integration test đọc `VW_TEST_DATABASE_URL`, `VW_TEST_MIGRATION_DATABASE_URL`, `VW_TEST_REDIS_URL`, `VW_TEST_SIM_DATABASE_URL` từ `backend/.env`. Simulator chạy thật trong test (ASGI, cùng process); một test khác dựng uvicorn thật để kiểm tra timeout và mất kết nối. Nếu thiếu, pytest bỏ qua các test này và in rõ lý do. Mỗi phiên test dựng lại schema của `viewallet_test` bằng `alembic downgrade base` rồi `upgrade head`, nên cũng kiểm tra luôn chiều downgrade của migration.
 
 ## 6. Thay đổi API
 

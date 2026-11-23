@@ -23,6 +23,8 @@ def build_openapi() -> dict[str, object]:
         # Throwaway keys: building the schema does not encrypt anything.
         data_encryption_key=base64.urlsafe_b64encode(os.urandom(32)).decode(),
         pin_pepper=base64.urlsafe_b64encode(os.urandom(32)).decode(),
+        simulator_api_key=base64.urlsafe_b64encode(os.urandom(24)).decode(),
+        simulator_webhook_secret=base64.urlsafe_b64encode(os.urandom(24)).decode(),
         log_json=False,
         log_level="WARNING",
     )

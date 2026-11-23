@@ -18,8 +18,9 @@ from app.core.db import Database
 from app.core.logging import configure_logging
 from app.core.models import CurrencyRecord
 from app.modules.access.public import seed_catalog
-from app.modules.ledger.public import seed_system_accounts
+from app.modules.ledger.public import AccountCode, open_account, seed_system_accounts
 from app.modules.pricing.public import seed_defaults
+from app.modules.providers.public import SIMULATOR, seed_providers
 
 logger = structlog.get_logger("app.seed")
 
@@ -46,7 +47,17 @@ async def seed(db: Database) -> None:
         for currency in CURRENCIES:
             if currency["enabled"]:
                 await seed_system_accounts(session, clock, str(currency["code"]))
+                # Money held at the (simulated) provider, one account per provider/currency.
+                await open_account(
+                    session,
+                    clock,
+                    code=AccountCode.PROVIDER_SETTLEMENT,
+                    currency=str(currency["code"]),
+                    owner_ref=SIMULATOR,
+                    name=f"Provider settlement {SIMULATOR} {currency['code']}",
+                )
         await seed_defaults(session)
+        await seed_providers(session)
     logger.info(
         "seed_completed",
         currencies=[c["code"] for c in CURRENCIES],

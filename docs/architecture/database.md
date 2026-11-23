@@ -2,7 +2,7 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Bảng được tạo ở phase cần đến nó, luôn qua migration Alembic. Đã cài đặt: `0001` (nền tảng), `0002` (identity, access, audit), `0003` (ví, ledger, giao dịch, pricing, risk, phê duyệt, đối soát) |
+| Trạng thái | Bảng được tạo ở phase cần đến nó, luôn qua migration Alembic. Đã cài đặt: `0001` (nền tảng), `0002` (identity, access, audit), `0003` (ví, ledger, giao dịch, pricing, risk, phê duyệt, đối soát), `0004` (provider, tài khoản nhận, thông báo in-app, hồ sơ thu hồi, `users.kyc_tier`) |
 | Cập nhật | 2026-11-23 |
 | Engine | PostgreSQL 18, schema `app` (simulator dùng schema `simulator` với role riêng) |
 | Liên quan | [Xử lý tài chính](financial-processing.md), [Kiến trúc](architecture.md) |
@@ -150,12 +150,16 @@ Index: `(source_wallet_id, created_at DESC, id)`, `(destination_wallet_id, creat
 
 ### 3.5 Thanh toán và tài khoản nhận
 
+> `bank_destinations` đã cài đặt ở `0004`: thêm `account_fingerprint` (HMAC có khóa) để phát hiện trùng mà không giải mã; số tài khoản mã hóa AES-256-GCM với associated data gắn id dòng; xóa mềm (`status = REMOVED`). `transactions` thêm `provider_code`, `bank_destination_id`.
+
 **merchants** — `user_id UNIQUE`, `wallet_id`, `legal_name` (hư cấu), `display_name`, `mcc` (mã danh mục merchant), `status`, `logo_key`.
 **payment_requests** — `code TEXT UNIQUE` (id ngắn trong QR), `issuer_type` (MERCHANT, USER), `issuer_user_id`, `destination_wallet_id`, `amount_minor NULL` (NULL = người trả tự nhập), `currency`, `description`, `single_use BOOL`, `status` (OPEN, PAID, EXPIRED, CANCELLED, DECLINED), `payer_user_id NULL` (cho xin tiền giữa người dùng), `expires_at`, `paid_transaction_id NULL`, `signature` (HMAC của payload).
 **bank_destinations** — `user_id`, `bank_code` (danh sách ngân hàng giả lập), `account_number_masked`, `account_number_encrypted`, `account_name`, `verified_at`, `status`. Tối đa 5 mỗi user.
 **recipients** — `owner_user_id`, `wallet_id`, `nickname`, `last_used_at`. `UNIQUE(owner_user_id, wallet_id)`.
 
 ### 3.6 Provider
+
+> Đã cài đặt ở `0004`. `provider_operations` có thêm `amount_minor`, `currency` (đối chiếu số tiền callback), `inquiry_count`, `recovery_flagged`; khóa duy nhất `(transaction_id, operation)`; trạng thái có thêm `CREATED`, `RETURNED`. `provider_callbacks` lưu cả callback sai chữ ký (`signature_valid = false`, không có body đã parse) và chỉ khử trùng callback hợp lệ (index duy nhất có điều kiện). `provider_callbacks`, `provider_callback_results` chỉ-thêm; `providers` chỉ đọc với role ứng dụng.
 
 **providers** — `code PK` (SIMULATOR), `name`, `status` (ENABLED, DISABLED), `capabilities` (CHARGE, PAYOUT, REFUND), `config JSONB` (không chứa bí mật).
 **provider_operations** — `transaction_id`, `provider_code`, `operation` (CHARGE, PAYOUT), `attempt`, `status` (CREATED, SUBMITTED, ACCEPTED, SUCCEEDED, FAILED, UNKNOWN, EXPIRED), `provider_reference UNIQUE NULL`, `request_payload JSONB` (đã che), `response_payload JSONB`, `error_code`, `submitted_at`, `resolved_at`, `next_inquiry_at`. Index `(status, next_inquiry_at)`.
@@ -177,6 +181,8 @@ Index: `(source_wallet_id, created_at DESC, id)`, `(destination_wallet_id, creat
 **recovery_cases** — `transaction_id`, `reason`, `status`, `assigned_to`, `notes`.
 
 ### 3.8 Thông báo, hỗ trợ, analytics, AI, audit, cấu hình
+
+> `notifications` đã cài đặt ở `0004` (khóa duy nhất `(source_event_id, user_id)` thay cho `source_event_id` đơn lẻ vì một sự kiện có thể gửi cho hai người). `notification_deliveries`, `push_subscriptions`, `notification_preferences` làm ở Phase 9. `recovery_cases` (§3.7) đã cài đặt, khóa duy nhất `(transaction_id, reason)`.
 
 **notifications** — `user_id`, `category` (TRANSACTION, SECURITY, KYC, FINANCIAL_ALERT, AI_INSIGHT, SYSTEM, PROMOTION), `type` (khóa template), `title`, `body`, `data JSONB` (deep link, id — không chứa bí mật), `priority`, `read_at`, `source_event_id UNIQUE` (khử trùng). Index `(user_id, read_at, created_at DESC)`.
 **notification_deliveries** — `notification_id`, `channel` (IN_APP, PUSH, EMAIL), `target_id` (id đăng ký push / email), `status` (PENDING, SENT, FAILED, SKIPPED), `attempts`, `last_error`, `sent_at`.

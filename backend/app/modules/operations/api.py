@@ -20,7 +20,7 @@ from app.modules.identity.public import (
     ensure_permission,
     require_permission,
 )
-from app.modules.operations import approvals, reconciliation
+from app.modules.operations import approvals, reconciliation, recovery
 from app.modules.operations.models import (
     ActionType,
     ApprovalRequest,
@@ -467,4 +467,54 @@ async def get_reconciliation_run(
         raise NotFoundError()
     return ReconciliationRunDetailOut(
         **_run_out(result.run).model_dump(), items=[_item_out(i) for i in result.items]
+    )
+
+
+# ---------------------------------------------------------------- recovery cases
+
+CAN_READ_TRANSACTIONS = require_permission("transaction:read:any")
+
+
+class RecoveryCaseOut(BaseModel):
+    id: uuid.UUID
+    transaction_id: uuid.UUID
+    provider_operation_id: uuid.UUID | None
+    reason: str
+    detail: str
+    status: str
+    created_at: datetime
+
+
+class RecoveryCasePageOut(BaseModel):
+    items: list[RecoveryCaseOut]
+    page: int
+    page_size: int
+    total: int
+
+
+@router.get("/recovery-cases", response_model=RecoveryCasePageOut)
+async def list_recovery_cases(
+    ctx: IdentityDep,
+    _principal: Principal = CAN_READ_TRANSACTIONS,
+    status: str | None = Query(default="OPEN", pattern="^(OPEN|INVESTIGATING|RESOLVED)$"),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
+) -> RecoveryCasePageOut:
+    rows, total = await recovery.list_cases(ctx.db, status=status, page=page, page_size=page_size)
+    return RecoveryCasePageOut(
+        items=[
+            RecoveryCaseOut(
+                id=r.id,
+                transaction_id=r.transaction_id,
+                provider_operation_id=r.provider_operation_id,
+                reason=r.reason,
+                detail=r.detail,
+                status=r.status,
+                created_at=r.created_at,
+            )
+            for r in rows
+        ],
+        page=page,
+        page_size=page_size,
+        total=total,
     )

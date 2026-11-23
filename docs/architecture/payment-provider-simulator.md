@@ -2,8 +2,8 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Bản nháp chờ duyệt (Phase 0) |
-| Cập nhật | 2026-11-21 |
+| Trạng thái | Đã cài đặt ở Phase 4 (xem §8) |
+| Cập nhật | 2026-11-23 |
 | Liên quan | [Xử lý tài chính](financial-processing.md), [ADR-0005](../adr/0005-simulator-as-separate-service.md) |
 
 ## 1. Mục đích
@@ -83,3 +83,19 @@ Các điều khiển khác (bảng admin trong VieWallet, permission `simulator:
 - Môi trường production-like không mở simulator ra ngoài, trừ trang checkout và đường gửi callback ra.
 - Endpoint điều khiển cần admin API key riêng và bị tắt khi `SIM_ENABLE_CONTROLS=false`.
 - Bí mật qua biến môi trường; khác nhau theo môi trường; không bao giờ commit.
+
+## 8. Trạng thái cài đặt (Phase 4)
+
+| Phần | Nơi cài đặt | Ghi chú |
+|---|---|---|
+| Service simulator | `backend/sim` (`sim.main:app_factory`, cổng 8090) | Cùng image Docker với backend nhưng chạy riêng; import-linter cấm `sim` và `app` import lẫn nhau |
+| Dữ liệu | Database riêng `viewallet_sim`, role `viewallet_sim`, schema `simulator`, migration Alembic riêng (`sim_alembic.ini`) | Mạnh hơn bản thiết kế (chỉ tách schema): simulator không thể đọc bảng VieWallet kể cả do lỗi cấu hình |
+| Kịch bản theo số tiền | `sim/scenarios.py` | Đủ 10 mã ở §4. Thời gian chờ cấu hình qua `SIM_*_SECONDS` (E2E rút ngắn) |
+| Chế độ toàn cục | NORMAL, DEGRADED, OUTAGE | `PUT /v1/admin/settings` |
+| Thao tác tay | `POST /v1/admin/operations/{key}/actions`: SUCCEED, FAIL, EXPIRE, RETURN, RESEND_CALLBACK | Bị tắt ngoài development/simulation/test |
+| Callback | Ký `v1=HMAC-SHA256`, gửi lại 5 lần (10 giây → 1 giờ); callback sai chữ ký (kịch bản 666) không gửi lại | |
+| Trang SimBank | HTML render phía server, escape mọi giá trị, CSP `default-src 'none'`; chỉ chuyển về `return_url` thuộc danh sách origin cho phép | Chống open redirect |
+| Adapter phía VieWallet | `app/modules/providers/simulator_adapter.py` | Không tự retry; lỗi kết nối/connect timeout ⇒ `ProviderUnavailable`; timeout đọc, reset, body cụt ⇒ `ProviderTimeout` |
+
+Chưa làm (dời phase): ghi đè kịch bản theo user ("thao tác kế tiếp của user X"), chèn độ trễ/bỏ/đảo thứ tự callback qua bảng điều khiển, trang "Provider Simulator" trong app admin (Phase 8; hiện điều khiển bằng API có admin key), đối soát sao kê với `provider_operations` (FT-28, Phase 8). Sao kê ngày (`GET /v1/statements/{date}`) đã có, kể cả chênh lệch kịch bản 888.
+

@@ -18,10 +18,14 @@ import app.modules.access.models
 import app.modules.audit.models
 import app.modules.identity.models
 import app.modules.ledger.models
+import app.modules.notifications.inapp
 import app.modules.operations.models
+import app.modules.operations.recovery
 import app.modules.pricing.models
+import app.modules.providers.models
 import app.modules.risk.models
 import app.modules.transactions.models
+import app.modules.wallet.destinations
 import app.modules.wallet.models  # noqa: F401
 from app.core.db import APP_SCHEMA, Base
 

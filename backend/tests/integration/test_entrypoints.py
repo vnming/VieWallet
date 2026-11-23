@@ -9,6 +9,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import pytest
+from fastapi import FastAPI
 from sqlalchemy import select, text
 
 from app.core.clock import FixedClock
@@ -51,7 +52,7 @@ async def test_export_openapi_requires_target(monkeypatch: pytest.MonkeyPatch) -
 
 
 async def test_purge_job_removes_expired_keys(
-    db: Database, clock: FixedClock, app_settings: Settings
+    db: Database, clock: FixedClock, app_settings: Settings, app: FastAPI
 ) -> None:
     store = IdempotencyStore(clock)
 
@@ -62,23 +63,29 @@ async def test_purge_job_removes_expired_keys(
         db, principal_id="p", scope="s", key="expired-key-1", payload={}, operation=noop
     )
     clock.advance(timedelta(hours=25))
-    jobs = build_jobs(db, clock, app_settings)
+    jobs = build_jobs(db, clock, app_settings, app.state.finance)
     names = [j.name for j in jobs]
     assert names == [
         "purge_expired_idempotency_keys",
         "internal_reconciliation",
         "expire_approval_requests",
+        "provider_status_inquiries",
+        "expire_withdrawal_quotes",
+        "resubmit_stalled_deposits",
     ]
     assert await JobScheduler(db, clock, jobs).run_due() == names
     async with db.transaction() as session:
         assert await session.scalar(text("SELECT count(*) FROM app.idempotency_keys")) == 0
 
 
-async def test_worker_starts_and_stops_cleanly(app_settings: Settings) -> None:
-    assert build_registry(app_settings).topics == [
+async def test_worker_starts_and_stops_cleanly(app_settings: Settings, app: FastAPI) -> None:
+    assert build_registry(app_settings, app.state.finance).topics == [
         "notifications.email.requested",
+        "provider.callback_received",
         "reconciliation.violation_found",
+        "transaction.recovery_needed",
         "transaction.status_changed",
+        "withdrawal.dispatch_requested",
     ]
     stop = asyncio.Event()
     task = asyncio.create_task(run_worker(app_settings, stop))

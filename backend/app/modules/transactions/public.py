@@ -18,12 +18,19 @@ from app.modules.transactions.service import (
     get_by_reference,
     held_totals,
 )
-from app.modules.transactions.use_cases import adjustment
+from app.modules.transactions.use_cases import adjustment, deposit, withdrawal
 from app.modules.transactions.use_cases.adjustment import (
     AdjustmentDirection,
     AdjustmentOutcome,
     AdjustmentReason,
     AdjustmentRequest,
+)
+from app.modules.transactions.use_cases.common import FinanceContext
+from app.modules.transactions.use_cases.workers import (
+    process_callback,
+    register_handlers,
+    resubmit_stalled_deposits,
+    run_inquiries,
 )
 
 __all__ = [
@@ -35,6 +42,7 @@ __all__ = [
     "AdjustmentOutcome",
     "AdjustmentReason",
     "AdjustmentRequest",
+    "FinanceContext",
     "InvalidStateTransition",
     "Transaction",
     "TransactionEvent",
@@ -44,7 +52,13 @@ __all__ = [
     "TxnStatus",
     "TxnType",
     "adjustment",
+    "deposit",
     "get",
     "get_by_reference",
     "held_totals",
+    "process_callback",
+    "register_handlers",
+    "resubmit_stalled_deposits",
+    "run_inquiries",
+    "withdrawal",
 ]

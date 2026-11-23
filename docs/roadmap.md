@@ -28,7 +28,7 @@ Quy mô: S nhỏ, M vừa, L lớn, XL rất lớn (tương đối, không cam k
 | 1 | Project Foundation | 0 | xong |
 | 2 | Identity & Security | 1 | xong |
 | 3 | Wallet & Financial Core | 2 | xong |
-| 4 | Provider Simulator, Deposit & Withdrawal | 3 | L |
+| 4 | Provider Simulator, Deposit & Withdrawal | 3 | xong |
 | 5 | Transfer, Payment, Refund, Reversal | 3 (4 cho đảo rút tiền) | L |
 | 6 | KYC, Risk & Limits | 3, 5 | L |
 | 7 | Hoàn thiện app khách hàng | 2–6 | M |

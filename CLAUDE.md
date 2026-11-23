@@ -4,7 +4,8 @@ Ví điện tử fintech mô phỏng (dự án portfolio). **Không tiền thậ
 
 ## Trạng thái hiện tại
 
-- Phase 0–3 hoàn tất (`docs/01-phase1-report.md`, `docs/02-phase2-report.md`, `docs/03-phase3-report.md`). Phase 4 chưa được cho phép.
+- Phase 0–4 hoàn tất (báo cáo `docs/01-…` tới `docs/04-phase4-report.md`). Phase 5 chưa được cho phép.
+- Payment Provider Simulator là service riêng (`backend/sim`, DB `viewallet_sim`, cổng 8090); không import chéo với `app` (import-linter).
 - Đăng nhập: session cookie phía server (ADR-0012), không dùng JWT. Mọi request ghi cần header `X-VW-CSRF: 1`.
 - Lệnh chạy, test, CI: `docs/development/setup.md`.
 - Không bắt đầu phase mới khi chưa có xác nhận rõ ràng của chủ dự án.

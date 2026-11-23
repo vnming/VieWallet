@@ -35,6 +35,7 @@ class Counterparty(BaseModel):
     kind: str
     name: str | None = None
     wallet_number_masked: str | None = None
+    account_masked: str | None = None
 
 
 class TransactionOut(BaseModel):
@@ -122,7 +123,7 @@ def customer_view(txn: Transaction, wallet_id: uuid.UUID) -> TransactionOut:
     )
 
 
-def _event(e: TransactionEvent) -> TransactionEventOut:
+def event_out(e: TransactionEvent) -> TransactionEventOut:
     return TransactionEventOut(
         from_status=TxnStatus(e.from_status) if e.from_status else None,
         to_status=TxnStatus(e.to_status),
@@ -160,7 +161,7 @@ async def get_my_transaction(
         txn = await service.get_for_wallet(session, wallet.id, reference)
         events = await service.events_of(session, txn.id)
     return TransactionDetailOut(
-        **customer_view(txn, wallet.id).model_dump(), events=[_event(e) for e in events]
+        **customer_view(txn, wallet.id).model_dump(), events=[event_out(e) for e in events]
     )
 
 
@@ -191,7 +192,7 @@ async def admin_get_transaction(
         version=txn.version,
         events=[
             AdminTransactionEventOut(
-                **_event(e).model_dump(),
+                **event_out(e).model_dump(),
                 actor_type=e.actor_type,
                 actor_id=e.actor_id,
                 message=e.message,

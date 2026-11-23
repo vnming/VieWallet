@@ -65,6 +65,7 @@ class MeResponse(BaseModel):
     created_at: datetime
     permissions: list[str]
     pin: PinStatusResponse
+    kyc_tier: int = Field(description="0 = unverified, 1 = verified (simulated KYC)")
 
 
 class UpdateProfileRequest(StrictModel):

@@ -52,6 +52,7 @@ class IdentityServices:
     rate_limiter: RateLimiter
     pin_key: bytes
     code_key: bytes
+    lookup_key: bytes  # keyed fingerprints (e.g. duplicate bank accounts) without plaintext
 
     @classmethod
     def build(
@@ -72,6 +73,7 @@ class IdentityServices:
             # Separate sub-keys so one secret never serves two purposes.
             pin_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/pin")),
             code_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/verification-codes")),
+            lookup_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/lookup-fingerprints")),
         )
 
     def hash_code(self, purpose: str, user_id: uuid.UUID, code: str) -> str:

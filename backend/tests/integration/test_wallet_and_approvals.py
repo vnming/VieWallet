@@ -169,6 +169,7 @@ async def test_maker_checker_adjustment_flow(
         "kind": "SYSTEM",
         "name": "VieWallet",
         "wallet_number_masked": None,
+        "account_masked": None,
     }
     detail = (await client.get(f"/api/v1/transactions/{reference}")).json()
     assert "internal_note" not in str(detail)
@@ -257,7 +258,7 @@ async def test_reject_cancel_and_expire(
         # Sessions expired with time; the expiry job runs without them.
         jobs = [
             j
-            for j in build_jobs(db, clock, app.state.identity.settings)
+            for j in build_jobs(db, clock, app.state.identity.settings, app.state.finance)
             if j.name == "expire_approval_requests"
         ]
         assert await JobScheduler(db, clock, jobs).run_due() == ["expire_approval_requests"]

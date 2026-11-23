@@ -53,17 +53,24 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106", "PLR2004", "S311"]
+"tests/**" = ["S101", "S105", "S106", "PLR2004", "S311", "PLR0917"]
 "migrations/**" = ["N999", "E501"]
 # User-facing message catalogue: long sentences are clearer unwrapped.
 "app/modules/notifications/templates.py" = ["E501"]
+"app/modules/notifications/inapp.py" = ["E501"]
+# Provider errors mirror the port names used in the design docs.
+"app/modules/providers/port.py" = ["N818"]
+# Money-flow steps are positional helpers with explicit early returns per business outcome.
+"app/modules/transactions/use_cases/*.py" = ["PLR0911", "PLR0917"]
+# The simulator is a fake external bank: inline HTML, FastAPI-style dependency aliases.
+"sim/**" = ["E501", "N806", "N818", "PLR0915", "PLR2004"]
 
 # ---------------------------------------------------------------- mypy
 [tool.mypy]
 python_version = "3.14"
 strict = true
 warn_unreachable = true
-files = ["app", "tests", "migrations"]
+files = ["app", "sim", "tests", "migrations"]
 exclude = ["migrations/versions/.*\\.mako$"]
 
 # ---------------------------------------------------------------- pytest
@@ -91,13 +98,13 @@ exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@abstractmeth
 # ---------------------------------------------------------------- import-linter
 # Module boundary rules (ADR-0001). Contracts for business modules are added as modules appear.
 [tool.importlinter]
-root_package = "app"
+root_packages = ["app", "sim"]
 
 [[tool.importlinter.contracts]]
 name = "Shared kernel (app.core) does not depend on API, modules or entrypoints"
 type = "forbidden"
 source_modules = ["app.core"]
-forbidden_modules = ["app.api", "app.modules", "app.main", "app.worker", "app.scripts"]
+forbidden_modules = ["app.api", "app.modules", "app.main", "app.worker", "app.scripts", "sim"]
 
 [[tool.importlinter.contracts]]
 name = "Business modules do not depend on entrypoints or the HTTP composition layer"
@@ -113,8 +120,16 @@ layers = [
     "app.modules.operations",
     "app.modules.transactions",
     "app.modules.wallet",
-    "app.modules.identity | app.modules.ledger | app.modules.pricing | app.modules.risk",
+    "app.modules.identity | app.modules.ledger | app.modules.pricing | app.modules.risk | app.modules.providers",
     "app.modules.notifications | app.modules.audit | app.modules.access",
 ]
 # The audit HTTP layer authorizes through identity; the audit service itself stays below it.
-ignore_imports = ["app.modules.audit.api -> app.modules.identity.public"]
+ignore_imports = [
+    "app.modules.audit.api -> app.modules.identity.public",
+    "app.modules.notifications.api -> app.modules.identity.public",
+]
+
+[[tool.importlinter.contracts]]
+name = "The provider simulator and VieWallet only talk over HTTP (ADR-0005)"
+type = "independence"
+modules = ["app", "sim"]

@@ -19,6 +19,9 @@ COPY --from=deps /opt/venv /opt/venv
 COPY backend/alembic.ini ./
 COPY backend/migrations ./migrations
 COPY backend/app ./app
+# The provider simulator ships in the same image but runs as its own service (ADR-0005).
+COPY backend/sim_alembic.ini ./
+COPY backend/sim ./sim
 ENV PATH="/opt/venv/bin:$PATH"
 USER app
 EXPOSE 8000

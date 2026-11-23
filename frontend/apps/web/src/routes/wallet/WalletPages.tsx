@@ -11,6 +11,7 @@ import {
 import {
   AmountText,
   Button,
+  buttonClassName,
   Card,
   Dialog,
   EmptyState,
@@ -206,6 +207,17 @@ export function WalletPage() {
       ) : (
         <>
           <BalanceCard wallet={wallet.data} />
+          <nav aria-label={t("wallet.title")} className="flex flex-wrap gap-3">
+            <Link to="/deposit" className={buttonClassName()}>
+              {t("nav.deposit")}
+            </Link>
+            <Link to="/withdraw" className={buttonClassName({ variant: "secondary" })}>
+              {t("nav.withdraw")}
+            </Link>
+            <Link to="/wallet/destinations" className={buttonClassName({ variant: "ghost" })}>
+              {t("destinations.title")}
+            </Link>
+          </nav>
           {wallet.data && (
             <FreezeControls status={wallet.data.status} freezeSource={wallet.data.freeze_source} />
           )}

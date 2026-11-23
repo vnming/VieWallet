@@ -14,6 +14,7 @@ from app.modules.identity.http import (
 from app.modules.identity.models import User
 from app.modules.identity.pin import verify_pin
 from app.modules.identity.staff import create_staff
+from app.modules.identity.tiers import credentials_changed_at, kyc_tier_of, set_kyc_tier
 
 __all__ = [
     "CustomerPrincipal",
@@ -28,7 +29,10 @@ __all__ = [
     "StaffPrincipal",
     "User",
     "create_staff",
+    "credentials_changed_at",
     "ensure_permission",
+    "kyc_tier_of",
     "require_permission",
+    "set_kyc_tier",
     "verify_pin",
 ]

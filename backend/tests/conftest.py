@@ -39,10 +39,16 @@ class IntegrationSettings(BaseSettings):
     database_url: str | None = None
     migration_database_url: str | None = None
     redis_url: str | None = None
+    sim_database_url: str | None = None  # the provider simulator's own test database
 
     @property
     def complete(self) -> bool:
-        return bool(self.database_url and self.migration_database_url and self.redis_url)
+        return bool(
+            self.database_url
+            and self.migration_database_url
+            and self.redis_url
+            and self.sim_database_url
+        )
 
 
 @pytest.fixture(scope="session")
@@ -54,7 +60,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
     settings = IntegrationSettings()
     skip = pytest.mark.skip(
         reason="integration tests need VW_TEST_DATABASE_URL, VW_TEST_MIGRATION_DATABASE_URL "
-        "and VW_TEST_REDIS_URL (see backend/.env.example)"
+        "VW_TEST_REDIS_URL and VW_TEST_SIM_DATABASE_URL (see backend/.env.example)"
     )
     for item in items:
         if "integration" in item.path.parts:

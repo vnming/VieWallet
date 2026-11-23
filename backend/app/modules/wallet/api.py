@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ from app.modules.identity.public import (
     require_permission,
     verify_pin,
 )
-from app.modules.wallet import service
+from app.modules.wallet import destinations, service
 from app.modules.wallet.domain import FreezeSource, WalletStatus
 
 router = APIRouter(prefix="/api/v1/wallet", tags=["wallet"])
@@ -165,3 +165,84 @@ async def admin_freeze_wallet(
             user_agent=meta.user_agent,
         )
         return admin_wallet_out(await service.view(session, wallet))
+
+
+# ---------------------------------------------------------------- bank accounts (withdrawals)
+
+
+class BankOut(BaseModel):
+    code: str
+    name: str
+
+
+class DestinationIn(BaseModel):
+    bank_code: str = Field(max_length=20)
+    account_number: str = Field(min_length=6, max_length=20)
+    account_name: str = Field(min_length=2, max_length=120)
+
+
+class DestinationOut(BaseModel):
+    id: uuid.UUID
+    bank_code: str
+    bank_name: str
+    account_number_masked: str
+    account_name: str
+    created_at: datetime
+    usable_from: datetime = Field(
+        description="Withdrawals to a new account are blocked until this time (risk cooldown)"
+    )
+
+
+def destination_out(row: destinations.BankDestination, cooldown_minutes: int) -> DestinationOut:
+    return DestinationOut(
+        id=row.id,
+        bank_code=row.bank_code,
+        bank_name=destinations.BANKS.get(row.bank_code, row.bank_code),
+        account_number_masked=row.account_number_masked,
+        account_name=row.account_name,
+        created_at=row.created_at,
+        usable_from=row.created_at + timedelta(minutes=cooldown_minutes),
+    )
+
+
+@router.get("/banks", response_model=list[BankOut])
+async def list_banks(_principal: CustomerPrincipal) -> list[BankOut]:
+    return [BankOut(code=code, name=name) for code, name in destinations.BANKS.items()]
+
+
+@router.get("/destinations", response_model=list[DestinationOut])
+async def list_my_destinations(
+    principal: CustomerPrincipal, ctx: IdentityDep
+) -> list[DestinationOut]:
+    async with ctx.db.transaction() as session:
+        rows = await destinations.list_destinations(session, principal.user_id)
+    minutes = ctx.settings.new_destination_cooldown_minutes
+    return [destination_out(r, minutes) for r in rows]
+
+
+@router.post("/destinations", response_model=DestinationOut, status_code=201)
+async def add_my_destination(
+    body: DestinationIn, principal: CustomerPrincipal, ctx: IdentityDep
+) -> DestinationOut:
+    async with ctx.db.transaction() as session:
+        row = await destinations.add_destination(
+            session,
+            ctx.clock,
+            ctx.cipher,
+            ctx.lookup_key,
+            user_id=principal.user_id,
+            bank_code=body.bank_code,
+            account_number=body.account_number,
+            account_name=body.account_name,
+        )
+    return destination_out(row, ctx.settings.new_destination_cooldown_minutes)
+
+
+@router.delete("/destinations/{destination_id}", status_code=204)
+async def remove_my_destination(
+    destination_id: uuid.UUID, principal: CustomerPrincipal, ctx: IdentityDep
+) -> None:
+    async with ctx.db.transaction() as session:
+        await destinations.remove_destination(
+            session, ctx.clock, user_id=principal.user_id, destination_id=destination_id
+        )

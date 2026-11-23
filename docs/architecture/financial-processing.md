@@ -344,3 +344,21 @@ BLOCK ⇒ giao dịch FAILED với `RISK_BLOCKED` (thông báo chung chung cho u
 | Hạn mức, risk | `pricing`, `risk` | Engine và rule mặc định có test; được nối vào luồng chuyển/rút/thanh toán ở Phase 4–5 |
 
 Lưu ý khi dùng tiếp ở Phase 4–5: thao tác giữ tiền phải cập nhật `held_minor` trong cùng transaction với journal `*_HOLD`, và trả về 0 khi tất toán/hoàn giữ, nếu không I5 sẽ báo vi phạm.
+
+### 13.1 Phase 4: nạp và rút tiền
+
+| Phần | Nơi cài đặt | Ghi chú |
+|---|---|---|
+| Nạp tiền (§5.2) | `transactions/use_cases/deposit.py` | Lời gọi provider nằm giữa hai DB transaction; `provider_operations.id` là idempotency key phía provider |
+| Rút tiền (§5.3, §9) | `transactions/use_cases/withdrawal.py` | Báo giá 10 phút → xác nhận bằng PIN (khóa ví, hạn mức, rủi ro, journal giữ tiền, `held_minor`) → gửi payout sau commit qua outbox |
+| Áp dụng kết quả provider | `transactions/use_cases/provider_flow.py` | Một hàm duy nhất cho phản hồi đồng bộ, callback và truy vấn trạng thái; thứ tự khóa: giao dịch → provider operation → số dư |
+| Hộp nhận callback | `providers/service.py`, `POST /api/v1/webhooks/providers/{code}` | Chỉ callback đã kiểm chữ ký mới khử trùng theo `event_id`, nên callback giả không chặn được callback thật cùng id |
+| Truy vấn trạng thái | Job `provider_status_inquiries` (10 giây) | Lịch 30 giây, 1, 2, 5, 15 phút rồi mỗi giờ; sau 72 giờ mở hồ sơ thu hồi `UNRESOLVED_72H` |
+| Phục hồi | `run_inquiries`, job `resubmit_stalled_deposits` | Payout `SUBMITTED` mà provider không biết ⇒ gửi lại với cùng key (FT-19) |
+| Chênh lệch | `recovery_cases` (operations) | `AMOUNT_MISMATCH`, `STATUS_MISMATCH` (provider báo thành công sau khi chính nó báo thất bại/hết hạn), `UNRESOLVED_72H`. Không bao giờ ghi có tự động |
+| Payout bị trả lại | `return_withdrawal` | Giao dịch REVERSAL + journal `WITHDRAWAL_RETURN`, hoàn cả phí; giao dịch gốc → REVERSED |
+
+Quy ước idempotency của nạp/rút: khóa duy nhất `(initiator_user_id, idempotency_key)` của bảng `transactions` là lớp chống trùng. Gửi lại cùng key trả về **trạng thái hiện tại** của chính giao dịch đó (phù hợp để client polling); khác số tiền/tài khoản nhận ⇒ 422 `IDEMPOTENCY_KEY_REUSED`. Bảng `idempotency_keys` không dùng cho hai luồng này vì phản hồi cần thay đổi theo trạng thái.
+
+Rút tiền bị risk đánh giá REVIEW được giữ tiền và chờ; API duyệt/từ chối của analyst làm ở Phase 5.
+

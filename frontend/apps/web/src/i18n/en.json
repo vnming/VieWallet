@@ -11,7 +11,10 @@
     "design": "Design",
     "security": "Security",
     "wallet": "Wallet",
-    "history": "History"
+    "history": "History",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "notifications": "Notifications"
   },
   "language": {
     "label": "Language",
@@ -23,7 +26,7 @@
     "intro": "Create a simulated account to get started. Wallet, deposits and transfers arrive in the next phases.",
     "statusTitle": "System status",
     "greeting": "Hello, {{name}}",
-    "signedInIntro": "Your balance and recent transactions are below. Deposits, withdrawals and transfers arrive in later phases."
+    "signedInIntro": "Your balance and recent transactions are below."
   },
   "status": {
     "loading": "Loading system status",
@@ -200,7 +203,7 @@
     "recent": "Recent transactions",
     "viewAll": "View all",
     "loadError": "Could not load your wallet",
-    "comingSoon": "Deposits, withdrawals and transfers arrive in later phases.",
+    "comingSoon": "Transfers and QR payments arrive in later phases.",
     "status": {
       "ACTIVE": "Active",
       "FROZEN": "Frozen",
@@ -246,5 +249,89 @@
     "copy": "Copy reference",
     "copied": "Reference copied",
     "failure": "Reason"
+  },
+  "money": {
+    "amount": "Amount (VND)",
+    "amountHint": "Multiple of 1,000 VND.",
+    "presets": "Quick amounts",
+    "simulationTitle": "Simulated bank",
+    "scenarioHint": "The amount picks a SimBank scenario: …111,000 fails, …222,000 completes after 2 minutes, …777,000 bank unavailable. Anything else succeeds.",
+    "timeline": "Progress",
+    "reference": "Reference",
+    "backHome": "Back to home",
+    "viewDetail": "View transaction details",
+    "stillWaiting": "Still processing. You can leave this page; we will notify you of the result.",
+    "failure": {
+      "INSUFFICIENT_FUNDS": "The bank reported insufficient funds.",
+      "CUSTOMER_DECLINED": "You declined the payment at the bank.",
+      "PROVIDER_UNAVAILABLE": "The bank is temporarily unavailable. Please try again later.",
+      "PROVIDER_REJECTED": "The bank rejected the request.",
+      "ACCOUNT_CLOSED": "The receiving account is closed or invalid.",
+      "INSUFFICIENT_BALANCE": "Your balance does not cover the amount and fee.",
+      "RISK_BLOCKED": "Blocked for your safety. New bank accounts must wait 1 hour.",
+      "WALLET_NOT_ACTIVE": "Your wallet is frozen.",
+      "DESTINATION_REMOVED": "The bank account was removed.",
+      "QUOTE_EXPIRED": "The quote has expired.",
+      "PAYOUT_FAILED": "The bank did not accept the payout."
+    }
+  },
+  "deposit": {
+    "title": "Deposit",
+    "description": "Simulated top-up from SimBank to your wallet.",
+    "submit": "Continue to SimBank",
+    "redirecting": "Redirecting to SimBank…",
+    "resultTitle": "Deposit result",
+    "completed": "Deposit completed",
+    "failed": "Deposit failed",
+    "expired": "Deposit session expired",
+    "pending": "Waiting for the bank",
+    "openCheckout": "Open SimBank again"
+  },
+  "withdraw": {
+    "title": "Withdraw",
+    "description": "Simulated withdrawal to a saved bank account.",
+    "kycRequired": "Identity verification (KYC) is required to withdraw",
+    "kycBody": "KYC arrives in Phase 6. In the simulation, developers can raise the tier with a CLI command.",
+    "destination": "Receiving account",
+    "noDestination": "You have not saved a bank account yet.",
+    "addDestination": "Add a bank account",
+    "quote": "See fee and total",
+    "review": "Under a safety review",
+    "fee": "Fee",
+    "total": "Total taken from your wallet",
+    "expiresAt": "Quote valid until",
+    "confirm": "Confirm withdrawal",
+    "cancel": "Cancel",
+    "cancelled": "Withdrawal cancelled",
+    "resultTitle": "Withdrawal result",
+    "completed": "Withdrawal completed",
+    "failed": "Withdrawal failed",
+    "refunded": "The money was returned to your wallet.",
+    "pending": "Money on hold, waiting to be sent",
+    "processing": "Being sent to your bank",
+    "reversed": "The bank returned the payout. Amount and fee were credited back.",
+    "expired": "The quote expired",
+    "cooldownUntil": "Usable from {{time}}"
+  },
+  "destinations": {
+    "title": "Bank accounts",
+    "description": "Up to 5 accounts at simulated banks. A new account must wait 1 hour before it can receive.",
+    "bank": "Bank",
+    "accountNumber": "Account number",
+    "accountName": "Account holder",
+    "add": "Save account",
+    "added": "Bank account saved",
+    "remove": "Remove",
+    "removed": "Bank account removed",
+    "empty": "No bank accounts yet",
+    "fictional": "Use fictional details only. Never enter a real account number."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "markAll": "Mark all as read",
+    "unread": "{{count}} unread notifications",
+    "open": "Open notification",
+    "error": "Could not load notifications"
   }
 }

@@ -15,12 +15,12 @@ from app.core.ids import new_id
 from app.core.models import CurrencyRecord
 from app.modules.identity.public import User
 from app.modules.transactions.domain.state_machine import TxnStatus, TxnType
-from app.modules.wallet.public import Wallet
+from app.modules.wallet.public import BankDestination, Wallet
 
 ACTOR_TYPES = ("USER", "STAFF", "SYSTEM", "PROVIDER")
 
 # Tables referenced by foreign keys must be registered in this process's metadata too.
-_FOREIGN_KEY_TARGETS = (CurrencyRecord, User, Wallet)
+_FOREIGN_KEY_TARGETS = (CurrencyRecord, User, Wallet, BankDestination)
 
 
 def _in(column: str, values: list[str] | tuple[str, ...]) -> str:
@@ -82,6 +82,10 @@ class Transaction(Base):
     idempotency_key: Mapped[str | None] = mapped_column(String(255))
     related_transaction_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("app.transactions.id")
+    )
+    provider_code: Mapped[str | None] = mapped_column(String(20))
+    bank_destination_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("app.bank_destinations.id")
     )
     fee_rule_id: Mapped[uuid.UUID | None]
     fee_rule_version: Mapped[int | None]

@@ -19,7 +19,11 @@ from app.core.clock import FixedClock
 from app.core.config import Environment, Settings
 from app.core.db import Database
 from app.main import create_app
+from app.modules.providers.public import SIMULATOR, SimulatorProvider
 from app.scripts.seed import seed
+from sim.config import SimSettings
+from sim.db import SimDatabase
+from sim.main import create_sim_app
 from tests.conftest import BACKEND_DIR, IntegrationSettings
 
 # Tables cleaned between tests. Reference data (currencies, RBAC catalog) is left in place.
@@ -30,11 +34,19 @@ MUTABLE_TABLES = (
     "outbox_events",
     "scheduled_jobs",
     "reconciliation_runs",
+    "provider_operations",
+    "recovery_cases",
     "users",  # cascades to wallets, transactions, approval_requests, transaction_events
 )
 # Append-only children reached by the cascade. The test fixture (table owner) lifts their
 # TRUNCATE guard inside its own transaction; the application role can never do this.
 CASCADED_APPEND_ONLY = ("transaction_events",)
+
+SIM_TABLES = ("sim_callbacks", "sim_operations", "sim_settings", "sim_logs")
+SIM_API_KEY = "test-sim-api-key"  # gitleaks:allow (throwaway test value)
+SIM_WEBHOOK_SECRET = "test-sim-webhook-secret"  # gitleaks:allow
+SIM_ADMIN_KEY = "test-sim-admin-key"  # gitleaks:allow
+SIM_BASE = "http://simulator.test"
 
 TEST_ENCRYPTION_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
 TEST_PIN_PEPPER = base64.urlsafe_b64encode(os.urandom(32)).decode()
@@ -101,6 +113,97 @@ async def clean_tables(migrator_db: Database) -> None:
             )
 
 
+@pytest.fixture(scope="session")
+def sim_migrated(test_settings: IntegrationSettings) -> str:
+    assert test_settings.sim_database_url
+    config = Config()
+    config.set_main_option("script_location", str(BACKEND_DIR / "sim" / "migrations"))
+    config.set_main_option("sqlalchemy.url", test_settings.sim_database_url)
+    command.downgrade(config, "base")
+    command.upgrade(config, "head")
+    return test_settings.sim_database_url
+
+
+@pytest.fixture(scope="session")
+async def sim_db(sim_migrated: str) -> AsyncIterator[SimDatabase]:
+    database = SimDatabase(sim_migrated)
+    yield database
+    await database.dispose()
+
+
+@pytest.fixture(autouse=True)
+async def clean_sim_tables(sim_db: SimDatabase) -> None:
+    async with sim_db.transaction() as session:
+        tables = ", ".join(f"simulator.{t}" for t in SIM_TABLES)
+        await session.execute(text(f"TRUNCATE {tables} CASCADE"))
+
+
+@pytest.fixture
+def sim_settings(sim_migrated: str) -> SimSettings:
+    return SimSettings(
+        _env_file=None,  # type: ignore[call-arg]
+        environment="test",
+        database_url=sim_migrated,
+        api_key=SIM_API_KEY,
+        webhook_secret=SIM_WEBHOOK_SECRET,
+        admin_key=SIM_ADMIN_KEY,
+        public_base_url=SIM_BASE,
+        allowed_return_origins=["http://127.0.0.1:8080"],
+        payout_delay_seconds=0,
+        pending_delay_seconds=120,
+        slow_response_seconds=0,
+        return_delay_seconds=300,
+        followup_callback_seconds=60,
+    )
+
+
+class CallbackRelay:
+    """Delivers simulator callbacks to the VieWallet app in-process (set once the app exists)."""
+
+    def __init__(self) -> None:
+        self.target: FastAPI | None = None
+        self.responses: list[int] = []
+        self.drop = False  # simulate a network that loses every callback
+
+    async def __call__(self, url: str, body: bytes, headers: dict[str, str]) -> int:
+        assert self.target is not None
+        if self.drop:
+            raise httpx.ConnectError("callback lost")
+        transport = httpx.ASGITransport(app=self.target)
+        async with httpx.AsyncClient(transport=transport, base_url="http://viewallet.test") as http:
+            path = url.split("://", 1)[-1].split("/", 1)[-1]
+            response = await http.post("/" + path, content=body, headers=headers)
+        self.responses.append(response.status_code)
+        return response.status_code
+
+
+@pytest.fixture
+def relay() -> CallbackRelay:
+    return CallbackRelay()
+
+
+@pytest.fixture
+async def sim_app(
+    sim_settings: SimSettings, clock: FixedClock, relay: CallbackRelay
+) -> AsyncIterator[FastAPI]:
+    application = create_sim_app(sim_settings, clock=clock, sender=relay, run_worker=False)
+    async with LifespanManager(application):
+        yield application
+
+
+@pytest.fixture
+async def provider(sim_app: FastAPI, clock: FixedClock) -> AsyncIterator[SimulatorProvider]:
+    adapter = SimulatorProvider.build(
+        SIM_BASE,
+        api_key=SIM_API_KEY,
+        webhook_secret=SIM_WEBHOOK_SECRET,
+        transport=httpx.ASGITransport(app=sim_app),
+        now=lambda: clock.now().timestamp(),
+    )
+    yield adapter
+    await adapter.aclose()
+
+
 @pytest.fixture
 def app_settings(migrated: IntegrationSettings) -> Settings:
     assert migrated.database_url
@@ -118,6 +221,10 @@ def app_settings(migrated: IntegrationSettings) -> Settings:
         cors_origins=["http://localhost:5173"],
         data_encryption_key=TEST_ENCRYPTION_KEY,
         pin_pepper=TEST_PIN_PEPPER,
+        simulator_url=SIM_BASE,
+        simulator_api_key=SIM_API_KEY,
+        simulator_webhook_secret=SIM_WEBHOOK_SECRET,
+        provider_callback_base_url="http://viewallet.test",
         cookie_secure=False,
         # Cheap Argon2 parameters keep the suite fast; production uses the defaults.
         argon2_time_cost=1,
@@ -127,8 +234,14 @@ def app_settings(migrated: IntegrationSettings) -> Settings:
 
 
 @pytest.fixture
-async def app(app_settings: Settings, clock: FixedClock) -> AsyncIterator[FastAPI]:
-    application = create_app(app_settings, clock=clock)
+async def app(
+    app_settings: Settings,
+    clock: FixedClock,
+    provider: SimulatorProvider,
+    relay: CallbackRelay,
+) -> AsyncIterator[FastAPI]:
+    application = create_app(app_settings, clock=clock, providers={SIMULATOR: provider})
+    relay.target = application
     async with LifespanManager(application):
         yield application
 

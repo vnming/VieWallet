@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import StrEnum
 
-RULES_VERSION = "2026.11-p3"
+RULES_VERSION = "2026.11-p4"
 SCORE_CAP = 100
 REVIEW_THRESHOLD = 70
 COOLDOWN_AMOUNT_MINOR = 2_000_000
@@ -44,6 +44,9 @@ class RiskContext:
     same_amount_same_counterparty_2m: int = 0
     # Security events.
     credentials_changed_at: datetime | None = None
+    # Withdrawals: when the receiving bank account was added, and the required wait.
+    destination_added_at: datetime | None = None
+    destination_cooldown: timedelta = timedelta(hours=1)
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,12 +119,20 @@ def duplicate_pattern(ctx: RiskContext) -> RuleHit | None:
     return None
 
 
+def new_destination_cooldown(ctx: RiskContext) -> RuleHit | None:
+    added = ctx.destination_added_at
+    if added is None or ctx.now - added >= ctx.destination_cooldown:
+        return None
+    return RuleHit("NEW_DESTINATION_COOLDOWN", 0, True, {"added_at": added.isoformat()})
+
+
 DEFAULT_RULES: tuple[Rule, ...] = (
     velocity_count,
     velocity_amount,
     credential_change_cooldown,
     repeated_failures,
     duplicate_pattern,
+    new_destination_cooldown,
 )
 
 

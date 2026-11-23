@@ -770,6 +770,24 @@
         "title": "AuditLogPage",
         "type": "object"
       },
+      "BankOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "BankOut",
+        "type": "object"
+      },
       "ChainVerificationResponse": {
         "properties": {
           "checked": {
@@ -923,6 +941,21 @@
         "title": "CodeRequest",
         "type": "object"
       },
+      "ConfirmIn": {
+        "properties": {
+          "pin": {
+            "maxLength": 6,
+            "minLength": 6,
+            "title": "Pin",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pin"
+        ],
+        "title": "ConfirmIn",
+        "type": "object"
+      },
       "ConfirmPinResetRequest": {
         "additionalProperties": false,
         "properties": {
@@ -950,6 +983,17 @@
       },
       "Counterparty": {
         "properties": {
+          "account_masked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Masked"
+          },
           "kind": {
             "title": "Kind",
             "type": "string"
@@ -999,6 +1043,130 @@
           }
         },
         "title": "DecisionIn",
+        "type": "object"
+      },
+      "DepositIn": {
+        "properties": {
+          "amount": {
+            "description": "Integer minor units as a string",
+            "maxLength": 19,
+            "title": "Amount",
+            "type": "string"
+          },
+          "method": {
+            "const": "SIMBANK",
+            "default": "SIMBANK",
+            "title": "Method",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount"
+        ],
+        "title": "DepositIn",
+        "type": "object"
+      },
+      "DestinationIn": {
+        "properties": {
+          "account_name": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Account Name",
+            "type": "string"
+          },
+          "account_number": {
+            "maxLength": 20,
+            "minLength": 6,
+            "title": "Account Number",
+            "type": "string"
+          },
+          "bank_code": {
+            "maxLength": 20,
+            "title": "Bank Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bank_code",
+          "account_number",
+          "account_name"
+        ],
+        "title": "DestinationIn",
+        "type": "object"
+      },
+      "DestinationOut": {
+        "properties": {
+          "account_name": {
+            "title": "Account Name",
+            "type": "string"
+          },
+          "account_number_masked": {
+            "title": "Account Number Masked",
+            "type": "string"
+          },
+          "bank_code": {
+            "title": "Bank Code",
+            "type": "string"
+          },
+          "bank_name": {
+            "title": "Bank Name",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "usable_from": {
+            "description": "Withdrawals to a new account are blocked until this time (risk cooldown)",
+            "format": "date-time",
+            "title": "Usable From",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "bank_code",
+          "bank_name",
+          "account_number_masked",
+          "account_name",
+          "created_at",
+          "usable_from"
+        ],
+        "title": "DestinationOut",
+        "type": "object"
+      },
+      "DestinationSnapshot": {
+        "properties": {
+          "account_masked": {
+            "title": "Account Masked",
+            "type": "string"
+          },
+          "account_name": {
+            "title": "Account Name",
+            "type": "string"
+          },
+          "bank_code": {
+            "title": "Bank Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bank_code",
+          "name",
+          "account_masked",
+          "account_name"
+        ],
+        "title": "DestinationSnapshot",
         "type": "object"
       },
       "EmailOnlyRequest": {
@@ -1180,6 +1348,11 @@
             "title": "Id",
             "type": "string"
           },
+          "kyc_tier": {
+            "description": "0 = unverified, 1 = verified (simulated KYC)",
+            "title": "Kyc Tier",
+            "type": "integer"
+          },
           "locale": {
             "enum": [
               "vi",
@@ -1217,7 +1390,8 @@
           "email_verified",
           "created_at",
           "permissions",
-          "pin"
+          "pin",
+          "kyc_tier"
         ],
         "title": "MeResponse",
         "type": "object"
@@ -1286,6 +1460,225 @@
           }
         },
         "title": "MfaVerifyRequest",
+        "type": "object"
+      },
+      "MoneyFlowOut": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "checkout_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "SimBank page (deposits)",
+            "title": "Checkout Url"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DestinationSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionEventOut"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "fee": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "next_action": {
+            "enum": [
+              "NONE",
+              "REDIRECT",
+              "WAIT_PROVIDER",
+              "WAIT_REVIEW"
+            ],
+            "title": "Next Action",
+            "type": "string"
+          },
+          "quote_expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote Expires At"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TxnStatus"
+          },
+          "total": {
+            "$ref": "#/components/schemas/Amount",
+            "description": "Amount + fee for withdrawals; the amount for deposits"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TxnType"
+          }
+        },
+        "required": [
+          "id",
+          "reference",
+          "type",
+          "status",
+          "amount",
+          "fee",
+          "total",
+          "failure_code",
+          "next_action",
+          "quote_expires_at",
+          "destination",
+          "created_at",
+          "completed_at",
+          "events"
+        ],
+        "title": "MoneyFlowOut",
+        "type": "object"
+      },
+      "NotificationOut": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "string"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "type",
+          "title",
+          "body",
+          "data",
+          "priority",
+          "read_at",
+          "created_at"
+        ],
+        "title": "NotificationOut",
+        "type": "object"
+      },
+      "NotificationPageOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "NotificationPageOut",
         "type": "object"
       },
       "PasswordOnlyRequest": {
@@ -1578,6 +1971,91 @@
           "total"
         ],
         "title": "ReconciliationRunPageOut",
+        "type": "object"
+      },
+      "RecoveryCaseOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "provider_operation_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Operation Id"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "transaction_id": {
+            "format": "uuid",
+            "title": "Transaction Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "transaction_id",
+          "provider_operation_id",
+          "reason",
+          "detail",
+          "status",
+          "created_at"
+        ],
+        "title": "RecoveryCaseOut",
+        "type": "object"
+      },
+      "RecoveryCasePageOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RecoveryCaseOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "RecoveryCasePageOut",
         "type": "object"
       },
       "RegisterRequest": {
@@ -2204,6 +2682,19 @@
         "title": "UnfreezeRequestIn",
         "type": "object"
       },
+      "UnreadCountOut": {
+        "properties": {
+          "unread": {
+            "title": "Unread",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "unread"
+        ],
+        "title": "UnreadCountOut",
+        "type": "object"
+      },
       "UpdateProfileRequest": {
         "additionalProperties": false,
         "properties": {
@@ -2380,6 +2871,27 @@
         ],
         "title": "WalletStatus",
         "type": "string"
+      },
+      "WithdrawalIn": {
+        "properties": {
+          "amount": {
+            "description": "Integer minor units as a string",
+            "maxLength": 19,
+            "title": "Amount",
+            "type": "string"
+          },
+          "destination_id": {
+            "format": "uuid",
+            "title": "Destination Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "destination_id",
+          "amount"
+        ],
+        "title": "WithdrawalIn",
+        "type": "object"
       }
     }
   },
@@ -3185,6 +3697,80 @@
         ]
       }
     },
+    "/api/v1/admin/recovery-cases": {
+      "get": {
+        "operationId": "list_recovery_cases_api_v1_admin_recovery_cases_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^(OPEN|INVESTIGATING|RESOLVED)$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "OPEN",
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryCasePageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Recovery Cases",
+        "tags": [
+          "admin-operations"
+        ]
+      }
+    },
     "/api/v1/admin/transactions/{reference}": {
       "get": {
         "operationId": "admin_get_transaction_api_v1_admin_transactions__reference__get",
@@ -3641,6 +4227,109 @@
         ]
       }
     },
+    "/api/v1/deposits": {
+      "post": {
+        "operationId": "create_deposit_api_v1_deposits_post",
+        "parameters": [
+          {
+            "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyFlowOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Deposit",
+        "tags": [
+          "money-movement"
+        ]
+      }
+    },
+    "/api/v1/deposits/{reference}": {
+      "get": {
+        "operationId": "get_deposit_api_v1_deposits__reference__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyFlowOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Deposit",
+        "tags": [
+          "money-movement"
+        ]
+      }
+    },
     "/api/v1/me": {
       "get": {
         "operationId": "get_me_api_v1_me_get",
@@ -4068,6 +4757,156 @@
         ]
       }
     },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "list_notifications_api_v1_notifications_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "unread",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Unread",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationPageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Notifications",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/read-all": {
+      "post": {
+        "operationId": "mark_all_read_api_v1_notifications_read_all_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Mark All Read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/unread-count": {
+      "get": {
+        "operationId": "unread_count_api_v1_notifications_unread_count_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Unread Count",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{notification_id}/read": {
+      "post": {
+        "operationId": "mark_read_api_v1_notifications__notification_id__read_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notification_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Notification Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mark Read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
     "/api/v1/system/status": {
       "get": {
         "operationId": "system_status_api_v1_system_status_get",
@@ -4246,6 +5085,131 @@
         ]
       }
     },
+    "/api/v1/wallet/banks": {
+      "get": {
+        "operationId": "list_banks_api_v1_wallet_banks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BankOut"
+                  },
+                  "title": "Response List Banks Api V1 Wallet Banks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Banks",
+        "tags": [
+          "wallet"
+        ]
+      }
+    },
+    "/api/v1/wallet/destinations": {
+      "get": {
+        "operationId": "list_my_destinations_api_v1_wallet_destinations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DestinationOut"
+                  },
+                  "title": "Response List My Destinations Api V1 Wallet Destinations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List My Destinations",
+        "tags": [
+          "wallet"
+        ]
+      },
+      "post": {
+        "operationId": "add_my_destination_api_v1_wallet_destinations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add My Destination",
+        "tags": [
+          "wallet"
+        ]
+      }
+    },
+    "/api/v1/wallet/destinations/{destination_id}": {
+      "delete": {
+        "operationId": "remove_my_destination_api_v1_wallet_destinations__destination_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "destination_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Destination Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove My Destination",
+        "tags": [
+          "wallet"
+        ]
+      }
+    },
     "/api/v1/wallet/freeze": {
       "post": {
         "description": "Self-service freeze (lost phone): no PIN needed, it only removes capabilities.",
@@ -4326,6 +5290,221 @@
         "summary": "Unfreeze My Wallet",
         "tags": [
           "wallet"
+        ]
+      }
+    },
+    "/api/v1/withdrawals": {
+      "post": {
+        "operationId": "quote_withdrawal_api_v1_withdrawals_post",
+        "parameters": [
+          {
+            "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawalIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyFlowOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Quote Withdrawal",
+        "tags": [
+          "money-movement"
+        ]
+      }
+    },
+    "/api/v1/withdrawals/{reference}": {
+      "get": {
+        "operationId": "get_withdrawal_api_v1_withdrawals__reference__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyFlowOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Withdrawal",
+        "tags": [
+          "money-movement"
+        ]
+      }
+    },
+    "/api/v1/withdrawals/{reference}/cancel": {
+      "post": {
+        "operationId": "cancel_withdrawal_api_v1_withdrawals__reference__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyFlowOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Withdrawal",
+        "tags": [
+          "money-movement"
+        ]
+      }
+    },
+    "/api/v1/withdrawals/{reference}/confirm": {
+      "post": {
+        "operationId": "confirm_withdrawal_api_v1_withdrawals__reference__confirm_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyFlowOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Confirm Withdrawal",
+        "tags": [
+          "money-movement"
         ]
       }
     },

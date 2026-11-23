@@ -72,6 +72,7 @@ async def _me(ctx: IdentityDep, principal: Principal) -> MeResponse:
             locked_until=status_.locked_until,
             requires_reset=status_.requires_reset,
         ),
+        kyc_tier=user.kyc_tier,
     )
 
 

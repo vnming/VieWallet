@@ -5,7 +5,16 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, ForeignKey, Index, String, Text
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    CheckConstraint,
+    ForeignKey,
+    Index,
+    SmallInteger,
+    String,
+    Text,
+)
 from sqlalchemy.dialects.postgresql import CITEXT
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -29,6 +38,7 @@ class User(Base):
         CheckConstraint(_in("user_type", USER_TYPES), name="user_type_valid"),
         CheckConstraint(_in("status", USER_STATUSES), name="status_valid"),
         CheckConstraint("locale IN ('vi', 'en')", name="locale_valid"),
+        CheckConstraint("kyc_tier IN (0, 1)", name="kyc_tier_valid"),
         Index("ix_users_status_created", "status", "created_at"),
     )
 
@@ -40,6 +50,9 @@ class User(Base):
     user_type: Mapped[str] = mapped_column(String(20))
     status: Mapped[str] = mapped_column(String(30))
     locale: Mapped[str] = mapped_column(String(5), default="vi")
+    # KYC tier (0 = unverified, 1 = verified). Set by the KYC flow from Phase 6; until then
+    # only the development/simulation CLI ``set_kyc_tier`` changes it.
+    kyc_tier: Mapped[int] = mapped_column(SmallInteger, default=0, server_default="0")
     created_at: Mapped[datetime]
     updated_at: Mapped[datetime]
     last_login_at: Mapped[datetime | None]

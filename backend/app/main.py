@@ -30,8 +30,18 @@ from app.core.rate_limit import RateLimiter
 from app.modules.audit import api as audit_api
 from app.modules.identity import api as identity_api
 from app.modules.identity.context import IdentityServices
+from app.modules.notifications import api as notifications_api
 from app.modules.operations import api as operations_api
+from app.modules.providers import api as providers_api
+from app.modules.providers.public import (
+    SIMULATOR,
+    PaymentProvider,
+    ProviderServices,
+    SimulatorProvider,
+)
 from app.modules.transactions import api as transactions_api
+from app.modules.transactions import money_api
+from app.modules.transactions.public import FinanceContext
 from app.modules.wallet import api as wallet_api
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +53,25 @@ def migration_head() -> str | None:
     return ScriptDirectory.from_config(config).get_current_head()
 
 
-def create_app(settings: Settings | None = None, *, clock: Clock | None = None) -> FastAPI:
+def build_providers(settings: Settings) -> dict[str, PaymentProvider]:
+    return {
+        SIMULATOR: SimulatorProvider.build(
+            settings.simulator_url,
+            api_key=settings.simulator_api_key,
+            webhook_secret=settings.simulator_webhook_secret,
+            connect_timeout=settings.provider_connect_timeout_seconds,
+            read_timeout=settings.provider_read_timeout_seconds,
+            max_age_seconds=settings.provider_callback_max_age_seconds,
+        )
+    }
+
+
+def create_app(
+    settings: Settings | None = None,
+    *,
+    clock: Clock | None = None,
+    providers: dict[str, PaymentProvider] | None = None,
+) -> FastAPI:
     settings = settings or get_settings()
     clock = clock or SystemClock()
     configure_logging(settings.log_level, json=settings.log_json)
@@ -69,10 +97,22 @@ def create_app(settings: Settings | None = None, *, clock: Clock | None = None) 
             expected_migration_head=migration_head(),
         )
         app.state.idempotency = app.state.vw.idempotency
-        app.state.identity = IdentityServices.build(settings, db, clock, RateLimiter(redis, clock))
+        identity = IdentityServices.build(settings, db, clock, RateLimiter(redis, clock))
+        app.state.identity = identity
+        owned = providers is None
+        provider_map = build_providers(settings) if providers is None else providers
+        provider_services = ProviderServices(
+            db, clock, provider_map, settings.provider_callback_base_url
+        )
+        app.state.providers = provider_services
+        app.state.finance = FinanceContext(identity, provider_services)
         try:
             yield
         finally:
+            if owned:
+                for provider in provider_map.values():
+                    if isinstance(provider, SimulatorProvider):
+                        await provider.aclose()
             await redis.aclose()
             await db.dispose()
 
@@ -111,6 +151,9 @@ def create_app(settings: Settings | None = None, *, clock: Clock | None = None) 
     app.include_router(transactions_api.router)
     app.include_router(transactions_api.admin_router)
     app.include_router(operations_api.router)
+    app.include_router(money_api.router)
+    app.include_router(notifications_api.router)
+    app.include_router(providers_api.router)
     return app
 
 

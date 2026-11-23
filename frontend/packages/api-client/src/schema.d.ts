@@ -294,6 +294,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/recovery-cases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Recovery Cases */
+    get: operations["list_recovery_cases_api_v1_admin_recovery_cases_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/transactions/{reference}": {
     parameters: {
       query?: never;
@@ -501,6 +518,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/deposits": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create Deposit */
+    post: operations["create_deposit_api_v1_deposits_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/deposits/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Deposit */
+    get: operations["get_deposit_api_v1_deposits__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/me": {
     parameters: {
       query?: never;
@@ -673,6 +724,74 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/notifications": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Notifications */
+    get: operations["list_notifications_api_v1_notifications_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/notifications/read-all": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Mark All Read */
+    post: operations["mark_all_read_api_v1_notifications_read_all_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/notifications/unread-count": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Unread Count */
+    get: operations["unread_count_api_v1_notifications_unread_count_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/notifications/{notification_id}/read": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Mark Read */
+    post: operations["mark_read_api_v1_notifications__notification_id__read_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/status": {
     parameters: {
       query?: never;
@@ -741,6 +860,58 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/wallet/banks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Banks */
+    get: operations["list_banks_api_v1_wallet_banks_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/wallet/destinations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List My Destinations */
+    get: operations["list_my_destinations_api_v1_wallet_destinations_get"];
+    put?: never;
+    /** Add My Destination */
+    post: operations["add_my_destination_api_v1_wallet_destinations_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/wallet/destinations/{destination_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Remove My Destination */
+    delete: operations["remove_my_destination_api_v1_wallet_destinations__destination_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/wallet/freeze": {
     parameters: {
       query?: never;
@@ -772,6 +943,74 @@ export interface paths {
     put?: never;
     /** Unfreeze My Wallet */
     post: operations["unfreeze_my_wallet_api_v1_wallet_unfreeze_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/withdrawals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Quote Withdrawal */
+    post: operations["quote_withdrawal_api_v1_withdrawals_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/withdrawals/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Withdrawal */
+    get: operations["get_withdrawal_api_v1_withdrawals__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/withdrawals/{reference}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel Withdrawal */
+    post: operations["cancel_withdrawal_api_v1_withdrawals__reference__cancel_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/withdrawals/{reference}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm Withdrawal */
+    post: operations["confirm_withdrawal_api_v1_withdrawals__reference__confirm_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1098,6 +1337,13 @@ export interface components {
       /** Total */
       total: number;
     };
+    /** BankOut */
+    BankOut: {
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+    };
     /** ChainVerificationResponse */
     ChainVerificationResponse: {
       /** Checked */
@@ -1154,6 +1400,11 @@ export interface components {
       /** Code */
       code: string;
     };
+    /** ConfirmIn */
+    ConfirmIn: {
+      /** Pin */
+      pin: string;
+    };
     /** ConfirmPinResetRequest */
     ConfirmPinResetRequest: {
       /** Code */
@@ -1163,6 +1414,8 @@ export interface components {
     };
     /** Counterparty */
     Counterparty: {
+      /** Account Masked */
+      account_masked?: string | null;
       /** Kind */
       kind: string;
       /** Name */
@@ -1174,6 +1427,67 @@ export interface components {
     DecisionIn: {
       /** Note */
       note?: string | null;
+    };
+    /** DepositIn */
+    DepositIn: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /**
+       * Method
+       * @default SIMBANK
+       * @constant
+       */
+      method: "SIMBANK";
+    };
+    /** DestinationIn */
+    DestinationIn: {
+      /** Account Name */
+      account_name: string;
+      /** Account Number */
+      account_number: string;
+      /** Bank Code */
+      bank_code: string;
+    };
+    /** DestinationOut */
+    DestinationOut: {
+      /** Account Name */
+      account_name: string;
+      /** Account Number Masked */
+      account_number_masked: string;
+      /** Bank Code */
+      bank_code: string;
+      /** Bank Name */
+      bank_name: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Usable From
+       * Format: date-time
+       * @description Withdrawals to a new account are blocked until this time (risk cooldown)
+       */
+      usable_from: string;
+    };
+    /** DestinationSnapshot */
+    DestinationSnapshot: {
+      /** Account Masked */
+      account_masked: string;
+      /** Account Name */
+      account_name: string;
+      /** Bank Code */
+      bank_code: string;
+      /** Name */
+      name: string;
     };
     /** EmailOnlyRequest */
     EmailOnlyRequest: {
@@ -1260,6 +1574,11 @@ export interface components {
        */
       id: string;
       /**
+       * Kyc Tier
+       * @description 0 = unverified, 1 = verified (simulated KYC)
+       */
+      kyc_tier: number;
+      /**
        * Locale
        * @enum {string}
        */
@@ -1291,6 +1610,82 @@ export interface components {
       code?: string | null;
       /** Recovery Code */
       recovery_code?: string | null;
+    };
+    /** MoneyFlowOut */
+    MoneyFlowOut: {
+      amount: components["schemas"]["Amount"];
+      /**
+       * Checkout Url
+       * @description SimBank page (deposits)
+       */
+      checkout_url?: string | null;
+      /** Completed At */
+      completed_at: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      destination: components["schemas"]["DestinationSnapshot"] | null;
+      /** Events */
+      events: components["schemas"]["TransactionEventOut"][];
+      /** Failure Code */
+      failure_code: string | null;
+      fee: components["schemas"]["Amount"];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Next Action
+       * @enum {string}
+       */
+      next_action: "NONE" | "REDIRECT" | "WAIT_PROVIDER" | "WAIT_REVIEW";
+      /** Quote Expires At */
+      quote_expires_at: string | null;
+      /** Reference */
+      reference: string;
+      status: components["schemas"]["TxnStatus"];
+      /** @description Amount + fee for withdrawals; the amount for deposits */
+      total: components["schemas"]["Amount"];
+      type: components["schemas"]["TxnType"];
+    };
+    /** NotificationOut */
+    NotificationOut: {
+      /** Body */
+      body: string;
+      /** Category */
+      category: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Data */
+      data: {
+        [key: string]: unknown;
+      };
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Priority */
+      priority: string;
+      /** Read At */
+      read_at: string | null;
+      /** Title */
+      title: string;
+      /** Type */
+      type: string;
+    };
+    /** NotificationPageOut */
+    NotificationPageOut: {
+      /** Items */
+      items: components["schemas"]["NotificationOut"][];
+      /** Next Cursor */
+      next_cursor: string | null;
     };
     /** PasswordOnlyRequest */
     PasswordOnlyRequest: {
@@ -1395,6 +1790,43 @@ export interface components {
     ReconciliationRunPageOut: {
       /** Items */
       items: components["schemas"]["ReconciliationRunOut"][];
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total */
+      total: number;
+    };
+    /** RecoveryCaseOut */
+    RecoveryCaseOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Detail */
+      detail: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Provider Operation Id */
+      provider_operation_id: string | null;
+      /** Reason */
+      reason: string;
+      /** Status */
+      status: string;
+      /**
+       * Transaction Id
+       * Format: uuid
+       */
+      transaction_id: string;
+    };
+    /** RecoveryCasePageOut */
+    RecoveryCasePageOut: {
+      /** Items */
+      items: components["schemas"]["RecoveryCaseOut"][];
       /** Page */
       page: number;
       /** Page Size */
@@ -1642,6 +2074,11 @@ export interface components {
       /** Reason */
       reason: string;
     };
+    /** UnreadCountOut */
+    UnreadCountOut: {
+      /** Unread */
+      unread: number;
+    };
     /** UpdateProfileRequest */
     UpdateProfileRequest: {
       /** Display Name */
@@ -1696,6 +2133,19 @@ export interface components {
      * @enum {string}
      */
     WalletStatus: "ACTIVE" | "FROZEN" | "SUSPENDED" | "CLOSED";
+    /** WithdrawalIn */
+    WithdrawalIn: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /**
+       * Destination Id
+       * Format: uuid
+       */
+      destination_id: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -2231,6 +2681,39 @@ export interface operations {
       };
     };
   };
+  list_recovery_cases_api_v1_admin_recovery_cases_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RecoveryCasePageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   admin_get_transaction_api_v1_admin_transactions__reference__get: {
     parameters: {
       query?: never;
@@ -2582,6 +3065,73 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["AcceptedResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_deposit_api_v1_deposits_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DepositIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MoneyFlowOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_deposit_api_v1_deposits__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MoneyFlowOut"];
         };
       };
       /** @description Validation Error */
@@ -2951,6 +3501,108 @@ export interface operations {
       };
     };
   };
+  list_notifications_api_v1_notifications_get: {
+    parameters: {
+      query?: {
+        cursor?: string | null;
+        limit?: number;
+        unread?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotificationPageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  mark_all_read_api_v1_notifications_read_all_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnreadCountOut"];
+        };
+      };
+    };
+  };
+  unread_count_api_v1_notifications_unread_count_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnreadCountOut"];
+        };
+      };
+    };
+  };
+  mark_read_api_v1_notifications__notification_id__read_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        notification_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   system_status_api_v1_system_status_get: {
     parameters: {
       query?: never;
@@ -3056,6 +3708,108 @@ export interface operations {
       };
     };
   };
+  list_banks_api_v1_wallet_banks_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BankOut"][];
+        };
+      };
+    };
+  };
+  list_my_destinations_api_v1_wallet_destinations_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DestinationOut"][];
+        };
+      };
+    };
+  };
+  add_my_destination_api_v1_wallet_destinations_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DestinationIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DestinationOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  remove_my_destination_api_v1_wallet_destinations__destination_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        destination_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   freeze_my_wallet_api_v1_wallet_freeze_post: {
     parameters: {
       query?: never;
@@ -3109,6 +3863,142 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["WalletOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  quote_withdrawal_api_v1_withdrawals_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["WithdrawalIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MoneyFlowOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_withdrawal_api_v1_withdrawals__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MoneyFlowOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  cancel_withdrawal_api_v1_withdrawals__reference__cancel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MoneyFlowOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  confirm_withdrawal_api_v1_withdrawals__reference__confirm_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MoneyFlowOut"];
         };
       };
       /** @description Validation Error */

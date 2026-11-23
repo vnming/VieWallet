@@ -3,10 +3,21 @@ import { isLocale, rememberLocale } from "@viewallet/shared";
 import { Button } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
-import { History, Home, type LucideIcon, Palette, ShieldCheck, Wallet } from "lucide-react";
+import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  History,
+  Home,
+  type LucideIcon,
+  Palette,
+  ShieldCheck,
+  Wallet,
+} from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
+
+import { NotificationBell } from "../routes/NotificationsPage";
 
 interface NavItem {
   to: string;
@@ -21,6 +32,8 @@ function useNavItems(signedIn: boolean): NavItem[] {
     ...(signedIn
       ? [
           { to: "/wallet", key: "nav.wallet", icon: Wallet, end: true },
+          { to: "/deposit", key: "nav.deposit", icon: ArrowDownToLine, end: true },
+          { to: "/withdraw", key: "nav.withdraw", icon: ArrowUpFromLine, end: true },
           { to: "/history", key: "nav.history", icon: History, end: false },
           { to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false },
         ]
@@ -145,6 +158,7 @@ export function AppShell() {
           <p className="hidden text-xs text-fg-muted md:block">{t("app.simulationNotice")}</p>
           <div className="flex items-center gap-3">
             <LanguageSwitch />
+            <NotificationBell />
             <UserMenu />
           </div>
         </header>

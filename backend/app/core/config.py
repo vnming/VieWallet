@@ -76,6 +76,25 @@ class Settings(BaseSettings):
     web_base_url: str = "http://127.0.0.1:8080"
     admin_base_url: str = "http://127.0.0.1:8081"
 
+    # --- Payment Provider Simulator (ADR-0005) ----------------------------------------------
+    simulator_url: str = "http://127.0.0.1:8090"
+    simulator_api_key: str = Field(description="Bearer key for calling the simulator.")
+    simulator_webhook_secret: str = Field(description="HMAC key that signs simulator callbacks.")
+    provider_callback_base_url: str = Field(
+        default="http://127.0.0.1:8000",
+        description="Base URL the provider uses to reach /api/v1/webhooks/providers/... .",
+    )
+    provider_connect_timeout_seconds: float = Field(default=3, gt=0)
+    provider_read_timeout_seconds: float = Field(default=10, gt=0)
+    provider_callback_max_age_seconds: int = Field(default=300, ge=30)
+
+    # --- Money movement rules --------------------------------------------------------------
+    new_destination_cooldown_minutes: int = Field(
+        default=60, ge=0, description="Wait before a newly added bank account can receive."
+    )
+    deposit_inquiry_after_minutes: int = Field(default=30, ge=1)
+    withdrawal_quote_minutes: int = Field(default=10, ge=1)
+
     @property
     def expose_api_docs(self) -> bool:
         return self.environment is not Environment.PRODUCTION_LIKE

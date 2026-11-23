@@ -5,6 +5,7 @@ set -euo pipefail
 API_URL="${VW_E2E_API_URL:-http://127.0.0.1:8000}"
 WEB_URL="${VW_E2E_WEB_URL:-http://127.0.0.1:8080}"
 ADMIN_URL="${VW_E2E_ADMIN_URL:-http://127.0.0.1:8081}"
+SIM_URL="${VW_E2E_SIM_URL:-http://127.0.0.1:8090}"
 DEADLINE=$((SECONDS + ${VW_E2E_WAIT_SECONDS:-180}))
 
 wait_for() {
@@ -23,3 +24,4 @@ wait_for() {
 wait_for api "$API_URL/health/ready"
 wait_for web "$WEB_URL/"
 wait_for admin "$ADMIN_URL/"
+wait_for simulator "$SIM_URL/health"
