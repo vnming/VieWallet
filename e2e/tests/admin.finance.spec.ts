@@ -45,6 +45,7 @@ async function enrolledStaff(page: Page, roles: string[]): Promise<void> {
   await page.getByLabel("Email nhân viên").fill(email);
   await page.getByLabel("Mật khẩu", { exact: true }).fill(PASSWORD);
   await page.getByRole("button", { name: "Tiếp tục" }).click();
+  await expect(page.locator("code").first()).toHaveText(/^[A-Z2-7]{16,}$/);
   const secret = (await page.locator("code").first().textContent())?.trim() ?? "";
   await page.getByLabel("Mã 6 số từ ứng dụng xác thực").fill(totp(secret));
   await page.getByRole("button", { name: "Bật xác thực hai lớp" }).click();
@@ -57,6 +58,8 @@ test("maker proposes a simulated top-up, a second staff member approves, the cus
 }) => {
   const customer = await browser.newContext({ baseURL: WEB_URL, locale: "vi-VN" });
   const walletNumber = await customerWithWallet(customer.request, uniqueEmail("binh"));
+  // Unique per run: the dev database keeps requests left by earlier (interrupted) runs.
+  const note = `Nạp tiền mô phỏng cho demo E2E ${walletNumber}`;
 
   const makerContext = await browser.newContext();
   const maker = await makerContext.newPage();
@@ -64,13 +67,13 @@ test("maker proposes a simulated top-up, a second staff member approves, the cus
   await maker.getByRole("link", { name: "Điều chỉnh số dư" }).click();
   await maker.getByLabel("Số ví").fill(walletNumber);
   await maker.getByLabel("Số tiền (VND)").fill("250000");
-  await maker.getByLabel("Ghi chú nội bộ").fill("Nạp tiền mô phỏng cho demo E2E");
+  await maker.getByLabel("Ghi chú nội bộ").fill(note);
   await maker.getByRole("button", { name: "Gửi đề xuất" }).click();
   await expect(maker.getByText(/Đã tạo đề xuất VW\d{6}[0-9A-Z]{10}/)).toBeVisible();
 
   // The maker sees the request but cannot approve it.
   await maker.getByRole("link", { name: "Phê duyệt" }).first().click();
-  const own = maker.getByRole("article").filter({ hasText: "Nạp tiền mô phỏng cho demo E2E" });
+  const own = maker.getByRole("article").filter({ hasText: note });
   await expect(own.getByRole("button", { name: "Hủy yêu cầu" })).toBeVisible();
   await expect(own.getByRole("button", { name: "Duyệt và thực hiện" })).toHaveCount(0);
 
@@ -78,7 +81,7 @@ test("maker proposes a simulated top-up, a second staff member approves, the cus
   const checker = await checkerContext.newPage();
   await enrolledStaff(checker, ["FINANCE"]);
   await checker.goto("/approvals");
-  const card = checker.getByRole("article").filter({ hasText: "Nạp tiền mô phỏng cho demo E2E" });
+  const card = checker.getByRole("article").filter({ hasText: note });
   await expect(card.getByText("+250.000")).toBeVisible();
   await card.getByRole("button", { name: "Duyệt và thực hiện" }).click();
   await expect(checker.getByText("Đã duyệt và thực hiện")).toBeVisible();

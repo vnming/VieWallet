@@ -72,7 +72,20 @@ export function WalletOverview() {
   return (
     <div className="flex flex-col gap-6">
       <BalanceCard wallet={wallet.data} />
-      <p className="text-sm text-fg-muted">{t("wallet.comingSoon")}</p>
+      <nav aria-label={t("wallet.quickActions")} className="flex flex-wrap gap-3">
+        <Link to="/transfer" className={buttonClassName()}>
+          {t("nav.transfer")}
+        </Link>
+        <Link to="/scan" className={buttonClassName({ variant: "secondary" })}>
+          {t("nav.scan")}
+        </Link>
+        <Link to="/receive" className={buttonClassName({ variant: "secondary" })}>
+          {t("receive.title")}
+        </Link>
+        <Link to="/request" className={buttonClassName({ variant: "ghost" })}>
+          {t("request.title")}
+        </Link>
+      </nav>
       <Card
         title={t("wallet.recent")}
         actions={
@@ -208,7 +221,10 @@ export function WalletPage() {
         <>
           <BalanceCard wallet={wallet.data} />
           <nav aria-label={t("wallet.title")} className="flex flex-wrap gap-3">
-            <Link to="/deposit" className={buttonClassName()}>
+            <Link to="/transfer" className={buttonClassName()}>
+              {t("nav.transfer")}
+            </Link>
+            <Link to="/deposit" className={buttonClassName({ variant: "secondary" })}>
               {t("nav.deposit")}
             </Link>
             <Link to="/withdraw" className={buttonClassName({ variant: "secondary" })}>

@@ -35,6 +35,7 @@ from app.modules.ledger.domain import (
     PostingLine,
     Side,
     balance_delta,
+    net_reversal,
 )
 from app.modules.ledger.models import AccountBalance, Journal, LedgerAccount, Posting
 
@@ -328,6 +329,46 @@ async def reverse(
         created_by=created_by,
         reverses_journal_id=journal_id,
     )
+
+
+async def reverse_transaction(
+    session: AsyncSession,
+    clock: Clock,
+    journal_ids: list[uuid.UUID],
+    *,
+    transaction_id: uuid.UUID,
+    created_by: str,
+) -> PostedJournal:
+    """Undo the net effect of a business transaction's journals with one REVERSAL journal.
+
+    A held transfer has two journals (hold, release); mirroring only the last one would leave
+    money on HOLD. Netting per account and posting the opposite gives the exact undo. The new
+    journal points at the last original journal (unique FK), so it can be reversed only once.
+    """
+    if not journal_ids:
+        raise LookupError("nothing to reverse")
+    drafts = [await journal_draft(session, journal_id) for journal_id in journal_ids]
+    if any(d.kind is JournalKind.REVERSAL for d in drafts):
+        raise AlreadyReversedError("a reversal cannot itself be reversed; use an adjustment")
+    last = journal_ids[-1]
+    if await session.scalar(select(Journal.id).where(Journal.reverses_journal_id == last)):
+        raise AlreadyReversedError()
+    return await post(
+        session,
+        clock,
+        net_reversal(drafts),
+        transaction_id=transaction_id,
+        created_by=created_by,
+        reverses_journal_id=last,
+    )
+
+
+async def journals_of(session: AsyncSession, transaction_id: uuid.UUID) -> list[uuid.UUID]:
+    """Journal ids of one business transaction, oldest first (UUIDv7 ids are time-ordered)."""
+    rows = await session.scalars(
+        select(Journal.id).where(Journal.transaction_id == transaction_id).order_by(Journal.id)
+    )
+    return list(rows.all())
 
 
 # ---------------------------------------------------------------- invariants

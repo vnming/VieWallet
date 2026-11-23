@@ -1,6 +1,7 @@
 """Public interface of the identity module (ADR-0001)."""
 
 from app.modules.identity.context import IdentityServices, RequestMeta
+from app.modules.identity.demo import create_verified_customer
 from app.modules.identity.errors import PinInvalidError, PinLockedError, PinNotSetError
 from app.modules.identity.http import (
     CustomerPrincipal,
@@ -29,6 +30,7 @@ __all__ = [
     "StaffPrincipal",
     "User",
     "create_staff",
+    "create_verified_customer",
     "credentials_changed_at",
     "ensure_permission",
     "kyc_tier_of",

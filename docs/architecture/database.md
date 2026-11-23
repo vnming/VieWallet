@@ -152,6 +152,8 @@ Index: `(source_wallet_id, created_at DESC, id)`, `(destination_wallet_id, creat
 
 > `bank_destinations` đã cài đặt ở `0004`: thêm `account_fingerprint` (HMAC có khóa) để phát hiện trùng mà không giải mã; số tài khoản mã hóa AES-256-GCM với associated data gắn id dòng; xóa mềm (`status = REMOVED`). `transactions` thêm `provider_code`, `bank_destination_id`.
 
+> Phase 5 (`0005`): `merchants` (thêm `created_at`, `updated_at`; `logo_key` chưa dùng), `payment_requests` (thêm `merchant_id`, `paid_count`; `signature` là HMAC-SHA256 hex; `paid_transaction_id` không có FK vì `transactions` nằm ở module cao hơn), `recipients` (bảng `SavedRecipient`, thêm `created_at`), `transactions.payment_request_id`. Ứng dụng không được DELETE/TRUNCATE `merchants`, `payment_requests`. CHECK mới: loại journal `PAYMENT_HOLD`, `PAYMENT_RELEASE_TO_MERCHANT`, `PAYMENT_RELEASE_TO_PAYER`; action `REVERSAL`; REFUND cần cả hai ví. Downgrade đặt lại CHECK cũ với `NOT VALID` vì journal là chỉ-thêm.
+
 **merchants** — `user_id UNIQUE`, `wallet_id`, `legal_name` (hư cấu), `display_name`, `mcc` (mã danh mục merchant), `status`, `logo_key`.
 **payment_requests** — `code TEXT UNIQUE` (id ngắn trong QR), `issuer_type` (MERCHANT, USER), `issuer_user_id`, `destination_wallet_id`, `amount_minor NULL` (NULL = người trả tự nhập), `currency`, `description`, `single_use BOOL`, `status` (OPEN, PAID, EXPIRED, CANCELLED, DECLINED), `payer_user_id NULL` (cho xin tiền giữa người dùng), `expires_at`, `paid_transaction_id NULL`, `signature` (HMAC của payload).
 **bank_destinations** — `user_id`, `bank_code` (danh sách ngân hàng giả lập), `account_number_masked`, `account_number_encrypted`, `account_name`, `verified_at`, `status`. Tối đa 5 mỗi user.

@@ -204,6 +204,7 @@ async def transition(
             "fee": str(txn.fee_minor),
             "currency": txn.currency,
             "failure_code": txn.failure_code,
+            "subtype": txn.extra.get("subtype"),
             # Consumers (notifications) must not query other modules' tables.
             "recipients": await _recipients(session, txn),
         },
@@ -269,10 +270,14 @@ async def events_of(session: AsyncSession, transaction_id: uuid.UUID) -> list[Tr
 # ---------------------------------------------------------------- customer views
 
 
+STAFF_PROPOSALS = (TxnType.ADJUSTMENT.value, TxnType.REVERSAL.value)
+
+
 def visible_to_customer() -> Any:
-    """Staff proposals (adjustments awaiting approval) are not shown until they complete."""
+    """Staff proposals (adjustments, reversals awaiting approval) stay hidden until they
+    complete."""
     return or_(
-        Transaction.type != TxnType.ADJUSTMENT.value,
+        Transaction.type.not_in(STAFF_PROPOSALS),
         Transaction.status == TxnStatus.COMPLETED.value,
     )
 
@@ -327,9 +332,7 @@ async def get_for_wallet(
     """404 (not 403) for other people's transactions, so references cannot be probed."""
     txn = await get_by_reference(session, reference)
     involved = wallet_id in (txn.source_wallet_id, txn.destination_wallet_id)
-    if not involved or (
-        txn.type == TxnType.ADJUSTMENT.value and txn.status != TxnStatus.COMPLETED.value
-    ):
+    if not involved or (txn.type in STAFF_PROPOSALS and txn.status != TxnStatus.COMPLETED.value):
         raise TransactionNotFoundError()
     return txn
 

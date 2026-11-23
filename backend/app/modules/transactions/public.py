@@ -18,7 +18,15 @@ from app.modules.transactions.service import (
     get_by_reference,
     held_totals,
 )
-from app.modules.transactions.use_cases import adjustment, deposit, withdrawal
+from app.modules.transactions.use_cases import (
+    adjustment,
+    deposit,
+    refund,
+    reversal,
+    review,
+    transfer,
+    withdrawal,
+)
 from app.modules.transactions.use_cases.adjustment import (
     AdjustmentDirection,
     AdjustmentOutcome,
@@ -57,8 +65,12 @@ __all__ = [
     "get_by_reference",
     "held_totals",
     "process_callback",
+    "refund",
     "register_handlers",
     "resubmit_stalled_deposits",
+    "reversal",
+    "review",
     "run_inquiries",
+    "transfer",
     "withdrawal",
 ]

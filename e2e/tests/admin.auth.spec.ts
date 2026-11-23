@@ -18,6 +18,7 @@ test("staff signs in, enrolls TOTP, saves recovery codes and reads the audit log
     page.getByRole("heading", { level: 1, name: "Thiết lập xác thực hai lớp" }),
   ).toBeVisible();
   await expect(page.getByRole("img", { name: /Mã QR/ })).toBeVisible();
+  await expect(page.locator("code").first()).toHaveText(/^[A-Z2-7]{16,}$/);
   const secret = (await page.locator("code").first().textContent())?.trim() ?? "";
   expect(secret).toMatch(/^[A-Z2-7]{16,}$/);
   await page.getByLabel("Mã 6 số từ ứng dụng xác thực").fill(totp(secret));

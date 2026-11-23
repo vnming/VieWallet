@@ -28,11 +28,14 @@ from app.modules.identity.public import IdentityServices
 from app.modules.notifications.public import EmailSender, SmtpEmailSender, register_inapp_handlers
 from app.modules.notifications.public import register_handlers as register_email_handlers
 from app.modules.operations.public import expire_due, register_recovery_handlers, run_internal
+from app.modules.payments.public import expire_due as expire_payment_requests
 from app.modules.providers.public import PaymentProvider, ProviderServices, SimulatorProvider
 from app.modules.transactions.public import (
     FinanceContext,
     resubmit_stalled_deposits,
+    review,
     run_inquiries,
+    transfer,
     withdrawal,
 )
 from app.modules.transactions.public import register_handlers as register_transaction_handlers
@@ -113,6 +116,18 @@ def build_jobs(
     async def resubmit_deposits() -> None:
         await resubmit_stalled_deposits(finance)
 
+    async def expire_spend_quotes() -> None:
+        await transfer.expire_quotes(finance)
+
+    async def expire_requests() -> None:
+        async with db.transaction() as session:
+            await expire_payment_requests(session, clock)
+
+    async def expire_review_holds() -> None:
+        cancelled = await review.expire_holds(finance)
+        if cancelled:
+            logger.info("risk_holds_expired", count=cancelled)
+
     return [
         JobSpec("purge_expired_idempotency_keys", timedelta(hours=1), purge_idempotency_keys),
         JobSpec("internal_reconciliation", timedelta(hours=1), reconcile_ledger),
@@ -120,6 +135,9 @@ def build_jobs(
         JobSpec("provider_status_inquiries", timedelta(seconds=10), provider_inquiries),
         JobSpec("expire_withdrawal_quotes", timedelta(minutes=1), expire_withdrawal_quotes),
         JobSpec("resubmit_stalled_deposits", timedelta(minutes=1), resubmit_deposits),
+        JobSpec("expire_spend_quotes", timedelta(minutes=1), expire_spend_quotes),
+        JobSpec("expire_payment_requests", timedelta(minutes=5), expire_requests),
+        JobSpec("expire_risk_holds", timedelta(minutes=15), expire_review_holds),
     ]
 
 

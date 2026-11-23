@@ -134,6 +134,99 @@ TEMPLATES: dict[str, InAppTemplate] = {
         },
         priority="HIGH",
     ),
+    "REVERSAL/STAFF:COMPLETED:IN": InAppTemplate(
+        {
+            "vi": "Giao dịch được đảo, tiền đã hoàn về ví",
+            "en": "Transaction reversed: money returned",
+        },
+        {
+            "vi": "$amount đã được hoàn về ví của bạn. Mã $reference.",
+            "en": "$amount was returned to your wallet. Ref $reference.",
+        },
+        priority="HIGH",
+    ),
+    "REVERSAL/STAFF:COMPLETED:OUT": InAppTemplate(
+        {"vi": "Một giao dịch đã bị đảo", "en": "A transaction was reversed"},
+        {
+            "vi": "$amount đã được trả lại cho người chuyển. Mã $reference.",
+            "en": "$amount was returned to the sender. Ref $reference.",
+        },
+        priority="HIGH",
+    ),
+    "TRANSFER:COMPLETED:OUT": InAppTemplate(
+        {"vi": "Chuyển tiền thành công", "en": "Transfer completed"},
+        {
+            "vi": "Bạn đã chuyển $amount. Mã $reference.",
+            "en": "You sent $amount. Ref $reference.",
+        },
+    ),
+    "TRANSFER:COMPLETED:IN": InAppTemplate(
+        {"vi": "Bạn nhận được tiền", "en": "You received money"},
+        {
+            "vi": "+$amount đã vào ví của bạn. Mã $reference.",
+            "en": "+$amount arrived in your wallet. Ref $reference.",
+        },
+    ),
+    "TRANSFER:PENDING:OUT": InAppTemplate(
+        {"vi": "Chuyển tiền đang được kiểm tra", "en": "Transfer under review"},
+        {
+            "vi": "$total đang được giữ để kiểm tra an toàn (tối đa 72 giờ). Mã $reference.",
+            "en": "$total is on hold for a safety check (up to 72 hours). Ref $reference.",
+        },
+        priority="HIGH",
+    ),
+    "TRANSFER:PENDING>CANCELLED:OUT": InAppTemplate(
+        {"vi": "Chuyển tiền bị hủy sau kiểm tra", "en": "Transfer cancelled after review"},
+        {
+            "vi": "$total đã hoàn về ví của bạn. Mã $reference.",
+            "en": "$total was returned to your wallet. Ref $reference.",
+        },
+        priority="HIGH",
+    ),
+    "PAYMENT:COMPLETED:OUT": InAppTemplate(
+        {"vi": "Thanh toán thành công", "en": "Payment completed"},
+        {
+            "vi": "Bạn đã thanh toán $amount. Mã $reference.",
+            "en": "You paid $amount. Ref $reference.",
+        },
+    ),
+    "PAYMENT:COMPLETED:IN": InAppTemplate(
+        {"vi": "Cửa hàng nhận được thanh toán", "en": "Payment received"},
+        {
+            "vi": "+$amount vào ví cửa hàng. Mã $reference.",
+            "en": "+$amount to the merchant wallet. Ref $reference.",
+        },
+    ),
+    "PAYMENT:PENDING:OUT": InAppTemplate(
+        {"vi": "Thanh toán đang được kiểm tra", "en": "Payment under review"},
+        {
+            "vi": "$total đang được giữ để kiểm tra an toàn. Mã $reference.",
+            "en": "$total is on hold for a safety check. Ref $reference.",
+        },
+        priority="HIGH",
+    ),
+    "PAYMENT:PENDING>CANCELLED:OUT": InAppTemplate(
+        {"vi": "Thanh toán bị hủy sau kiểm tra", "en": "Payment cancelled after review"},
+        {
+            "vi": "$total đã hoàn về ví của bạn. Mã $reference.",
+            "en": "$total was returned to your wallet. Ref $reference.",
+        },
+        priority="HIGH",
+    ),
+    "REFUND:COMPLETED:IN": InAppTemplate(
+        {"vi": "Bạn được hoàn tiền", "en": "You got a refund"},
+        {
+            "vi": "+$amount được cửa hàng hoàn về ví. Mã $reference.",
+            "en": "+$amount was refunded by the merchant. Ref $reference.",
+        },
+    ),
+    "REFUND:COMPLETED:OUT": InAppTemplate(
+        {"vi": "Đã hoàn tiền cho khách", "en": "Refund sent"},
+        {
+            "vi": "$amount đã được hoàn cho khách. Mã $reference.",
+            "en": "$amount was refunded to the customer. Ref $reference.",
+        },
+    ),
     "ADJUSTMENT:COMPLETED": InAppTemplate(
         {"vi": "Số dư được điều chỉnh", "en": "Balance adjusted"},
         {
@@ -150,8 +243,19 @@ def format_vnd(amount_minor: int, locale: str) -> str:
     return ("-" if amount_minor < 0 else "") + text
 
 
-def template_for(txn_type: str, old: str, new: str) -> InAppTemplate | None:
-    return TEMPLATES.get(f"{txn_type}:{old}>{new}") or TEMPLATES.get(f"{txn_type}:{new}")
+def template_for(
+    txn_type: str, old: str, new: str, direction: str = "", subtype: str | None = None
+) -> InAppTemplate | None:
+    """Most specific first: subtype, then old>new, then the new status; each with the
+    recipient's direction before without it."""
+    kinds = [f"{txn_type}/{subtype}", txn_type] if subtype else [txn_type]
+    for kind in kinds:
+        for status in (f"{old}>{new}", new):
+            for suffix in (f":{direction}", ""):
+                found = TEMPLATES.get(f"{kind}:{status}{suffix}")
+                if found is not None:
+                    return found
+    return None
 
 
 def render(template: InAppTemplate, locale: str, params: Mapping[str, str]) -> tuple[str, str]:
@@ -161,14 +265,23 @@ def render(template: InAppTemplate, locale: str, params: Mapping[str, str]) -> t
 
 async def notify_transaction(db: Database, clock: Clock, message: OutboxMessage) -> None:
     payload = message.payload
-    template = template_for(str(payload["type"]), str(payload["from"]), str(payload["to"]))
     recipients: list[dict[str, Any]] = list(payload.get("recipients", []))
-    if template is None or not recipients:
+    if not recipients:
         return
+    subtype = payload.get("subtype")
     amount = int(str(payload["amount"]))
     fee = int(str(payload.get("fee", "0")))
     async with db.transaction() as session:
         for recipient in recipients:
+            template = template_for(
+                str(payload["type"]),
+                str(payload["from"]),
+                str(payload["to"]),
+                str(recipient.get("direction", "")),
+                str(subtype) if subtype else None,
+            )
+            if template is None:
+                continue
             locale = str(recipient.get("locale", "vi"))
             outgoing = recipient.get("direction") == "OUT"
             params = {

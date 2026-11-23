@@ -11,6 +11,7 @@
     "clsx": "^2.1.1",
     "i18next": "^27.2.2",
     "lucide-react": "^1.77.0",
+    "qrcode": "^1.5.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-i18next": "^18.0.3",
@@ -21,5 +22,8 @@
     "build": "tsc -p . && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.6"
   }
 }

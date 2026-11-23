@@ -3,7 +3,7 @@
 | Mục | Giá trị |
 |---|---|
 | Trạng thái | Lõi đã cài đặt ở Phase 3 (xem §13) — **tài liệu ưu tiên cao nhất** |
-| Cập nhật | 2026-11-23 |
+| Cập nhật | 2026-11-23 (Phase 5) |
 | Liên quan | [Database](database.md), [Payment Provider Simulator](payment-provider-simulator.md), [ADR-0002 Ledger](../adr/0002-double-entry-ledger.md), [ADR-0003 Tiền](../adr/0003-money-representation.md), [ADR-0004 Concurrency](../adr/0004-concurrency-control.md) |
 
 ## 1. Nguyên tắc
@@ -360,5 +360,22 @@ Lưu ý khi dùng tiếp ở Phase 4–5: thao tác giữ tiền phải cập nh
 
 Quy ước idempotency của nạp/rút: khóa duy nhất `(initiator_user_id, idempotency_key)` của bảng `transactions` là lớp chống trùng. Gửi lại cùng key trả về **trạng thái hiện tại** của chính giao dịch đó (phù hợp để client polling); khác số tiền/tài khoản nhận ⇒ 422 `IDEMPOTENCY_KEY_REUSED`. Bảng `idempotency_keys` không dùng cho hai luồng này vì phản hồi cần thay đổi theo trạng thái.
 
-Rút tiền bị risk đánh giá REVIEW được giữ tiền và chờ; API duyệt/từ chối của analyst làm ở Phase 5.
+Rút tiền bị risk đánh giá REVIEW được giữ tiền và chờ analyst (Phase 5: duyệt thì tạo payout, từ chối thì hoàn giữ; xem §13.2).
 
+
+### 13.2 Phase 5: chuyển tiền, thanh toán, hoàn tiền, đảo giao dịch
+
+| Phần | Nơi cài đặt | Ghi chú |
+|---|---|---|
+| Báo giá chuyển tiền / trả payment request | `transactions/use_cases/transfer.py` | Hạn mức chiều đi kiểm tra sơ bộ, phí từ `fee_rules`, báo giá 10 phút (`VW_SPEND_QUOTE_MINUTES`), không vượt hạn của payment request. Cảnh báo `NEW_RECIPIENT`, `POSSIBLE_DUPLICATE` chỉ để hiển thị |
+| Xác nhận (§9) | `transactions/use_cases/spend.py` | Một pipeline cho TRANSFER và PAYMENT. Thứ tự khóa: giao dịch → payment request → hai ví (theo id) → số dư (ledger, theo id). Kiểm tra lại trạng thái ví hai bên, hạn mức, trần số dư người nhận (`RECEIVER_LIMIT_EXCEEDED`), rủi ro; ALLOW ⇒ journal `TRANSFER`/`PAYMENT`, REVIEW ⇒ `TRANSFER_HOLD`/`PAYMENT_HOLD` + `held_minor` |
+| Kiểm PIN | `transfer.check_pin` | Chạy sau khi claim idempotency và **trước** khi mở transaction tiền, nên một request không bao giờ giữ hai connection cùng lúc |
+| Idempotency | `IdempotencyStore.execute_checked` | Chuyển tiền, thanh toán, hoàn tiền, đề xuất đảo dùng bảng `idempotency_keys` (§7.1): gửi lại cùng key trả về **đúng body đã lưu** kèm `Idempotent-Replayed: true`; deadlock/serialization chạy lại cả unit of work tối đa 3 lần. Fingerprint của bước xác nhận không chứa PIN |
+| Giữ tiền do rủi ro | `transactions/use_cases/review.py`, `GET/POST /api/v1/admin/risk/holds` | Duyệt: `TRANSFER_RELEASE_TO_RECEIVER` / `PAYMENT_RELEASE_TO_MERCHANT` (rút tiền: tạo payout). Từ chối hoặc quá 72 giờ (job `expire_risk_holds`): `*_RELEASE_TO_SENDER` / `PAYMENT_RELEASE_TO_PAYER` / `WITHDRAWAL_RELEASE`, payment request dùng một lần được mở lại |
+| Payment request (QR) | `payments/service.py` | Mã 16 ký tự Crockford ngẫu nhiên (80 bit). HMAC của các trường quyết định nơi tiền đến (mã, người phát hành, ví nhận, số tiền, dùng một lần, người trả, hạn) được kiểm tra mỗi lần đọc và trả; lệch ⇒ log lỗi + 404. Dùng một lần: khóa dòng + `CHECK (NOT single_use OR paid_count <= 1)` (FT-32) |
+| Xin tiền giữa người dùng | `transfer.quote_request` | Request của user được trả bằng **TRANSFER** liên kết `payment_request_id` (không hoàn tiền được); request của merchant tạo **PAYMENT** (quyết định của chủ dự án) |
+| Hoàn tiền | `transactions/use_cases/refund.py` | Khóa dòng thanh toán gốc (FT-21), `Σ hoàn + R ≤ số tiền` + CHECK; journal `REFUND` (Nợ ví merchant, Có ví khách); gốc → PARTIALLY_REFUNDED/REFUNDED. Phase 5 chưa có ngưỡng phê duyệt (quyết định của chủ dự án) |
+| Đảo giao dịch | `transactions/use_cases/reversal.py`, `ledger.reverse_transaction` | Maker-checker (`REVERSAL`). Một journal REVERSAL **ròng** của mọi journal của giao dịch gốc (chuyển qua review có hai journal), `reverses_journal_id` trỏ journal cuối (duy nhất ⇒ chỉ đảo một lần). Người nhận không đủ tiền ⇒ REVERSAL FAILED + hồ sơ thu hồi `REVERSAL_INSUFFICIENT_FUNDS` (FT-22). Đảo được TRANSFER, PAYMENT chưa hoàn lần nào, DEPOSIT (mô phỏng chargeback) |
+| Hiển thị cho khách | `transactions/api.customer_view` | `counterparty_snapshot` là phía trả tiền nhìn thấy; `metadata.source_party` là phía nhận nhìn thấy. Đảo/điều chỉnh đang chờ duyệt bị ẩn |
+
+Lỗi nghiệp vụ lúc xác nhận trả **200** với `status = FAILED`/`EXPIRED` và `failure_code` (thống nhất với rút tiền, quyết định của chủ dự án); FT-01, FT-08, FT-09 kiểm tra `failure_code` thay cho mã HTTP 422.

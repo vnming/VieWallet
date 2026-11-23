@@ -311,6 +311,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/risk/holds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Holds */
+    get: operations["list_holds_api_v1_admin_risk_holds_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/risk/holds/{reference}/approve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Approve Hold */
+    post: operations["approve_hold_api_v1_admin_risk_holds__reference__approve_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/risk/holds/{reference}/reject": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reject Hold */
+    post: operations["reject_hold_api_v1_admin_risk_holds__reference__reject_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/transactions/{reference}": {
     parameters: {
       query?: never;
@@ -322,6 +373,23 @@ export interface paths {
     get: operations["admin_get_transaction_api_v1_admin_transactions__reference__get"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/transactions/{reference}/reversals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Reversal */
+    post: operations["propose_reversal_api_v1_admin_transactions__reference__reversals_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -724,6 +792,74 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/merchant": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** My Merchant */
+    get: operations["my_merchant_api_v1_merchant_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/merchant/payments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Merchant Payments */
+    get: operations["merchant_payments_api_v1_merchant_payments_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/merchant/payments/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Merchant Payment */
+    get: operations["merchant_payment_api_v1_merchant_payments__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/merchant/payments/{reference}/refunds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create Refund */
+    post: operations["create_refund_api_v1_merchant_payments__reference__refunds_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/notifications": {
     parameters: {
       query?: never;
@@ -792,6 +928,196 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/payment-requests": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Payment Requests */
+    get: operations["list_payment_requests_api_v1_payment_requests_get"];
+    put?: never;
+    /** Create Payment Request */
+    post: operations["create_payment_request_api_v1_payment_requests_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payment-requests/{code}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Payment Request */
+    get: operations["get_payment_request_api_v1_payment_requests__code__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payment-requests/{code}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel Payment Request */
+    post: operations["cancel_payment_request_api_v1_payment_requests__code__cancel_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payment-requests/{code}/decline": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Decline Payment Request */
+    post: operations["decline_payment_request_api_v1_payment_requests__code__decline_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payment-requests/{code}/pay": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Pay Request */
+    post: operations["pay_request_api_v1_payment_requests__code__pay_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payments/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Payment */
+    get: operations["get_payment_api_v1_payments__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payments/{reference}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel Payment */
+    post: operations["cancel_payment_api_v1_payments__reference__cancel_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payments/{reference}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm Payment */
+    post: operations["confirm_payment_api_v1_payments__reference__confirm_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/recipients": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Saved */
+    get: operations["list_saved_api_v1_recipients_get"];
+    put?: never;
+    /** Save */
+    post: operations["save_api_v1_recipients_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/recipients/lookup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lookup */
+    get: operations["lookup_api_v1_recipients_lookup_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/recipients/{recipient_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete */
+    delete: operations["delete_api_v1_recipients__recipient_id__delete"];
+    options?: never;
+    head?: never;
+    /** Rename */
+    patch: operations["rename_api_v1_recipients__recipient_id__patch"];
+    trace?: never;
+  };
   "/api/v1/system/status": {
     parameters: {
       query?: never;
@@ -837,6 +1163,74 @@ export interface paths {
     get: operations["get_my_transaction_api_v1_transactions__reference__get"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/transfers": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Quote Transfer */
+    post: operations["quote_transfer_api_v1_transfers_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/transfers/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Transfer */
+    get: operations["get_transfer_api_v1_transfers__reference__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/transfers/{reference}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel Transfer */
+    post: operations["cancel_transfer_api_v1_transfers__reference__cancel_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/transfers/{reference}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm Transfer */
+    post: operations["confirm_transfer_api_v1_transfers__reference__confirm_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -926,6 +1320,27 @@ export interface paths {
      * @description Self-service freeze (lost phone): no PIN needed, it only removes capabilities.
      */
     post: operations["freeze_my_wallet_api_v1_wallet_freeze_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/wallet/qr": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Receive Qr
+     * @description Personal QR: a link to the transfer screen with this wallet prefilled. Whoever scans it
+     *     still sees the masked name from a lookup before paying, so it needs no signature.
+     */
+    get: operations["receive_qr_api_v1_wallet_qr_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -1068,7 +1483,7 @@ export interface components {
      * ActionType
      * @enum {string}
      */
-    ActionType: "ADJUSTMENT" | "WALLET_UNFREEZE";
+    ActionType: "ADJUSTMENT" | "WALLET_UNFREEZE" | "REVERSAL";
     /** AdjustmentCreatedOut */
     AdjustmentCreatedOut: {
       approval: components["schemas"]["ApprovalOut"];
@@ -1177,7 +1592,7 @@ export interface components {
     };
     /** AdminWalletOut */
     AdminWalletOut: {
-      balance: components["schemas"]["AmountOut"];
+      balance: components["schemas"]["app__modules__wallet__api__AmountOut"];
       /**
        * Created At
        * Format: date-time
@@ -1206,16 +1621,6 @@ export interface components {
     };
     /** Amount */
     Amount: {
-      /**
-       * Amount
-       * @description Integer minor units as a string
-       */
-      amount: string;
-      /** Currency */
-      currency: string;
-    };
-    /** AmountOut */
-    AmountOut: {
       /**
        * Amount
        * @description Integer minor units as a string
@@ -1516,6 +1921,66 @@ export interface components {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
+    /** HoldDecisionIn */
+    HoldDecisionIn: {
+      /** Note */
+      note?: string | null;
+    };
+    /** HoldOut */
+    HoldOut: {
+      /** Amount */
+      amount: string;
+      /** Confirmed At */
+      confirmed_at: string | null;
+      /** Counterparty */
+      counterparty: {
+        [key: string]: unknown;
+      } | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Currency */
+      currency: string;
+      /** Destination Wallet Id */
+      destination_wallet_id: string | null;
+      /** Fee */
+      fee: string;
+      /** Held */
+      held: string;
+      /** Reference */
+      reference: string;
+      /** Source Wallet Id */
+      source_wallet_id: string | null;
+      /** Status */
+      status: string;
+      /** Type */
+      type: string;
+    };
+    /** HoldRejectIn */
+    HoldRejectIn: {
+      /** Note */
+      note: string;
+    };
+    /** IssuerOut */
+    IssuerOut: {
+      kind: components["schemas"]["IssuerType"];
+      /** Mcc */
+      mcc?: string | null;
+      /**
+       * Name
+       * @description Verified business name, or the masked name of a person
+       */
+      name: string;
+      /** Wallet Number Masked */
+      wallet_number_masked: string;
+    };
+    /**
+     * IssuerType
+     * @enum {string}
+     */
+    IssuerType: "MERCHANT" | "USER";
     /** LiveResponse */
     LiveResponse: {
       /**
@@ -1552,6 +2017,25 @@ export interface components {
     LogoutAllResponse: {
       /** Revoked Sessions */
       revoked_sessions: number;
+    };
+    /** LookupOut */
+    LookupOut: {
+      /** Active */
+      active: boolean;
+      /**
+       * Display Name
+       * @description Masked name (people) or business name (merchants)
+       */
+      display_name: string;
+      /** Kind */
+      kind: string;
+      /**
+       * Wallet Number
+       * @description Echoed back only when the caller typed it
+       */
+      wallet_number?: string | null;
+      /** Wallet Number Masked */
+      wallet_number_masked: string;
     };
     /** MeResponse */
     MeResponse: {
@@ -1591,6 +2075,57 @@ export interface components {
        * @enum {string}
        */
       user_type: "CUSTOMER" | "STAFF";
+    };
+    /** MerchantOut */
+    MerchantOut: {
+      balance: components["schemas"]["app__modules__payments__api__AmountOut"];
+      /** Display Name */
+      display_name: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Legal Name */
+      legal_name: string;
+      /** Mcc */
+      mcc: string;
+      /** Status */
+      status: string;
+      /** Wallet Number */
+      wallet_number: string;
+    };
+    /** MerchantPaymentOut */
+    MerchantPaymentOut: {
+      amount: components["schemas"]["Amount"];
+      /** Completed At */
+      completed_at: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Description */
+      description: string;
+      payer: components["schemas"]["Counterparty"] | null;
+      /** Reference */
+      reference: string;
+      refundable: components["schemas"]["Amount"];
+      refunded: components["schemas"]["Amount"];
+      /**
+       * Related Reference
+       * @description For refunds: the payment refunded
+       */
+      related_reference: string | null;
+      status: components["schemas"]["TxnStatus"];
+      type: components["schemas"]["TxnType"];
+    };
+    /** MerchantPaymentPageOut */
+    MerchantPaymentPageOut: {
+      /** Items */
+      items: components["schemas"]["MerchantPaymentOut"][];
+      /** Next Cursor */
+      next_cursor: string | null;
     };
     /** MfaConfirmResponse */
     MfaConfirmResponse: {
@@ -1692,6 +2227,86 @@ export interface components {
       /** Password */
       password: string;
     };
+    /** PayIn */
+    PayIn: {
+      /**
+       * Amount
+       * @description Only for open amounts
+       */
+      amount?: string | null;
+    };
+    /** PaymentRequestIn */
+    PaymentRequestIn: {
+      /** Amount */
+      amount?: string | null;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /** Expires In Minutes */
+      expires_in_minutes?: number | null;
+      /**
+       * Kind
+       * @description MERCHANT: a shop's QR (needs a merchant profile); USER: ask someone for money
+       * @enum {string}
+       */
+      kind: "MERCHANT" | "USER";
+      /** Payer Email */
+      payer_email?: string | null;
+      /** Payer Wallet Number */
+      payer_wallet_number?: string | null;
+      /**
+       * Single Use
+       * @default true
+       */
+      single_use: boolean;
+    };
+    /** PaymentRequestOut */
+    PaymentRequestOut: {
+      /**
+       * Addressed To Me
+       * @description The caller is the named payer
+       */
+      addressed_to_me: boolean;
+      /** @description Null: the payer enters the amount */
+      amount: components["schemas"]["app__modules__payments__api__AmountOut"] | null;
+      /** Code */
+      code: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Description */
+      description: string;
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      /**
+       * Is Mine
+       * @description The caller issued this request
+       */
+      is_mine: boolean;
+      issuer: components["schemas"]["IssuerOut"];
+      /** Paid Count */
+      paid_count: number;
+      /**
+       * Payer Name
+       * @description Masked; for the issuer only
+       */
+      payer_name?: string | null;
+      /** Single Use */
+      single_use: boolean;
+      status: components["schemas"]["RequestStatus"];
+      /**
+       * Url
+       * @description Text encoded in the QR code
+       */
+      url: string;
+    };
     /** PinStatusResponse */
     PinStatusResponse: {
       /** Is Set */
@@ -1709,6 +2324,32 @@ export interface components {
        * @enum {string}
        */
       status: "ok" | "fail";
+    };
+    /** ReceiveQrOut */
+    ReceiveQrOut: {
+      /** Display Name */
+      display_name: string;
+      /**
+       * Payload
+       * @description Text to encode in the QR code (a web link)
+       */
+      payload: string;
+      /** Wallet Number */
+      wallet_number: string;
+    };
+    /** RecipientOut */
+    RecipientOut: {
+      /** Active */
+      active: boolean;
+      /**
+       * Display Name
+       * @description Masked name (people) or business name (merchants)
+       */
+      display_name: string;
+      /** Kind */
+      kind: string;
+      /** Wallet Number Masked */
+      wallet_number_masked: string;
     };
     /** ReconciliationItemOut */
     ReconciliationItemOut: {
@@ -1834,6 +2475,13 @@ export interface components {
       /** Total */
       total: number;
     };
+    /** RefundIn */
+    RefundIn: {
+      /** Amount */
+      amount: string;
+      /** Reason */
+      reason: string;
+    };
     /** RegisterRequest */
     RegisterRequest: {
       /**
@@ -1857,12 +2505,53 @@ export interface components {
       /** Note */
       note: string;
     };
+    /** RenameIn */
+    RenameIn: {
+      /** Nickname */
+      nickname?: string | null;
+    };
+    /**
+     * RequestStatus
+     * @enum {string}
+     */
+    RequestStatus: "OPEN" | "PAID" | "EXPIRED" | "CANCELLED" | "DECLINED";
     /** ResetPasswordRequest */
     ResetPasswordRequest: {
       /** New Password */
       new_password: string;
       /** Token */
       token: string;
+    };
+    /** ReversalCreatedOut */
+    ReversalCreatedOut: {
+      approval: components["schemas"]["ApprovalOut"];
+      /** Reversal Reference */
+      reversal_reference: string;
+    };
+    /** ReversalIn */
+    ReversalIn: {
+      /** Reason */
+      reason: string;
+    };
+    /** SaveRecipientIn */
+    SaveRecipientIn: {
+      /** Nickname */
+      nickname?: string | null;
+      /** Wallet Number */
+      wallet_number: string;
+    };
+    /** SavedRecipientOut */
+    SavedRecipientOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Last Used At */
+      last_used_at: string | null;
+      /** Nickname */
+      nickname: string | null;
+      recipient: components["schemas"]["RecipientOut"];
     };
     /** SessionResponse */
     SessionResponse: {
@@ -1894,6 +2583,51 @@ export interface components {
       password: string;
       /** Pin */
       pin: string;
+    };
+    /** SpendOut */
+    SpendOut: {
+      amount: components["schemas"]["Amount"];
+      /** Completed At */
+      completed_at: string | null;
+      /** @description The receiver, as the payer sees it */
+      counterparty: components["schemas"]["Counterparty"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Description */
+      description: string;
+      /** Events */
+      events: components["schemas"]["TransactionEventOut"][];
+      /** Failure Code */
+      failure_code: string | null;
+      fee: components["schemas"]["Amount"];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Next Action
+       * @enum {string}
+       */
+      next_action: "NONE" | "CONFIRM" | "WAIT_REVIEW";
+      /** Payment Request Code */
+      payment_request_code: string | null;
+      /** Quote Expires At */
+      quote_expires_at: string | null;
+      /** Reference */
+      reference: string;
+      status: components["schemas"]["TxnStatus"];
+      /** @description What leaves the payer's wallet (amount + fee) */
+      total: components["schemas"]["Amount"];
+      type: components["schemas"]["TxnType"];
+      /**
+       * Warnings
+       * @description NEW_RECIPIENT, POSSIBLE_DUPLICATE
+       */
+      warnings: string[];
     };
     /** StaffFreezeIn */
     StaffFreezeIn: {
@@ -2043,6 +2777,25 @@ export interface components {
       /** Next Cursor */
       next_cursor: string | null;
     };
+    /** TransferIn */
+    TransferIn: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /** Email */
+      email?: string | null;
+      /**
+       * Note
+       * @default
+       */
+      note: string;
+      /** Recipient Id */
+      recipient_id?: string | null;
+      /** Wallet Number */
+      wallet_number?: string | null;
+    };
     /**
      * TxnStatus
      * @enum {string}
@@ -2113,7 +2866,7 @@ export interface components {
     };
     /** WalletOut */
     WalletOut: {
-      balance: components["schemas"]["AmountOut"];
+      balance: components["schemas"]["app__modules__wallet__api__AmountOut"];
       /** Currency */
       currency: string;
       freeze_source: components["schemas"]["FreezeSource"] | null;
@@ -2145,6 +2898,23 @@ export interface components {
        * Format: uuid
        */
       destination_id: string;
+    };
+    /** AmountOut */
+    app__modules__payments__api__AmountOut: {
+      /** Amount */
+      amount: string;
+      /** Currency */
+      currency: string;
+    };
+    /** AmountOut */
+    app__modules__wallet__api__AmountOut: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /** Currency */
+      currency: string;
     };
   };
   responses: never;
@@ -2714,6 +3484,96 @@ export interface operations {
       };
     };
   };
+  list_holds_api_v1_admin_risk_holds_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HoldOut"][];
+        };
+      };
+    };
+  };
+  approve_hold_api_v1_admin_risk_holds__reference__approve_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["HoldDecisionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HoldOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  reject_hold_api_v1_admin_risk_holds__reference__reject_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["HoldRejectIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HoldOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   admin_get_transaction_api_v1_admin_transactions__reference__get: {
     parameters: {
       query?: never;
@@ -2732,6 +3592,44 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["AdminTransactionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  propose_reversal_api_v1_admin_transactions__reference__reversals_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReversalIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReversalCreatedOut"];
         };
       };
       /** @description Validation Error */
@@ -3501,6 +4399,127 @@ export interface operations {
       };
     };
   };
+  my_merchant_api_v1_merchant_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MerchantOut"];
+        };
+      };
+    };
+  };
+  merchant_payments_api_v1_merchant_payments_get: {
+    parameters: {
+      query?: {
+        cursor?: string | null;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MerchantPaymentPageOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  merchant_payment_api_v1_merchant_payments__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MerchantPaymentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_refund_api_v1_merchant_payments__reference__refunds_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   list_notifications_api_v1_notifications_get: {
     parameters: {
       query?: {
@@ -3603,6 +4622,454 @@ export interface operations {
       };
     };
   };
+  list_payment_requests_api_v1_payment_requests_get: {
+    parameters: {
+      query?: {
+        role?: "issued" | "incoming";
+        open?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentRequestOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_payment_request_api_v1_payment_requests_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PaymentRequestIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentRequestOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_payment_request_api_v1_payment_requests__code__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentRequestOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  cancel_payment_request_api_v1_payment_requests__code__cancel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentRequestOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  decline_payment_request_api_v1_payment_requests__code__decline_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentRequestOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  pay_request_api_v1_payment_requests__code__pay_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PayIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_payment_api_v1_payments__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  cancel_payment_api_v1_payments__reference__cancel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  confirm_payment_api_v1_payments__reference__confirm_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_saved_api_v1_recipients_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SavedRecipientOut"][];
+        };
+      };
+    };
+  };
+  save_api_v1_recipients_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SaveRecipientIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SavedRecipientOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  lookup_api_v1_recipients_lookup_get: {
+    parameters: {
+      query?: {
+        wallet_number?: string | null;
+        email?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LookupOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_api_v1_recipients__recipient_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        recipient_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  rename_api_v1_recipients__recipient_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        recipient_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RenameIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SavedRecipientOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   system_status_api_v1_system_status_get: {
     parameters: {
       query?: never;
@@ -3675,6 +5142,142 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["TransactionDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  quote_transfer_api_v1_transfers_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TransferIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_transfer_api_v1_transfers__reference__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  cancel_transfer_api_v1_transfers__reference__cancel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  confirm_transfer_api_v1_transfers__reference__confirm_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SpendOut"];
         };
       };
       /** @description Validation Error */
@@ -3839,6 +5442,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  receive_qr_api_v1_wallet_qr_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReceiveQrOut"];
         };
       };
     };

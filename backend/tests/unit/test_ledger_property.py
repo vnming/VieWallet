@@ -26,6 +26,7 @@ from app.modules.ledger.domain import (
     balance_delta,
     credit,
     debit,
+    net_reversal,
 )
 
 WALLETS = 5
@@ -42,6 +43,10 @@ class Book:
     journals: list[JournalDraft] = field(default_factory=list)
     reversed_ids: set[int] = field(default_factory=set)
     holds: list[tuple[int, int, int]] = field(default_factory=list)  # (wallet idx, amount, fee)
+    # Held transfers awaiting review: (journal index of the hold, sender, receiver, amount, fee).
+    review_holds: list[tuple[int, int, int, int, int]] = field(default_factory=list)
+    # Completed business transfers as journal groups (direct: [t]; via review: [hold, release]).
+    transfers: list[list[int]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.folded = 0
@@ -88,7 +93,46 @@ class Book:
         lines = [debit(self.wallets[s], vnd(amount + fee)), credit(self.wallets[r], vnd(amount))]
         if fee:
             lines.append(credit(self.fees, vnd(fee)))
-        self.apply(JournalDraft(JournalKind.TRANSFER, tuple(lines)))
+        if self.apply(JournalDraft(JournalKind.TRANSFER, tuple(lines))):
+            self.transfers.append([len(self.journals) - 1])
+
+    def transfer_reviewed(self, s: int, r: int, amount: int, fee: int) -> None:
+        """REVIEW: TRANSFER_HOLD now, an analyst decides later (§5.4)."""
+        if s == r:
+            return
+        total = vnd(amount + fee)
+        held = JournalDraft(
+            JournalKind.TRANSFER_HOLD, (debit(self.wallets[s], total), credit(self.hold, total))
+        )
+        if self.apply(held):
+            self.review_holds.append((len(self.journals) - 1, s, r, amount, fee))
+
+    def review_decide(self, pick: int, *, approve: bool) -> None:
+        if not self.review_holds:
+            return
+        index, s, r, amount, fee = self.review_holds.pop(pick % len(self.review_holds))
+        total = vnd(amount + fee)
+        if approve:
+            lines = [debit(self.hold, total), credit(self.wallets[r], vnd(amount))]
+            if fee:
+                lines.append(credit(self.fees, vnd(fee)))
+            draft = JournalDraft(JournalKind.TRANSFER_RELEASE_TO_RECEIVER, tuple(lines))
+        else:
+            draft = JournalDraft(
+                JournalKind.TRANSFER_RELEASE_TO_SENDER,
+                (debit(self.hold, total), credit(self.wallets[s], total)),
+            )
+        assert self.apply(draft), "releasing a hold can never fail"
+        if approve:
+            self.transfers.append([index, len(self.journals) - 1])
+
+    def reverse_transfer(self, pick: int) -> None:
+        """Staff reversal of a whole business transfer (net of all its journals, §5.7)."""
+        if not self.transfers:
+            return
+        group = self.transfers.pop(pick % len(self.transfers))
+        if not self.apply(net_reversal([self.journals[i] for i in group])):
+            self.transfers.append(group)  # receiver spent it: refused, nothing posted (FT-22)
 
     def withdraw_hold(self, w: int, amount: int, fee: int) -> None:
         total = vnd(amount + fee)
@@ -139,7 +183,8 @@ class Book:
             i
             for i, j in enumerate(self.journals)
             if i not in self.reversed_ids
-            and j.kind not in {JournalKind.REVERSAL, JournalKind.WITHDRAWAL_HOLD}
+            and j.kind
+            not in {JournalKind.REVERSAL, JournalKind.WITHDRAWAL_HOLD, JournalKind.TRANSFER}
             and all(line.account_id != self.hold for line in j.lines)
         ]
         if not candidates:
@@ -176,14 +221,15 @@ class Book:
             b for a, b in self.balances.items() if CHART[self.codes[a]].normal_side is Side.CREDIT
         )
         assert debit_side == credit_side  # I4
-        assert self.balances[self.hold] == sum(a + f for _, a, f in self.holds)  # I5
+        held = sum(a + f for _, a, f in self.holds) + sum(a + f for *_, a, f in self.review_holds)
+        assert self.balances[self.hold] == held  # I5
 
 
 def run_operation(book: Book, rng: random.Random) -> None:
     w1, w2 = rng.randrange(WALLETS), rng.randrange(WALLETS)
     amount = rng.choice([1, 999, 1_000, 50_000, 1_000_000, rng.randint(1, 5_000_000)])
     fee = rng.choice([0, 0, 1_100, rng.randint(0, 10_000)])
-    match rng.randrange(8):
+    match rng.randrange(11):
         case 0:
             book.deposit(w1, amount)
         case 1:
@@ -198,6 +244,12 @@ def run_operation(book: Book, rng: random.Random) -> None:
             book.reverse(rng.randrange(1_000))
         case 6:
             book.adjust(w1, amount, to_customer=rng.random() < 0.6)
+        case 7:
+            book.transfer_reviewed(w1, w2, amount, fee)
+        case 8:
+            book.review_decide(rng.randrange(1_000), approve=rng.random() < 0.6)
+        case 9:
+            book.reverse_transfer(rng.randrange(1_000))
         case _:
             book.transfer(w2, w1, amount, 0)
 

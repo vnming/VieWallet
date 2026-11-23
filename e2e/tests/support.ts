@@ -122,3 +122,44 @@ export function setKycTier(email: string, tier: 0 | 1): void {
     String(tier),
   ]);
 }
+
+/** A verified customer who owns a simulated shop (CLI inside the api container). */
+export function createMerchant(email: string, shopName: string, owner: string): void {
+  compose(
+    [
+      "exec",
+      "-T",
+      "api",
+      "python",
+      "-m",
+      "app.scripts.create_merchant",
+      "--create-user",
+      "--email",
+      email,
+      "--owner",
+      owner,
+      "--name",
+      shopName,
+    ],
+    `${PASSWORD}\n`,
+  );
+}
+
+/** A verified customer without going through sign-up (which is rate limited per IP). */
+export function createCustomer(email: string, fullName: string): void {
+  compose(
+    [
+      "exec",
+      "-T",
+      "api",
+      "python",
+      "-m",
+      "app.scripts.create_customer",
+      "--email",
+      email,
+      "--name",
+      fullName,
+    ],
+    `${PASSWORD}\n`,
+  );
+}

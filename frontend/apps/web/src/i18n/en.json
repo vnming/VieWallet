@@ -14,7 +14,10 @@
     "history": "History",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "transfer": "Send money",
+    "scan": "Scan QR",
+    "merchant": "Shop"
   },
   "language": {
     "label": "Language",
@@ -209,7 +212,8 @@
       "FROZEN": "Frozen",
       "SUSPENDED": "Suspended",
       "CLOSED": "Closed"
-    }
+    },
+    "quickActions": "Quick actions"
   },
   "history": {
     "title": "Transaction history",
@@ -268,11 +272,23 @@
       "PROVIDER_REJECTED": "The bank rejected the request.",
       "ACCOUNT_CLOSED": "The receiving account is closed or invalid.",
       "INSUFFICIENT_BALANCE": "Your balance does not cover the amount and fee.",
-      "RISK_BLOCKED": "Blocked for your safety. New bank accounts must wait 1 hour.",
+      "RISK_BLOCKED": "Stopped for your safety.",
       "WALLET_NOT_ACTIVE": "Your wallet is frozen.",
       "DESTINATION_REMOVED": "The bank account was removed.",
       "QUOTE_EXPIRED": "The quote has expired.",
-      "PAYOUT_FAILED": "The bank did not accept the payout."
+      "PAYOUT_FAILED": "The bank did not accept the payout.",
+      "WALLET_FROZEN": "Your wallet is frozen.",
+      "RECIPIENT_UNAVAILABLE": "The recipient cannot receive money right now.",
+      "RECEIVER_LIMIT_EXCEEDED": "The recipient reached their balance limit.",
+      "PAYMENT_REQUEST_CLOSED": "The payment request is closed (paid, expired or cancelled).",
+      "REVIEW_REJECTED": "Not approved after a safety check. The money is back in your wallet.",
+      "REVIEW_EXPIRED": "The safety check timed out. The money is back in your wallet.",
+      "LIMIT_PER_TXN_EXCEEDED": "Per-transaction limit exceeded.",
+      "LIMIT_DAILY_AMOUNT_EXCEEDED": "Daily limit exceeded.",
+      "LIMIT_DAILY_COUNT_EXCEEDED": "Daily transaction count exceeded.",
+      "LIMIT_MONTHLY_AMOUNT_EXCEEDED": "Monthly limit exceeded.",
+      "LIMIT_MONTHLY_COUNT_EXCEEDED": "Monthly transaction count exceeded.",
+      "TXN_TYPE_NOT_ALLOWED": "Identity verification (KYC) is required for this."
     }
   },
   "deposit": {
@@ -333,5 +349,136 @@
     "unread": "{{count}} unread notifications",
     "open": "Open notification",
     "error": "Could not load notifications"
+  },
+  "spend": {
+    "review": "Review",
+    "to": "To",
+    "warning": {
+      "NEW_RECIPIENT": "First transfer to this person. Check the name carefully.",
+      "POSSIBLE_DUPLICATE": "You just sent this exact amount to the same person. Is this a duplicate?"
+    },
+    "review_hold": "Safety check in progress",
+    "reviewBody": "The money is on hold while we check (up to 72 hours). If not approved, it returns to your wallet.",
+    "expired": "The quote expired",
+    "cancelled": "Cancelled",
+    "notConfirmed": "Not confirmed yet",
+    "status": {
+      "REVERSED": "Reversed",
+      "REFUNDED": "Refunded",
+      "PARTIALLY_REFUNDED": "Partially refunded"
+    }
+  },
+  "transfer": {
+    "title": "Send money",
+    "description": "Instant transfers to another VieWallet wallet.",
+    "recipientBy": "Find the recipient by",
+    "by": {
+      "wallet": "Wallet number",
+      "email": "E-mail",
+      "saved": "Saved"
+    },
+    "noSaved": "No saved recipients yet.",
+    "savedLabel": "Saved recipient",
+    "choose": "Choose a recipient",
+    "walletNumber": "Recipient wallet number",
+    "email": "Recipient e-mail",
+    "check": "Check",
+    "save": "Save recipient",
+    "saved": "Saved",
+    "amountHint": "Whole dong, from 1 VND.",
+    "note": "Message (optional)",
+    "quote": "See fee and confirm",
+    "confirm": "Confirm transfer",
+    "completed": "Transfer completed",
+    "failed": "Transfer failed"
+  },
+  "pay": {
+    "title": "Pay",
+    "description": "Check who you pay before paying.",
+    "verified": "Verified",
+    "merchant": "Shop",
+    "person": "Person",
+    "openAmount": "The shop lets you enter the amount.",
+    "closed": {
+      "PAID": "This code was already paid.",
+      "EXPIRED": "This payment code expired.",
+      "CANCELLED": "The issuer cancelled this code.",
+      "DECLINED": "You declined this request."
+    },
+    "yours": "You created this code.",
+    "continue": "Continue",
+    "invalid": "Payment code not valid",
+    "confirm": "Confirm payment",
+    "completed": "Payment completed",
+    "failed": "Payment failed"
+  },
+  "scan": {
+    "title": "Scan a QR code",
+    "description": "Scan a shop QR, a money request or a friend's receive QR.",
+    "camera": "Camera viewfinder",
+    "start": "Turn on camera",
+    "unsupported": "This browser cannot scan with the camera yet. Enter the code below.",
+    "denied": "Could not open the camera. Allow camera access or enter the code below.",
+    "manual": "Enter a code or link",
+    "code": "Payment code, wallet number or link",
+    "codeHint": "For example the 16-character code under the QR, or a 10-digit wallet number.",
+    "invalid": "Code not recognised. Only VieWallet codes can be opened.",
+    "open": "Open"
+  },
+  "receive": {
+    "title": "Receive money",
+    "description": "Show this code so others can send you money.",
+    "qrLabel": "Your receive QR code"
+  },
+  "request": {
+    "title": "Request money",
+    "description": "Ask someone to pay you an amount.",
+    "incoming": "Requests to you",
+    "new": "New request",
+    "issued": "Your requests",
+    "empty": {
+      "issued": "You have not requested money yet.",
+      "incoming": "No requests addressed to you."
+    },
+    "anyone": "Anyone with the code",
+    "until": "Until {{time}}",
+    "pay": "Pay",
+    "cancel": "Cancel request",
+    "decline": "Decline",
+    "qrLabel": "Payment request QR code",
+    "another": "Create another",
+    "payer": "Payer (optional)",
+    "payerHint": "E-mail or wallet number. Empty: anyone with the code can pay.",
+    "payerInvalid": "Enter an e-mail or a 10-digit wallet number.",
+    "create": "Create request",
+    "status": {
+      "OPEN": "Open",
+      "PAID": "Paid",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled",
+      "DECLINED": "Declined"
+    }
+  },
+  "merchant": {
+    "title": "Shop",
+    "description": "Simulated shop: create QR codes, see payments, refund.",
+    "none": "You do not have a shop",
+    "noneBody": "Simulated shops are created with the create_merchant command in development.",
+    "balance": "Shop wallet balance",
+    "newQr": "Create a payment QR",
+    "amountHint": "Leave empty to let the customer enter the amount.",
+    "reusable": "Reusable code (counter sticker)",
+    "createQr": "Create QR",
+    "qrLabel": "Shop payment QR code",
+    "payments": "Recent payments",
+    "noPayments": "No payments yet.",
+    "refund": "Refund",
+    "refundTitle": "Refund the customer",
+    "refundBody": "Payment {{reference}}. The money leaves the shop wallet and reaches the customer at once.",
+    "refundable": "Still refundable:",
+    "tooMuch": "More than what is still refundable.",
+    "reason": "Reason",
+    "refunded": "Refund sent",
+    "refundFailed": "Refund failed"
   }
 }

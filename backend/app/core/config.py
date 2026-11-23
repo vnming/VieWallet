@@ -94,6 +94,7 @@ class Settings(BaseSettings):
     )
     deposit_inquiry_after_minutes: int = Field(default=30, ge=1)
     withdrawal_quote_minutes: int = Field(default=10, ge=1)
+    spend_quote_minutes: int = Field(default=10, ge=1, description="Transfer/payment quotes.")
 
     @property
     def expose_api_docs(self) -> bool:

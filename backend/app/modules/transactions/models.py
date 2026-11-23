@@ -14,13 +14,14 @@ from app.core.db import Base
 from app.core.ids import new_id
 from app.core.models import CurrencyRecord
 from app.modules.identity.public import User
+from app.modules.payments.public import PaymentRequest
 from app.modules.transactions.domain.state_machine import TxnStatus, TxnType
 from app.modules.wallet.public import BankDestination, Wallet
 
 ACTOR_TYPES = ("USER", "STAFF", "SYSTEM", "PROVIDER")
 
 # Tables referenced by foreign keys must be registered in this process's metadata too.
-_FOREIGN_KEY_TARGETS = (CurrencyRecord, User, Wallet, BankDestination)
+_FOREIGN_KEY_TARGETS = (CurrencyRecord, User, Wallet, BankDestination, PaymentRequest)
 
 
 def _in(column: str, values: list[str] | tuple[str, ...]) -> str:
@@ -54,6 +55,7 @@ class Transaction(Base):
             " WHEN 'DEPOSIT' THEN destination_wallet_id IS NOT NULL AND source_wallet_id IS NULL"
             " WHEN 'WITHDRAWAL' THEN source_wallet_id IS NOT NULL AND destination_wallet_id IS NULL"
             " WHEN 'ADJUSTMENT' THEN (source_wallet_id IS NULL) <> (destination_wallet_id IS NULL)"
+            " WHEN 'REFUND' THEN source_wallet_id IS NOT NULL AND destination_wallet_id IS NOT NULL"
             " ELSE TRUE END",
             name="wallets_match_type",
         ),
@@ -62,6 +64,7 @@ class Transaction(Base):
         Index("ix_transactions_ops_queue", "status", "type", "created_at"),
         Index("ix_transactions_limits", "source_wallet_id", "type", "created_at"),
         Index("ix_transactions_related", "related_transaction_id"),
+        Index("ix_transactions_payment_request", "payment_request_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=new_id)
@@ -86,6 +89,9 @@ class Transaction(Base):
     provider_code: Mapped[str | None] = mapped_column(String(20))
     bank_destination_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("app.bank_destinations.id")
+    )
+    payment_request_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("app.payment_requests.id")
     )
     fee_rule_id: Mapped[uuid.UUID | None]
     fee_rule_version: Mapped[int | None]

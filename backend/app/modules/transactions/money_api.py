@@ -85,7 +85,7 @@ def _next_action(txn: Transaction) -> NextAction:
     if txn.status == TxnStatus.PENDING.value:
         if txn.type == TxnType.DEPOSIT.value and txn.extra.get("checkout_url"):
             return "REDIRECT"
-        if txn.risk_decision == "REVIEW":
+        if txn.risk_decision == "REVIEW" and "review_decision" not in txn.extra:
             return "WAIT_REVIEW"
         return "WAIT_PROVIDER"
     if txn.status == TxnStatus.PROCESSING.value:

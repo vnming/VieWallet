@@ -59,13 +59,16 @@ class WalletView:
 
 
 async def find_for_owner(
-    session: AsyncSession, owner_user_id: uuid.UUID, currency: str = DEFAULT_CURRENCY
+    session: AsyncSession,
+    owner_user_id: uuid.UUID,
+    currency: str = DEFAULT_CURRENCY,
+    wallet_type: WalletType = WalletType.MAIN,
 ) -> Wallet | None:
     wallet: Wallet | None = await session.scalar(
         select(Wallet).where(
             Wallet.owner_user_id == owner_user_id,
             Wallet.currency == currency,
-            Wallet.wallet_type == WalletType.MAIN.value,
+            Wallet.wallet_type == wallet_type.value,
         )
     )
     return wallet
@@ -76,13 +79,14 @@ async def ensure_wallet(
     clock: Clock,
     owner_user_id: uuid.UUID,
     currency: str = DEFAULT_CURRENCY,
+    wallet_type: WalletType = WalletType.MAIN,
 ) -> Wallet:
-    """Return the user's main wallet, opening it (and its ledger account) if needed.
+    """Return the user's wallet of that type, opening it (and its ledger account) if needed.
 
     Runs in a savepoint, so a concurrent opener or a wallet-number collision never leaves an
     orphan ledger account behind.
     """
-    existing = await find_for_owner(session, owner_user_id, currency)
+    existing = await find_for_owner(session, owner_user_id, currency, wallet_type)
     if existing is not None:
         return existing
     for _ in range(_NUMBER_ATTEMPTS):
@@ -102,7 +106,7 @@ async def ensure_wallet(
                     id=wallet_id,
                     owner_user_id=owner_user_id,
                     wallet_number=generate_wallet_number(),
-                    wallet_type=WalletType.MAIN.value,
+                    wallet_type=wallet_type.value,
                     currency=currency,
                     status=WalletStatus.ACTIVE.value,
                     ledger_account_id=account.id,
@@ -112,7 +116,7 @@ async def ensure_wallet(
                 session.add(wallet)
                 await session.flush()
         except IntegrityError:
-            existing = await find_for_owner(session, owner_user_id, currency)
+            existing = await find_for_owner(session, owner_user_id, currency, wallet_type)
             if existing is not None:  # a concurrent request opened it first
                 return existing
             continue  # wallet number collision: try another number
@@ -124,7 +128,7 @@ async def ensure_wallet(
                 actor_type="SYSTEM",
                 target_type="wallet",
                 target_id=str(wallet.id),
-                details={"currency": currency},
+                details={"currency": currency, "wallet_type": wallet_type.value},
             ),
         )
         return wallet

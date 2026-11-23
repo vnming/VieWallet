@@ -32,59 +32,10 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 
 import { FormError } from "../../features/auth/FormError";
+import { validAmount } from "../../features/money/amount";
+import { AmountField, PageHeader } from "../../features/money/fields";
 import { goToProvider } from "../../features/money/redirect";
 import { amountLocale, formatDateTime, uiLocale } from "../../features/wallet/format";
-
-const PRESETS = ["100000", "500000", "1000000", "2000000"];
-
-function onlyDigits(value: string): string {
-  return value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 13);
-}
-
-function validAmount(value: string): boolean {
-  return /^[1-9]\d*000$/.test(value);
-}
-
-function PageHeader({ title, description }: { title: string; description: string }) {
-  return (
-    <header className="flex flex-col gap-1">
-      <h1 className="text-2xl font-bold text-fg">{title}</h1>
-      <p className="text-fg-muted">{description}</p>
-    </header>
-  );
-}
-
-function AmountField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const { t, i18n } = useTranslation();
-  return (
-    <div className="flex flex-col gap-3">
-      <TextField
-        label={t("money.amount")}
-        inputMode="numeric"
-        hint={t("money.amountHint")}
-        value={value}
-        onChange={(e) => onChange(onlyDigits(e.target.value))}
-      />
-      <div role="group" aria-label={t("money.presets")} className="flex flex-wrap gap-2">
-        {PRESETS.map((preset) => (
-          <Button
-            key={preset}
-            type="button"
-            size="sm"
-            variant={preset === value ? "primary" : "secondary"}
-            onClick={() => onChange(preset)}
-          >
-            <AmountText
-              money={{ amount: preset, currency: "VND" }}
-              locale={amountLocale(i18n.language)}
-              size="sm"
-            />
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // ------------------------------------------------------------------ deposit
 

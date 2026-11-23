@@ -105,7 +105,10 @@ def _amount(value: int, currency: str) -> Amount:
 def customer_view(txn: Transaction, wallet_id: uuid.UUID) -> TransactionOut:
     outgoing = txn.source_wallet_id == wallet_id
     total = txn.amount_minor + txn.fee_minor if outgoing else txn.amount_minor
-    snapshot = txn.counterparty_snapshot or None
+    # counterparty_snapshot is what the paying side sees; source_party what the receiver sees.
+    snapshot = (
+        txn.counterparty_snapshot if outgoing else txn.extra.get("source_party")
+    ) or txn.counterparty_snapshot
     return TransactionOut(
         id=txn.id,
         reference=txn.reference,

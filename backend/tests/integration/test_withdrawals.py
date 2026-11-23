@@ -13,8 +13,11 @@ from sqlalchemy import text, update
 from app.core.clock import FixedClock
 from app.core.outbox import OutboxEvent
 from app.modules.providers.public import SIMULATOR, ProviderOperation, SimulatorProvider
+from app.modules.risk.public import Decision, RiskResult
 from app.modules.transactions.public import run_inquiries, withdrawal
+from app.modules.transactions.use_cases import withdrawal as withdrawal_module
 from tests.integration.conftest import SIM_API_KEY, SIM_BASE, SIM_WEBHOOK_SECRET, CallbackRelay
+from tests.integration.finance_helpers import sign_in_staff
 from tests.integration.identity_helpers import PIN, signed_in_customer
 from tests.integration.money_helpers import (
     assert_books_clean,
@@ -406,3 +409,49 @@ async def test_notification_inbox(
     assert (await client.post("/api/v1/notifications/read-all")).json() == {"unread": 0}
     await drain(app)  # replaying events never duplicates notifications
     assert len((await client.get("/api/v1/notifications")).json()["items"]) == 2
+
+
+async def test_withdrawal_held_for_review_then_decided(
+    client: httpx.AsyncClient,
+    app: FastAPI,
+    sim_app: FastAPI,
+    clock: FixedClock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Phase 5 completes the REVIEW path of withdrawals: approve sends the payout, reject
+    releases the hold."""
+    destination = await ready_customer(client, app, clock)
+
+    async def review_everything(*_: Any, **__: Any) -> RiskResult:
+        return RiskResult(score=80, decision=Decision.REVIEW)
+
+    monkeypatch.setattr(withdrawal_module, "assess", review_everything)
+    first = await quote(client, destination, 1_000_000)
+    held = (await confirm(client, first["reference"])).json()
+    assert (held["status"], held["next_action"]) == ("PENDING", "WAIT_REVIEW")
+    second = await quote(client, destination, 500_000)
+    assert (await confirm(client, second["reference"])).json()["next_action"] == "WAIT_REVIEW"
+    await drain(app)  # nothing is sent while under review
+    assert (await status_of(client, first["reference"]))["status"] == "PENDING"
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(
+        transport=transport, base_url="http://viewallet.test", headers={"X-VW-CSRF": "1"}
+    ) as staff:
+        await sign_in_staff(staff, app, "analyst@example.com", "RISK_ANALYST")
+        approved = await staff.post(
+            f"/api/v1/admin/risk/holds/{first['reference']}/approve", json={}
+        )
+        assert approved.status_code == 200, approved.text
+        assert approved.json()["status"] == "PENDING"  # the payout goes out next
+        rejected = await staff.post(
+            f"/api/v1/admin/risk/holds/{second['reference']}/reject",
+            json={"note": "tài khoản nhận đáng ngờ"},
+        )
+        assert rejected.json()["status"] == "CANCELLED"
+    assert (await status_of(client, first["reference"]))["next_action"] == "WAIT_PROVIDER"
+    await drain(app)
+    await settle(app, sim_app)
+    assert (await status_of(client, first["reference"]))["status"] == "COMPLETED"
+    assert await balance(client) == 5_000_000 - 1_001_100
+    await assert_books_clean(app)

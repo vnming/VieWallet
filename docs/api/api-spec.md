@@ -124,6 +124,32 @@ Mã lỗi mới: `WALLET_NOT_FOUND`, `WALLET_NOT_ACTIVE`, `WALLET_STATE_CONFLICT
 
 `MoneyFlowOut.next_action`: `REDIRECT` (mở `checkout_url`), `WAIT_PROVIDER`, `WAIT_REVIEW` (rút tiền chờ kiểm tra rủi ro), `NONE`. `GET /api/v1/me` có thêm `kyc_tier`.
 
+## 3c. Chuyển tiền, thanh toán QR, cửa hàng, hoàn tiền, đảo (đã cài đặt ở Phase 5)
+
+| Method | Path | Ghi chú |
+|---|---|---|
+| GET | `/api/v1/recipients/lookup?wallet_number=` / `?email=` | Tên đã che (`NGUYEN V*** A`), `kind`, `active`. Rate limit 20/10 phút + 100/ngày mỗi user ⇒ 429. Chính mình ⇒ 422 `RECIPIENT_IS_SELF`; không có ⇒ 404 `RECIPIENT_NOT_FOUND` (ví merchant cũng 404: merchant nhận qua payment request) |
+| GET/POST | `/api/v1/recipients` | Người nhận đã lưu (tối đa 50, lưu trùng giữ một bản) |
+| PATCH/DELETE | `/api/v1/recipients/{id}` | Của người khác ⇒ 404 |
+| GET | `/api/v1/wallet/qr` | `payload` = `{web}/transfer?to=<số ví>` |
+| POST | `/api/v1/transfers` [I] | `{wallet_number \| email \| recipient_id, amount, note}` ⇒ `SpendOut` CREATED, `next_action = CONFIRM`, `warnings` |
+| POST | `/api/v1/transfers/{ref}/confirm` [I] | `{pin}` ⇒ COMPLETED, PENDING (`next_action = WAIT_REVIEW`) hoặc 200 với FAILED/EXPIRED + `failure_code` (`INSUFFICIENT_BALANCE`, `WALLET_FROZEN`, `RECIPIENT_UNAVAILABLE`, `RECEIVER_LIMIT_EXCEEDED`, `LIMIT_*`, `RISK_BLOCKED`, `QUOTE_EXPIRED`, `PAYMENT_REQUEST_CLOSED`). Sai PIN ⇒ 422 `PIN_INVALID`/`PIN_LOCKED`, báo giá giữ CREATED. Cùng key ⇒ body đã lưu + `Idempotent-Replayed: true`; key khác sau khi xác nhận ⇒ 409 `TXN_INVALID_STATE` |
+| POST | `/api/v1/transfers/{ref}/cancel` · GET `/api/v1/transfers/{ref}` | Hủy chỉ khi CREATED |
+| POST | `/api/v1/payment-requests` [I] | `{kind: MERCHANT\|USER, amount?, description, single_use, expires_in_minutes?, payer_wallet_number?\|payer_email?}`. MERCHANT cần hồ sơ cửa hàng (`MERCHANT_NOT_FOUND`); USER bắt buộc `amount`, luôn dùng một lần. Mặc định hạn: QR một lần 15 phút, QR dùng nhiều lần 30 ngày, xin tiền 7 ngày |
+| GET | `/api/v1/payment-requests?role=issued\|incoming&open=` | |
+| GET | `/api/v1/payment-requests/{code}` | Kiểm chữ ký; `status` hiệu lực (OPEN quá hạn ⇒ EXPIRED). Request gửi đích danh người khác ⇒ 404 |
+| POST | `/api/v1/payment-requests/{code}/cancel` · `/decline` | Người phát hành hủy / người trả được chỉ định từ chối |
+| POST | `/api/v1/payment-requests/{code}/pay` [I] | `{amount?}` (chỉ cho QR để trống số tiền) ⇒ `SpendOut` PAYMENT (merchant) hoặc TRANSFER (người dùng) |
+| POST | `/api/v1/payments/{ref}/confirm` [I] · `/cancel` · GET `/api/v1/payments/{ref}` | Như chuyển tiền |
+| GET | `/api/v1/merchant` | Hồ sơ cửa hàng + số dư ví MERCHANT; không phải merchant ⇒ 404 |
+| GET | `/api/v1/merchant/payments` · `/merchant/payments/{ref}` | Thanh toán và hoàn tiền của cửa hàng, `refunded`, `refundable` |
+| POST | `/api/v1/merchant/payments/{ref}/refunds` [I] | `{amount, reason}` ⇒ REFUND COMPLETED/FAILED; vượt phần còn lại ⇒ 422 `REFUND_EXCEEDS_REMAINING`; thanh toán đã hoàn hết/đã đảo ⇒ 409 |
+| POST | `/api/v1/admin/transactions/{ref}/reversals` [I] | `reversal:propose:any`; `{reason}` ⇒ 201 `{approval, reversal_reference}`; duyệt qua `/admin/approvals/{id}/approve` (`reversal:approve:any`) |
+| GET | `/api/v1/admin/risk/holds` | `risk_hold:decide:any` (step-up MFA) |
+| POST | `/api/v1/admin/risk/holds/{ref}/approve` · `/reject` | `{note?}` / `{note}` ≥ 5 ký tự |
+
+Mã lỗi mới: `RECIPIENT_NOT_FOUND`, `RECIPIENT_IS_SELF`, `RECIPIENT_LIMIT_REACHED`, `RECIPIENT_UNAVAILABLE`, `WALLET_FROZEN`, `PAYMENT_REQUEST_NOT_FOUND`, `PAYMENT_REQUEST_CLOSED`, `PAYMENT_REQUEST_AMOUNT_MISMATCH`, `PAYMENT_REQUEST_NOT_FOR_YOU`, `MERCHANT_NOT_FOUND`, `MERCHANT_NOT_ACTIVE`, `REFUND_EXCEEDS_REMAINING`.
+
 ## 4. KYC
 
 `GET /kyc` (trạng thái, tier, lịch sử) · `POST /kyc/submissions` (thông tin) · `POST /kyc/submissions/{id}/documents` (multipart, ≤ 5 MB) · `POST /kyc/submissions/{id}/submit`.

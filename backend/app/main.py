@@ -32,6 +32,8 @@ from app.modules.identity import api as identity_api
 from app.modules.identity.context import IdentityServices
 from app.modules.notifications import api as notifications_api
 from app.modules.operations import api as operations_api
+from app.modules.operations import holds_api
+from app.modules.payments import api as payments_api
 from app.modules.providers import api as providers_api
 from app.modules.providers.public import (
     SIMULATOR,
@@ -40,9 +42,10 @@ from app.modules.providers.public import (
     SimulatorProvider,
 )
 from app.modules.transactions import api as transactions_api
-from app.modules.transactions import money_api
+from app.modules.transactions import money_api, spend_api
 from app.modules.transactions.public import FinanceContext
 from app.modules.wallet import api as wallet_api
+from app.modules.wallet import recipients_api
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 
@@ -148,10 +151,15 @@ def create_app(
     app.include_router(audit_api.router)
     app.include_router(wallet_api.router)
     app.include_router(wallet_api.admin_router)
+    app.include_router(recipients_api.router)
+    app.include_router(recipients_api.qr_router)
     app.include_router(transactions_api.router)
     app.include_router(transactions_api.admin_router)
     app.include_router(operations_api.router)
+    app.include_router(holds_api.router)
     app.include_router(money_api.router)
+    app.include_router(spend_api.router)
+    app.include_router(payments_api.router)
     app.include_router(notifications_api.router)
     app.include_router(providers_api.router)
     return app

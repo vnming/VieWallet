@@ -53,6 +53,7 @@ class IdentityServices:
     pin_key: bytes
     code_key: bytes
     lookup_key: bytes  # keyed fingerprints (e.g. duplicate bank accounts) without plaintext
+    signing_key: bytes  # integrity tags of payment requests (QR codes)
 
     @classmethod
     def build(
@@ -74,6 +75,7 @@ class IdentityServices:
             pin_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/pin")),
             code_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/verification-codes")),
             lookup_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/lookup-fingerprints")),
+            signing_key=bytes.fromhex(hmac_sha256_hex(pepper, "viewallet/payment-requests")),
         )
 
     def hash_code(self, purpose: str, user_id: uuid.UUID, code: str) -> str:

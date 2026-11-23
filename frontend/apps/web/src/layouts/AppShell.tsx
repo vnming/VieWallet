@@ -1,16 +1,19 @@
-import { useIdentityApi, useMe } from "@viewallet/api-client";
+import { useIdentityApi, useMe, useMerchant } from "@viewallet/api-client";
 import { isLocale, rememberLocale } from "@viewallet/shared";
 import { Button } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
 import {
   ArrowDownToLine,
+  ArrowLeftRight,
   ArrowUpFromLine,
   History,
   Home,
   type LucideIcon,
   Palette,
+  ScanLine,
   ShieldCheck,
+  Store,
   Wallet,
 } from "lucide-react";
 import { useEffect } from "react";
@@ -27,14 +30,18 @@ interface NavItem {
 }
 
 function useNavItems(signedIn: boolean): NavItem[] {
+  const merchant = useMerchant(signedIn).isSuccess;
   return [
     { to: "/", key: "nav.home", icon: Home, end: true },
     ...(signedIn
       ? [
           { to: "/wallet", key: "nav.wallet", icon: Wallet, end: true },
+          { to: "/transfer", key: "nav.transfer", icon: ArrowLeftRight, end: true },
+          { to: "/scan", key: "nav.scan", icon: ScanLine, end: true },
           { to: "/deposit", key: "nav.deposit", icon: ArrowDownToLine, end: true },
           { to: "/withdraw", key: "nav.withdraw", icon: ArrowUpFromLine, end: true },
           { to: "/history", key: "nav.history", icon: History, end: false },
+          ...(merchant ? [{ to: "/merchant", key: "nav.merchant", icon: Store, end: true }] : []),
           { to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false },
         ]
       : []),

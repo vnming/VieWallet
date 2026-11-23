@@ -14,8 +14,10 @@ Flow for one request:
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
+import random
 import re
 import uuid
 from collections.abc import Awaitable, Callable, Mapping
@@ -26,11 +28,12 @@ from typing import Annotated, Any, Final
 from fastapi import Depends, Header, Request
 from sqlalchemy import CheckConstraint, Index, String, UniqueConstraint, delete, select, update
 from sqlalchemy.dialects.postgresql import JSONB, insert
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.clock import Clock
-from app.core.db import Base, Database
+from app.core.db import Base, Database, is_retryable_db_error
 from app.core.errors import (
     IdempotencyInProgressError,
     IdempotencyKeyInvalidError,
@@ -40,6 +43,7 @@ from app.core.errors import (
 from app.core.ids import new_id
 
 IN_PROGRESS: Final = "IN_PROGRESS"
+RETRY_ATTEMPTS: Final = 3  # deadlock/serialization retries of one unit of work
 COMPLETED: Final = "COMPLETED"
 
 _KEY_RE = re.compile(r"^[A-Za-z0-9_\-]{8,255}$")
@@ -235,6 +239,30 @@ class IdempotencyStore:
         operation: Callable[[AsyncSession], Awaitable[OperationResult]],
     ) -> IdempotentOutcome:
         """Run ``operation`` at most once per (principal, scope, key)."""
+        return await self.execute_checked(
+            db,
+            principal_id=principal_id,
+            scope=scope,
+            key=key,
+            payload=payload,
+            before=None,
+            operation=operation,
+        )
+
+    async def execute_checked(
+        self,
+        db: Database,
+        *,
+        principal_id: str,
+        scope: str,
+        key: str,
+        payload: Mapping[str, Any],
+        before: Callable[[], Awaitable[None]] | None,
+        operation: Callable[[AsyncSession], Awaitable[OperationResult]],
+    ) -> IdempotentOutcome:
+        """Like ``execute``; ``before`` runs after the claim and before the business
+        transaction opens (for example a PIN check that commits its own failure counter), so
+        one request never holds two pooled connections at once."""
         request_hash = request_fingerprint(payload)
         async with db.transaction() as session:
             claimed = await self.claim(
@@ -245,9 +273,9 @@ class IdempotencyStore:
                 claimed.status_code, claimed.body, claimed.resource_id, replayed=True
             )
         try:
-            async with db.transaction() as session:
-                result = await operation(session)
-                await self.complete(session, claimed, result)
+            if before is not None:
+                await before()
+            result = await self._run(db, claimed, operation, RETRY_ATTEMPTS)
         except BaseException:
             async with db.transaction() as session:
                 await self.release(session, claimed)
@@ -255,6 +283,27 @@ class IdempotencyStore:
         return IdempotentOutcome(
             result.status_code, result.body, result.resource_id, replayed=False
         )
+
+    async def _run(
+        self,
+        db: Database,
+        claimed: Claim,
+        operation: Callable[[AsyncSession], Awaitable[OperationResult]],
+        attempts: int,
+    ) -> OperationResult:
+        """Run the unit of work; a deadlock/serialization failure re-runs it from scratch
+        (ADR-0004 §6 step 6) while this request keeps its claim."""
+        for attempt in range(1, attempts + 1):
+            try:
+                async with db.transaction() as session:
+                    result = await operation(session)
+                    await self.complete(session, claimed, result)
+                    return result
+            except DBAPIError as exc:
+                if not is_retryable_db_error(exc) or attempt == attempts:
+                    raise
+                await asyncio.sleep(0.02 * (2 ** (attempt - 1)) * (1 + random.random()))  # noqa: S311
+        raise AssertionError("unreachable")  # pragma: no cover
 
 
 def get_idempotency_store(request: Request) -> IdempotencyStore:

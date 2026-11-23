@@ -14,7 +14,10 @@
     "history": "Lịch sử",
     "deposit": "Nạp tiền",
     "withdraw": "Rút tiền",
-    "notifications": "Thông báo"
+    "notifications": "Thông báo",
+    "transfer": "Chuyển tiền",
+    "scan": "Quét QR",
+    "merchant": "Cửa hàng"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -209,7 +212,8 @@
       "FROZEN": "Đang khóa",
       "SUSPENDED": "Tạm ngưng",
       "CLOSED": "Đã đóng"
-    }
+    },
+    "quickActions": "Thao tác nhanh"
   },
   "history": {
     "title": "Lịch sử giao dịch",
@@ -268,11 +272,23 @@
       "PROVIDER_REJECTED": "Ngân hàng từ chối yêu cầu.",
       "ACCOUNT_CLOSED": "Tài khoản nhận đã đóng hoặc không hợp lệ.",
       "INSUFFICIENT_BALANCE": "Số dư không đủ cho số tiền và phí.",
-      "RISK_BLOCKED": "Giao dịch bị tạm chặn vì lý do an toàn. Tài khoản nhận mới cần chờ 1 giờ.",
+      "RISK_BLOCKED": "Giao dịch bị tạm chặn vì lý do an toàn.",
       "WALLET_NOT_ACTIVE": "Ví đang bị khóa.",
       "DESTINATION_REMOVED": "Tài khoản nhận đã bị xóa.",
       "QUOTE_EXPIRED": "Báo giá đã hết hạn.",
-      "PAYOUT_FAILED": "Ngân hàng không nhận khoản tiền."
+      "PAYOUT_FAILED": "Ngân hàng không nhận khoản tiền.",
+      "WALLET_FROZEN": "Ví của bạn đang bị khóa.",
+      "RECIPIENT_UNAVAILABLE": "Người nhận hiện không nhận được tiền.",
+      "RECEIVER_LIMIT_EXCEEDED": "Người nhận đã đạt hạn mức số dư, không nhận thêm được.",
+      "PAYMENT_REQUEST_CLOSED": "Yêu cầu thanh toán đã đóng (đã trả, hết hạn hoặc bị hủy).",
+      "REVIEW_REJECTED": "Giao dịch không được duyệt sau kiểm tra an toàn. Tiền đã hoàn về ví.",
+      "REVIEW_EXPIRED": "Hết thời gian kiểm tra an toàn. Tiền đã hoàn về ví.",
+      "LIMIT_PER_TXN_EXCEEDED": "Vượt hạn mức mỗi giao dịch.",
+      "LIMIT_DAILY_AMOUNT_EXCEEDED": "Vượt hạn mức trong ngày.",
+      "LIMIT_DAILY_COUNT_EXCEEDED": "Vượt số giao dịch trong ngày.",
+      "LIMIT_MONTHLY_AMOUNT_EXCEEDED": "Vượt hạn mức trong tháng.",
+      "LIMIT_MONTHLY_COUNT_EXCEEDED": "Vượt số giao dịch trong tháng.",
+      "TXN_TYPE_NOT_ALLOWED": "Cần xác minh danh tính (KYC) để dùng chức năng này."
     }
   },
   "deposit": {
@@ -333,5 +349,136 @@
     "unread": "{{count}} thông báo chưa đọc",
     "open": "Mở thông báo",
     "error": "Không tải được thông báo"
+  },
+  "spend": {
+    "review": "Xem lại giao dịch",
+    "to": "Người nhận",
+    "warning": {
+      "NEW_RECIPIENT": "Lần đầu chuyển cho người này. Hãy kiểm tra kỹ tên người nhận.",
+      "POSSIBLE_DUPLICATE": "Bạn vừa chuyển đúng số tiền này cho cùng người nhận. Có phải chuyển trùng?"
+    },
+    "review_hold": "Đang kiểm tra an toàn",
+    "reviewBody": "Tiền đang được giữ trong lúc chúng tôi kiểm tra (tối đa 72 giờ). Nếu không được duyệt, tiền tự hoàn về ví.",
+    "expired": "Báo giá đã hết hạn",
+    "cancelled": "Giao dịch đã hủy",
+    "notConfirmed": "Chưa xác nhận",
+    "status": {
+      "REVERSED": "Giao dịch đã được đảo",
+      "REFUNDED": "Đã hoàn tiền",
+      "PARTIALLY_REFUNDED": "Đã hoàn một phần"
+    }
+  },
+  "transfer": {
+    "title": "Chuyển tiền",
+    "description": "Chuyển tiền tức thì tới ví VieWallet khác.",
+    "recipientBy": "Tìm người nhận theo",
+    "by": {
+      "wallet": "Số ví",
+      "email": "Email",
+      "saved": "Đã lưu"
+    },
+    "noSaved": "Chưa có người nhận đã lưu.",
+    "savedLabel": "Người nhận đã lưu",
+    "choose": "Chọn người nhận",
+    "walletNumber": "Số ví người nhận",
+    "email": "Email người nhận",
+    "check": "Kiểm tra",
+    "save": "Lưu người nhận",
+    "saved": "Đã lưu",
+    "amountHint": "Số nguyên đồng, từ 1 ₫.",
+    "note": "Nội dung (không bắt buộc)",
+    "quote": "Xem phí và xác nhận",
+    "confirm": "Xác nhận chuyển",
+    "completed": "Chuyển tiền thành công",
+    "failed": "Chuyển tiền không thành công"
+  },
+  "pay": {
+    "title": "Thanh toán",
+    "description": "Kiểm tra người nhận trước khi trả.",
+    "verified": "Đã xác minh",
+    "merchant": "Cửa hàng",
+    "person": "Người dùng",
+    "openAmount": "Cửa hàng để bạn tự nhập số tiền.",
+    "closed": {
+      "PAID": "Mã này đã được thanh toán.",
+      "EXPIRED": "Mã thanh toán đã hết hạn.",
+      "CANCELLED": "Người tạo đã hủy mã này.",
+      "DECLINED": "Bạn đã từ chối yêu cầu này."
+    },
+    "yours": "Đây là mã do bạn tạo.",
+    "continue": "Tiếp tục",
+    "invalid": "Mã thanh toán không hợp lệ",
+    "confirm": "Xác nhận thanh toán",
+    "completed": "Thanh toán thành công",
+    "failed": "Thanh toán không thành công"
+  },
+  "scan": {
+    "title": "Quét mã QR",
+    "description": "Quét QR cửa hàng, QR xin tiền hoặc QR nhận tiền của bạn bè.",
+    "camera": "Khung camera quét mã",
+    "start": "Bật camera",
+    "unsupported": "Trình duyệt này chưa hỗ trợ quét bằng camera. Hãy nhập mã bên dưới.",
+    "denied": "Không mở được camera. Hãy cấp quyền camera hoặc nhập mã bên dưới.",
+    "manual": "Nhập mã hoặc liên kết",
+    "code": "Mã thanh toán, số ví hoặc liên kết",
+    "codeHint": "Ví dụ: mã 16 ký tự dưới QR, hoặc số ví 10 chữ số.",
+    "invalid": "Không nhận ra mã này. Chỉ mở được mã của VieWallet.",
+    "open": "Mở"
+  },
+  "receive": {
+    "title": "Nhận tiền",
+    "description": "Đưa mã này để người khác chuyển tiền cho bạn.",
+    "qrLabel": "Mã QR nhận tiền của bạn"
+  },
+  "request": {
+    "title": "Xin tiền",
+    "description": "Gửi yêu cầu để người khác trả bạn một khoản.",
+    "incoming": "Yêu cầu gửi tới bạn",
+    "new": "Tạo yêu cầu mới",
+    "issued": "Yêu cầu bạn đã tạo",
+    "empty": {
+      "issued": "Bạn chưa tạo yêu cầu nào.",
+      "incoming": "Không có yêu cầu nào gửi tới bạn."
+    },
+    "anyone": "Bất kỳ ai có mã",
+    "until": "Hạn {{time}}",
+    "pay": "Trả",
+    "cancel": "Hủy yêu cầu",
+    "decline": "Từ chối",
+    "qrLabel": "Mã QR yêu cầu thanh toán",
+    "another": "Tạo mã khác",
+    "payer": "Người trả (không bắt buộc)",
+    "payerHint": "Email hoặc số ví. Để trống: ai có mã cũng trả được.",
+    "payerInvalid": "Nhập email hoặc số ví 10 chữ số.",
+    "create": "Tạo yêu cầu",
+    "status": {
+      "OPEN": "Đang mở",
+      "PAID": "Đã trả",
+      "EXPIRED": "Hết hạn",
+      "CANCELLED": "Đã hủy",
+      "DECLINED": "Bị từ chối"
+    }
+  },
+  "merchant": {
+    "title": "Cửa hàng",
+    "description": "Cửa hàng mô phỏng: tạo QR, xem thanh toán, hoàn tiền.",
+    "none": "Bạn chưa có cửa hàng",
+    "noneBody": "Cửa hàng mô phỏng được tạo bằng lệnh create_merchant trong môi trường phát triển.",
+    "balance": "Số dư ví cửa hàng",
+    "newQr": "Tạo mã QR thanh toán",
+    "amountHint": "Để trống để khách tự nhập số tiền.",
+    "reusable": "Mã dùng nhiều lần (QR dán tại quầy)",
+    "createQr": "Tạo mã QR",
+    "qrLabel": "Mã QR thanh toán của cửa hàng",
+    "payments": "Thanh toán gần đây",
+    "noPayments": "Chưa có thanh toán nào.",
+    "refund": "Hoàn tiền",
+    "refundTitle": "Hoàn tiền cho khách",
+    "refundBody": "Giao dịch {{reference}}. Tiền trừ từ ví cửa hàng và vào ví của khách ngay.",
+    "refundable": "Còn hoàn được:",
+    "tooMuch": "Vượt quá phần còn hoàn được.",
+    "reason": "Lý do",
+    "refunded": "Đã hoàn tiền cho khách",
+    "refundFailed": "Hoàn tiền không thành công"
   }
 }

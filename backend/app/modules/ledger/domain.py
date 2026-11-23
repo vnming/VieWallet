@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import uuid
+from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -68,6 +70,9 @@ class JournalKind(StrEnum):
     TRANSFER_RELEASE_TO_RECEIVER = "TRANSFER_RELEASE_TO_RECEIVER"
     TRANSFER_RELEASE_TO_SENDER = "TRANSFER_RELEASE_TO_SENDER"
     PAYMENT = "PAYMENT"
+    PAYMENT_HOLD = "PAYMENT_HOLD"
+    PAYMENT_RELEASE_TO_MERCHANT = "PAYMENT_RELEASE_TO_MERCHANT"
+    PAYMENT_RELEASE_TO_PAYER = "PAYMENT_RELEASE_TO_PAYER"
     REFUND = "REFUND"
     REVERSAL = "REVERSAL"
     ADJUSTMENT = "ADJUSTMENT"
@@ -128,6 +133,33 @@ class JournalDraft:
             for line in self.lines
         )
         return JournalDraft(kind=kind, lines=flipped, description=f"reversal of {self.kind}")
+
+
+def net_reversal(drafts: Sequence[JournalDraft]) -> JournalDraft:
+    """One REVERSAL journal that undoes the net effect of several journals (for example the
+    hold and the release of a held transfer: mirroring only the release would leave money on
+    HOLD). Accounts whose net effect is zero get no posting."""
+    if not drafts:
+        raise LedgerError("nothing to reverse")
+    if any(d.kind is JournalKind.REVERSAL for d in drafts):
+        raise LedgerError("a reversal cannot itself be reversed; use an adjustment")
+    currency = drafts[0].currency
+    net: dict[uuid.UUID, int] = defaultdict(int)  # debit-positive
+    for draft in drafts:
+        if draft.currency != currency:
+            raise LedgerError("all journals must use one currency")
+        for line in draft.lines:
+            net[line.account_id] += line.amount.amount_minor * (
+                1 if line.side is Side.DEBIT else -1
+            )
+    lines = tuple(
+        PostingLine(
+            account, Side.CREDIT if amount > 0 else Side.DEBIT, Money(abs(amount), currency)
+        )
+        for account, amount in sorted(net.items())
+        if amount != 0
+    )
+    return JournalDraft(JournalKind.REVERSAL, lines, description="reversal")
 
 
 def balance_delta(normal_side: Side, side: Side, amount_minor: int) -> int:

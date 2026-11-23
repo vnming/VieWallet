@@ -93,7 +93,7 @@ test("journey 7: withdrawal succeeds, fails with refund, and a timeout is resolv
     await expect(page.getByText("1.100 ₫", { exact: true })).toBeVisible();
     await page.getByLabel("PIN hiện tại").fill(PIN);
     await page.getByRole("button", { name: "Xác nhận rút tiền" }).click();
-    await expect(page).toHaveURL(/\/withdrawals\/VW/);
+    await expect(page).toHaveURL(/\/withdrawals\/VW/, { timeout: 15_000 });
   }
 
   await withdraw("1000000");

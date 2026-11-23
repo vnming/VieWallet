@@ -19,6 +19,16 @@ import {
   WithdrawPage,
 } from "../routes/money/MoneyPages";
 import { NotificationsPage } from "../routes/NotificationsPage";
+import {
+  MerchantPage,
+  PaymentResultPage,
+  PayPage,
+  ReceivePage,
+  RequestMoneyPage,
+  ScanPage,
+  TransferPage,
+  TransferResultPage,
+} from "../routes/spend/SpendPages";
 import { HistoryPage, TransactionDetailPage, WalletPage } from "../routes/wallet/WalletPages";
 
 export const routes: RouteObject[] = [
@@ -45,6 +55,14 @@ export const routes: RouteObject[] = [
           { path: "withdrawals/:reference", element: <WithdrawalResultPage /> },
           { path: "wallet/destinations", element: <DestinationsPage /> },
           { path: "notifications", element: <NotificationsPage /> },
+          { path: "transfer", element: <TransferPage /> },
+          { path: "transfers/:reference", element: <TransferResultPage /> },
+          { path: "pay/:code", element: <PayPage /> },
+          { path: "payments/:reference", element: <PaymentResultPage /> },
+          { path: "scan", element: <ScanPage /> },
+          { path: "receive", element: <ReceivePage /> },
+          { path: "request", element: <RequestMoneyPage /> },
+          { path: "merchant", element: <MerchantPage /> },
         ],
       },
       // Style guide with sample data: development builds only.

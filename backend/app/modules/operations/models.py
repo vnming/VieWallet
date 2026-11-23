@@ -32,6 +32,7 @@ class ApprovalStatus(StrEnum):
 class ActionType(StrEnum):
     ADJUSTMENT = "ADJUSTMENT"
     WALLET_UNFREEZE = "WALLET_UNFREEZE"
+    REVERSAL = "REVERSAL"
 
 
 def _in(column: str, values: list[str]) -> str:

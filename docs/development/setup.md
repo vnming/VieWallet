@@ -92,6 +92,25 @@ Email xác minh, đặt lại mật khẩu và thông báo bảo mật xem tại
 
 Worker chạy thêm: `provider_status_inquiries` (10 giây), `expire_withdrawal_quotes` (1 phút), `resubmit_stalled_deposits` (1 phút).
 
+## 3b2. Chuyển tiền, thanh toán QR, cửa hàng mô phỏng (Phase 5)
+
+- **Chuyển tiền**: app khách hàng → Chuyển tiền → nhập số ví hoặc email → Kiểm tra (hiện tên đã che, ví dụ `NGUYEN V*** A`) → số tiền → xem phí → PIN. Tra cứu người nhận giới hạn 20 lần/10 phút và 100 lần/ngày mỗi user.
+- **Cửa hàng mô phỏng** (chỉ development/simulation, có audit). Biến một khách hàng có sẵn thành cửa hàng, hoặc tạo luôn tài khoản demo (mật khẩu đọc từ stdin):
+
+  ```bash
+  docker compose exec -T api python -m app.scripts.create_merchant --email lan@example.com --name "Quán Lan"
+  echo "<mật khẩu>" | docker compose exec -T api python -m app.scripts.create_merchant --create-user       --email cafe-may@example.com --owner "Lê Thu Mây" --name "Cà phê Mây (mô phỏng)"
+  ```
+
+  Cửa hàng có ví MERCHANT riêng; trang `/merchant` tạo QR (dùng một lần hoặc dán tại quầy), xem thanh toán, hoàn tiền.
+- **Khách hàng demo không qua đăng ký** (dùng cho E2E vì đăng ký bị giới hạn theo IP):
+  `echo "<mật khẩu>" | docker compose exec -T api python -m app.scripts.create_customer --email an@example.com --name "Nguyễn Văn An"`.
+- **Quét QR**: trang `/scan` dùng camera khi trình duyệt có Barcode Detection API (Chrome/Android); nơi khác nhập mã 16 ký tự hoặc dán liên kết `/pay/<mã>`.
+- **Giữ tiền do rủi ro**: nhân viên RISK_ANALYST (MFA còn hiệu lực) xem `GET /api/v1/admin/risk/holds`, duyệt/từ chối `POST .../{ref}/approve|reject`. UI admin ở Phase 8.
+- **Đảo giao dịch**: OPERATIONS/FINANCE đề xuất `POST /api/v1/admin/transactions/{ref}/reversals`, người thứ hai có `reversal:approve:any` duyệt qua `/api/v1/admin/approvals`.
+
+Worker chạy thêm: `expire_spend_quotes` (1 phút), `expire_payment_requests` (5 phút), `expire_risk_holds` (15 phút, hủy khoản giữ quá 72 giờ).
+
 ## 3c. Tạo số dư demo
 
 Chưa có nạp tiền (Phase 4), nên số dư demo được tạo bằng **điều chỉnh số dư** qua maker-checker, đúng như mọi thay đổi số dư khác:

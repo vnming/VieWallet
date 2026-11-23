@@ -72,6 +72,9 @@ async def test_purge_job_removes_expired_keys(
         "provider_status_inquiries",
         "expire_withdrawal_quotes",
         "resubmit_stalled_deposits",
+        "expire_spend_quotes",
+        "expire_payment_requests",
+        "expire_risk_holds",
     ]
     assert await JobScheduler(db, clock, jobs).run_due() == names
     async with db.transaction() as session:
