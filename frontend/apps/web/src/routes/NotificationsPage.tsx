@@ -104,9 +104,13 @@ export function NotificationsPage() {
         {list.isPending ? (
           <Skeleton className="h-24 w-full" />
         ) : list.isError ? (
-          <ErrorState title={t("notifications.error")} onRetry={() => void list.refetch()} />
+          <ErrorState
+            headingLevel={2}
+            title={t("notifications.error")}
+            onRetry={() => void list.refetch()}
+          />
         ) : list.data.items.length === 0 ? (
-          <EmptyState title={t("notifications.empty")} />
+          <EmptyState headingLevel={2} title={t("notifications.empty")} />
         ) : (
           <ul className="flex flex-col">
             {list.data.items.map((item) => (

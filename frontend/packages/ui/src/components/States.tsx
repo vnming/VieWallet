@@ -6,19 +6,29 @@ import { Button } from "./Button";
 
 export interface EmptyStateProps {
   title: string;
+  /** Heading level of the title; use 2 when the state sits directly under the page h1. */
+  headingLevel?: 2 | 3;
   description?: ReactNode;
   action?: ReactNode;
   icon?: ReactNode;
   className?: string;
 }
 
-export function EmptyState({ title, description, action, icon, className }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  headingLevel = 3,
+  description,
+  action,
+  icon,
+  className,
+}: EmptyStateProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <div className={clsx("flex flex-col items-center gap-3 px-6 py-10 text-center", className)}>
       <span className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary">
         {icon ?? <Inbox aria-hidden className="size-6" />}
       </span>
-      <h3 className="text-base font-semibold text-fg">{title}</h3>
+      <Heading className="text-base font-semibold text-fg">{title}</Heading>
       {description && <p className="max-w-sm text-sm text-fg-muted">{description}</p>}
       {action}
     </div>
@@ -27,6 +37,8 @@ export function EmptyState({ title, description, action, icon, className }: Empt
 
 export interface ErrorStateProps {
   title: string;
+  /** Heading level of the title; use 2 when the state sits directly under the page h1. */
+  headingLevel?: 2 | 3;
   description?: ReactNode;
   /** Shown so users can quote it to support. */
   correlationId?: string | null | undefined;
@@ -38,6 +50,7 @@ export interface ErrorStateProps {
 
 export function ErrorState({
   title,
+  headingLevel = 3,
   description,
   correlationId,
   correlationLabel = "Mã tham chiếu",
@@ -45,6 +58,7 @@ export function ErrorState({
   retryLabel = "Thử lại",
   className,
 }: ErrorStateProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <div
       role="alert"
@@ -53,7 +67,7 @@ export function ErrorState({
       <span className="grid size-12 place-items-center rounded-full bg-danger-100 text-danger-700 dark:bg-danger-700/20 dark:text-danger-500">
         <AlertTriangle aria-hidden className="size-6" />
       </span>
-      <h3 className="text-base font-semibold text-fg">{title}</h3>
+      <Heading className="text-base font-semibold text-fg">{title}</Heading>
       {description && <p className="max-w-sm text-sm text-fg-muted">{description}</p>}
       {correlationId && (
         <p className="text-xs text-fg-muted">

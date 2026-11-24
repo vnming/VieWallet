@@ -2,7 +2,7 @@
 
 | Mục | Giá trị |
 |---|---|
-| Trạng thái | Hoàn tất (2026-11-24), trừ đo Lighthouse (xem §4) |
+| Trạng thái | Hoàn tất (2026-11-24) |
 | Nhánh | `phase-1/foundation` |
 | Migration | `0007` |
 | Liên quan | [Design system §9 — 7 trạng thái](design/design-system.md), [Đặc tả API §3e](api/api-spec.md), [Hướng dẫn §3b4](development/setup.md) |
@@ -39,7 +39,8 @@
 | Frontend prettier, eslint, tsc, build | Đạt |
 | Frontend vitest | **160 passed** (gồm 42 lượt axe trên 21 trang × 2 trạng thái) |
 | axe trên trình duyệt thật (có tương phản màu): trợ giúp, cài đặt (cả giao diện tối), ticket, lịch sử, tài khoản | 0 vi phạm serious/critical |
-| Playwright trên compose stack (`--workers=2`; web desktop + mobile, admin) | **32 passed** (3,1 phút) |
+| Playwright trên compose stack (`--workers=2`; web desktop + mobile, admin) | **32 passed** |
+| Lighthouse 12 accessibility (Chromium headless, compose stack): `/login`, `/help`, `/help/withdraw`, `/`, `/wallet`, `/history`, `/transfer`, `/deposit`, `/withdraw`, `/kyc`, `/account`, `/account/profile`, `/account/security`, `/settings`, `/support/tickets`, `/notifications` | **100** trên cả 16 trang (mục tiêu ≥ 90) |
 
 Test chính: `test_customer_hub.py` (hồ sơ/SĐT/khóa tên sau KYC; lọc lịch sử và ký tự đặc biệt; danh mục riêng mỗi phía, theo mã ngành cửa hàng; CSV: khoảng ngày sai, idempotent, chưa sẵn sàng, của người khác ⇒ 404, nội dung và chống chèn công thức, hết hạn; trợ giúp tìm không dấu; ticket: gắn giao dịch không phải của mình ⇒ 404, ghi chú nội bộ không lộ cho khách, mở lại, đóng, thông báo; giới hạn tạo ticket). Frontend: `account.test.tsx`, `support.test.tsx`, `a11y.test.tsx`. E2E: `web.account.spec.ts`.
 
@@ -52,13 +53,14 @@ Test chính: `test_customer_hub.py` (hồ sơ/SĐT/khóa tên sau KYC; lọc l�
 | Ô chế độ riêng tư chỉ đổi sau khi server trả lời; hai thay đổi liên tiếp ghi đè nhau; truy vấn `/me` đang chạy xóa giá trị vừa chọn | E2E | Cập nhật lạc quan có state cục bộ, chỉ gộp trường vừa đổi, hủy truy vấn đang chạy |
 | Simulator chạy với thời gian chờ mặc định (2 phút) sau một lần khởi động lại một phần stack, làm hành trình 3 và 7 quá thời gian | E2E | Khởi động lại stack với biến môi trường E2E (không phải lỗi code) |
 | Sau khi tạo lại riêng container `api`, nginx của `admin` giữ IP cũ và trả 502, làm hỏng các test admin | E2E | `docker compose restart admin web worker`; ghi chú trong setup.md |
+| Nhãn "Chỉ dành cho mô phỏng" ở trang chủ (mobile) tương phản 4,34:1 (< 4,5:1) | Lighthouse | Làm tối token `saffron-700` (oklch 55% ⇒ 51%) |
+| Trạng thái trống/lỗi của lịch sử và thông báo dùng h3 ngay dưới h1 (nhảy cấp heading) | Lighthouse | `EmptyState`/`ErrorState` có prop `headingLevel`; hai trang này dùng h2 |
 | Hành trình 8 duyệt khoản giữ đầu tiên trong hàng đợi, nên duyệt nhầm khoản do lần chạy hỏng trước để lại | E2E | Test lấy mã giao dịch từ URL và duyệt đúng dòng đó |
 
 ## 4. Lệch so với kế hoạch
 
 | Hạng mục | Kế hoạch | Thực tế |
 |---|---|---|
-| Lighthouse accessibility ≥ 90 | Đo | **Chưa đo**: tải Lighthouse qua `npx` bị kiểm soát quyền của phiên chặn. Thay bằng axe-core (jsdom + trình duyệt thật). Cần chủ dự án cho phép tải gói `lighthouse` hoặc tự chạy |
 | Lọc lịch sử theo danh mục | — | Chưa có (danh mục mặc định tính khi đọc); để Phase 10 (báo cáo) |
 | SĐT | Tra cứu người nhận theo SĐT | Lưu SĐT mô phỏng, chưa xác minh bằng SMS nên chưa dùng để tra cứu |
 | UI admin ticket | Phase 8 | Chỉ API (có test) |

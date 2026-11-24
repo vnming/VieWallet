@@ -41,6 +41,8 @@ Ba lớp: **primitive → semantic → component**. Cài đặt bằng CSS custo
 | `danger` | | | | oklch(58% .2 25) | | | | |
 | `info` | | | | oklch(60% .13 240) | | | | |
 
+> Token `--color-saffron-700` = oklch(51% .12 65): chữ trên nền `saffron-100` đạt ≥ 4,5:1 (Lighthouse, Phase 7).
+
 Màu success lệch về xanh-vàng (hue 145) để khác biệt với jade (hue ~172), và trạng thái luôn đi kèm icon và nhãn.
 
 ### 3.2 Token semantic

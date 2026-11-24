@@ -467,9 +467,14 @@ export function HistoryPage() {
         {history.isPending ? (
           <ListSkeleton />
         ) : history.isError ? (
-          <ErrorState title={t("history.error")} onRetry={() => void history.refetch()} />
+          <ErrorState
+            headingLevel={2}
+            title={t("history.error")}
+            onRetry={() => void history.refetch()}
+          />
         ) : items.length === 0 ? (
           <EmptyState
+            headingLevel={2}
             title={filtered ? t("history.emptyFiltered") : t("history.empty")}
             description={filtered ? undefined : t("history.emptyBody")}
           />
