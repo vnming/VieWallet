@@ -4,6 +4,7 @@ import { Copy, Eye, EyeOff, Snowflake } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { usePrivacyMode } from "../preferences/privacy";
 import { amountLocale } from "./format";
 
 const HIDE_KEY = "vw.hideBalance";
@@ -12,12 +13,15 @@ const HIDE_KEY = "vw.hideBalance";
 export function BalanceCard({ wallet }: { wallet: WalletInfo | undefined }) {
   const { t, i18n } = useTranslation();
   const toast = useToast();
-  const [hidden, setHidden] = useState(() => localStorage.getItem(HIDE_KEY) === "1");
+  const privacy = usePrivacyMode();
+  const [choice, setChoice] = useState(() => localStorage.getItem(HIDE_KEY));
+  // Privacy mode hides the balance until revealed; otherwise this device's last choice.
+  const hidden = choice === null ? privacy : choice === "1";
 
   const toggle = () => {
-    const next = !hidden;
-    setHidden(next);
-    localStorage.setItem(HIDE_KEY, next ? "1" : "0");
+    const next = hidden ? "0" : "1";
+    setChoice(next);
+    localStorage.setItem(HIDE_KEY, next);
   };
 
   const copyNumber = async (value: string) => {

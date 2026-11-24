@@ -171,6 +171,22 @@ Mã lỗi mới: `RECIPIENT_NOT_FOUND`, `RECIPIENT_IS_SELF`, `RECIPIENT_LIMIT_RE
 
 Mã lỗi mới: `KYC_NOT_FOUND`, `KYC_ALREADY_VERIFIED`, `KYC_IN_REVIEW`, `KYC_INVALID_STATE`, `KYC_DOCUMENTS_MISSING`, `KYC_TOO_MANY_ATTEMPTS`, `KYC_CLAIMED_BY_OTHER`, `KYC_LINK_EXPIRED`, `KYC_FILE_INVALID`, `KYC_FILE_TOO_LARGE`, `RISK_RULE_NOT_FOUND`, `RISK_RULE_INVALID`, `RISK_ALERT_NOT_FOUND`, `RISK_ALERT_CLOSED`, `RISK_FLAG_EXISTS`, `RISK_FLAG_NOT_FOUND`.
 
+## 3e. Tài khoản, lịch sử, xuất CSV, trợ giúp, hỗ trợ (đã cài đặt ở Phase 7)
+
+| Method | Path | Ghi chú |
+|---|---|---|
+| PATCH | `/api/v1/me` | Thêm `phone` (di động Việt Nam mô phỏng, lưu `+84…`, chuỗi rỗng để xóa, trùng ⇒ 409 `PHONE_TAKEN`), `theme` (SYSTEM, LIGHT, DARK), `privacy_mode`. Đã KYC thì đổi họ tên ⇒ 409 `PROFILE_NAME_LOCKED` |
+| GET | `/api/v1/transactions` | Bộ lọc mới: `direction` (IN/OUT), `from`, `to` (ngày theo giờ Việt Nam, gồm cả hai đầu), `min_amount`, `max_amount`, `q` (mã giao dịch, nội dung, tên đối tác; ký tự `%` `_` là chữ thường). Mỗi giao dịch có `category {code, name}` |
+| GET | `/api/v1/transactions/categories` | Danh mục hệ thống (tên theo ngôn ngữ của user) |
+| PATCH | `/api/v1/transactions/{ref}/category` | `{category_code}`; chỉ áp dụng cho phía của người gọi |
+| POST | `/api/v1/transactions/exports` [I] | `{date_from, date_to}` (≤ 366 ngày) ⇒ 202 job PENDING |
+| GET | `/api/v1/transactions/exports/{id}` · `/download` | READY ⇒ CSV UTF-8 có BOM, tối đa 10.000 dòng, giữ 24 giờ; chưa sẵn sàng ⇒ 409 `EXPORT_NOT_READY`; của người khác ⇒ 404 |
+| GET | `/api/v1/help/articles?q=&locale=` · `/help/articles/{slug}` | Không cần đăng nhập; tìm không dấu, mọi từ đều phải khớp |
+| GET/POST | `/api/v1/support/tickets` | Tạo: `{category, subject, message, transaction_reference?}` (chỉ giao dịch của mình); 5 ticket/giờ ⇒ 429 |
+| GET | `/api/v1/support/tickets/{ref}` · POST `/messages` | Không thấy ghi chú nội bộ; ticket đã đóng ⇒ 409 `TICKET_CLOSED`; trả lời ticket đã giải quyết thì mở lại |
+| GET | `/api/v1/admin/tickets?status=` · `/admin/tickets/{ref}` | `ticket:manage:any`; kèm ghi chú nội bộ |
+| POST | `/api/v1/admin/tickets/{ref}/messages` | `{body, internal, status?}`; trả lời công khai ⇒ PENDING_CUSTOMER + thông báo in-app |
+
 ## 4. KYC
 
 `GET /kyc` (trạng thái, tier, lịch sử) · `POST /kyc/submissions` (thông tin) · `POST /kyc/submissions/{id}/documents` (multipart, ≤ 5 MB) · `POST /kyc/submissions/{id}/submit`.

@@ -1,4 +1,8 @@
 import {
+  newIdempotencyKey,
+  useAccountApi,
+  useCategories,
+  useExportJob,
   financeKeys,
   type TransactionFilters,
   type TxnStatus,
@@ -22,11 +26,12 @@ import {
   STATUS_STYLES,
   StatusBadge,
   StatusTimeline,
+  TextField,
   useToast,
 } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Copy, Snowflake } from "lucide-react";
-import { type ReactNode, type SyntheticEvent, useState } from "react";
+import { type ReactNode, type SyntheticEvent, useDeferredValue, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
@@ -279,13 +284,99 @@ function FilterSelect<T extends string>({
   );
 }
 
+function ExportPanel() {
+  const { t } = useTranslation();
+  const api = useAccountApi();
+  const today = todayInVietnam();
+  const [from, setFrom] = useState(firstOfMonth(today));
+  const [to, setTo] = useState(today);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [exportKey, setExportKey] = useState(newIdempotencyKey);
+  const job = useExportJob(jobId);
+  const create = useMutation({
+    mutationFn: () => api.createExport(from, to, exportKey),
+    onSuccess: (created) => {
+      setJobId(created.id);
+      setExportKey(newIdempotencyKey());
+    },
+  });
+  return (
+    <Card title={t("history.export.title")}>
+      <form
+        className="flex flex-wrap items-end gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          create.mutate();
+        }}
+      >
+        <TextField
+          label={t("history.from")}
+          type="date"
+          value={from}
+          max={to}
+          onChange={(e) => setFrom(e.target.value)}
+        />
+        <TextField
+          label={t("history.to")}
+          type="date"
+          value={to}
+          min={from}
+          max={today}
+          onChange={(e) => setTo(e.target.value)}
+        />
+        <Button
+          type="submit"
+          variant="secondary"
+          loading={create.isPending}
+          disabled={!from || !to}
+        >
+          {t("history.export.create")}
+        </Button>
+      </form>
+      <div className="mt-3 text-sm" aria-live="polite">
+        <FormError error={create.error} />
+        {job.data?.status === "PENDING" && (
+          <p className="text-fg-muted">{t("history.export.pending")}</p>
+        )}
+        {job.data?.status === "READY" && job.data.download_url && (
+          <p>
+            <a href={job.data.download_url} download className="font-medium text-primary underline">
+              {t("history.export.download", { count: job.data.row_count ?? 0 })}
+            </a>
+            {job.data.truncated && (
+              <span className="ml-2 text-fg-muted">{t("history.export.truncated")}</span>
+            )}
+          </p>
+        )}
+        {(job.data?.status === "FAILED" || job.data?.status === "EXPIRED") && (
+          <p className="text-fg-muted">{t("history.export.gone")}</p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+const DIRECTIONS: ("IN" | "OUT")[] = ["IN", "OUT"];
+
+function todayInVietnam(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh" }).format(new Date());
+}
+
+function firstOfMonth(day: string): string {
+  return `${day.slice(0, 8)}01`;
+}
+
 export function HistoryPage() {
   const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState<TransactionFilters>({});
-  const history = useTransactions(filters);
+  const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search.trim());
+  const query = { ...filters, ...(deferredSearch.length >= 2 ? { q: deferredSearch } : {}) };
+  const history = useTransactions(query);
   const items = history.data?.pages.flatMap((p) => p.items) ?? [];
-  const filtered = Boolean(filters.type ?? filters.status);
+  const filtered = Object.values(query).some((v) => v !== undefined && v !== "");
   const statusLabel = (s: TxnStatus) => STATUS_STYLES[s].label[uiLocale(i18n.language)];
+  const amountFilter = (value: string) => (value === "" ? undefined : Number(value));
 
   return (
     <div className="flex flex-col gap-6">
@@ -293,21 +384,84 @@ export function HistoryPage() {
         <h1 className="text-2xl font-bold text-fg">{t("history.title")}</h1>
         <p className="text-fg-muted">{t("history.description")}</p>
       </header>
-      <div className="flex flex-wrap gap-4">
-        <FilterSelect
-          label={t("history.filterType")}
-          value={filters.type}
-          options={TYPES}
-          onChange={(type) => setFilters((f) => ({ ...f, type }))}
-          labelFor={(type) => t(`txn.types.${type}`)}
+      <div role="search" className="flex flex-col gap-4">
+        <TextField
+          label={t("history.search")}
+          type="search"
+          hint={t("history.searchHint")}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-        <FilterSelect
-          label={t("history.filterStatus")}
-          value={filters.status}
-          options={STATUSES}
-          onChange={(status) => setFilters((f) => ({ ...f, status }))}
-          labelFor={statusLabel}
-        />
+        <div className="flex flex-wrap gap-4">
+          <FilterSelect
+            label={t("history.filterType")}
+            value={filters.type}
+            options={TYPES}
+            onChange={(type) => setFilters((f) => ({ ...f, type }))}
+            labelFor={(type) => t(`txn.types.${type}`)}
+          />
+          <FilterSelect
+            label={t("history.filterStatus")}
+            value={filters.status}
+            options={STATUSES}
+            onChange={(status) => setFilters((f) => ({ ...f, status }))}
+            labelFor={statusLabel}
+          />
+          <FilterSelect
+            label={t("history.filterDirection")}
+            value={filters.direction}
+            options={DIRECTIONS}
+            onChange={(direction) => setFilters((f) => ({ ...f, direction }))}
+            labelFor={(d) => t(`history.direction.${d}`)}
+          />
+          <TextField
+            label={t("history.from")}
+            type="date"
+            value={filters.from ?? ""}
+            onChange={(e) => setFilters((f) => ({ ...f, from: e.target.value || undefined }))}
+          />
+          <TextField
+            label={t("history.to")}
+            type="date"
+            value={filters.to ?? ""}
+            onChange={(e) => setFilters((f) => ({ ...f, to: e.target.value || undefined }))}
+          />
+          <TextField
+            label={t("history.minAmount")}
+            inputMode="numeric"
+            value={filters.minAmount?.toString() ?? ""}
+            onChange={(e) =>
+              setFilters((f) => ({
+                ...f,
+                minAmount: amountFilter(e.target.value.replace(/\D/g, "")),
+              }))
+            }
+          />
+          <TextField
+            label={t("history.maxAmount")}
+            inputMode="numeric"
+            value={filters.maxAmount?.toString() ?? ""}
+            onChange={(e) =>
+              setFilters((f) => ({
+                ...f,
+                maxAmount: amountFilter(e.target.value.replace(/\D/g, "")),
+              }))
+            }
+          />
+        </div>
+        {filtered && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-fit"
+            onClick={() => {
+              setFilters({});
+              setSearch("");
+            }}
+          >
+            {t("history.clear")}
+          </Button>
+        )}
       </div>
       <Card>
         {history.isPending ? (
@@ -336,7 +490,39 @@ export function HistoryPage() {
           </>
         )}
       </Card>
+      <ExportPanel />
     </div>
+  );
+}
+
+function CategoryEditor({ reference, code }: { reference: string; code: string }) {
+  const { t } = useTranslation();
+  const api = useAccountApi();
+  const categories = useCategories();
+  const queryClient = useQueryClient();
+  const change = useMutation({
+    mutationFn: (next: string) => api.setCategory(reference, next),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(financeKeys.transaction(reference), updated);
+      void queryClient.invalidateQueries({ queryKey: financeKeys.allTransactions });
+    },
+  });
+  return (
+    <label className="flex items-center justify-end gap-2">
+      <span className="sr-only">{t("txn.category")}</span>
+      <select
+        value={code}
+        disabled={change.isPending || !categories.data}
+        onChange={(e) => change.mutate(e.target.value)}
+        className="h-9 rounded-md border border-border bg-surface px-2 text-sm"
+      >
+        {(categories.data ?? [{ code, name: code }]).map((c) => (
+          <option key={c.code} value={c.code}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 
@@ -432,8 +618,19 @@ export function TransactionDetailPage() {
           {txn.completed_at && (
             <Row label={t("txn.completed")}>{formatDateTime(txn.completed_at, i18n.language)}</Row>
           )}
+          <Row label={t("txn.category")}>
+            <CategoryEditor reference={txn.reference} code={txn.category.code} />
+          </Row>
           {txn.failure_code && <Row label={t("txn.failure")}>{txn.failure_code}</Row>}
         </dl>
+        <div className="mt-4 border-t border-border pt-4">
+          <Link
+            to={`/support/tickets?txn=${txn.reference}`}
+            className="text-sm font-medium text-primary underline"
+          >
+            {t("txn.report")}
+          </Link>
+        </div>
       </Card>
       <Card title={t("txn.timeline")}>
         <StatusTimeline

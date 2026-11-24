@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import and_, func, or_, select, update
@@ -288,6 +289,63 @@ class TransactionPage:
     next_cursor: uuid.UUID | None
 
 
+@dataclass(frozen=True, slots=True)
+class HistoryFilter:
+    """Customer history filters (PRD FR-TXN-05). All optional; combined with AND."""
+
+    txn_type: TxnType | None = None
+    status: TxnStatus | None = None
+    direction: str | None = None  # IN or OUT, relative to the wallet
+    created_from: datetime | None = None  # inclusive
+    created_to: datetime | None = None  # exclusive
+    min_amount: int | None = None
+    max_amount: int | None = None
+    query: str | None = None  # reference (exact) or words in description / counterparty
+
+
+def _like(text: str) -> str:
+    escaped = text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return f"%{escaped}%"
+
+
+def history_conditions(wallet_id: uuid.UUID, flt: HistoryFilter) -> list[Any]:
+    conditions: list[Any] = [
+        or_(
+            Transaction.source_wallet_id == wallet_id,
+            Transaction.destination_wallet_id == wallet_id,
+        ),
+        visible_to_customer(),
+    ]
+    if flt.txn_type is not None:
+        conditions.append(Transaction.type == flt.txn_type.value)
+    if flt.status is not None:
+        conditions.append(Transaction.status == flt.status.value)
+    if flt.direction == "OUT":
+        conditions.append(Transaction.source_wallet_id == wallet_id)
+    elif flt.direction == "IN":
+        conditions.append(Transaction.destination_wallet_id == wallet_id)
+    if flt.created_from is not None:
+        conditions.append(Transaction.created_at >= flt.created_from)
+    if flt.created_to is not None:
+        conditions.append(Transaction.created_at < flt.created_to)
+    if flt.min_amount is not None:
+        conditions.append(Transaction.amount_minor >= flt.min_amount)
+    if flt.max_amount is not None:
+        conditions.append(Transaction.amount_minor <= flt.max_amount)
+    if flt.query:
+        text = flt.query.strip()
+        pattern = _like(text)
+        conditions.append(
+            or_(
+                Transaction.reference == text.upper(),
+                Transaction.description.ilike(pattern, escape="\\"),
+                Transaction.counterparty_snapshot["name"].astext.ilike(pattern, escape="\\"),
+                Transaction.extra["source_party"]["name"].astext.ilike(pattern, escape="\\"),
+            )
+        )
+    return conditions
+
+
 async def list_for_wallet(
     session: AsyncSession,
     wallet_id: uuid.UUID,
@@ -296,21 +354,13 @@ async def list_for_wallet(
     cursor: uuid.UUID | None = None,
     txn_type: TxnType | None = None,
     status: TxnStatus | None = None,
+    flt: HistoryFilter | None = None,
 ) -> TransactionPage:
     """Newest first. UUIDv7 ids are time-ordered, so the id alone is a stable cursor."""
-    conditions = [
-        or_(
-            Transaction.source_wallet_id == wallet_id,
-            Transaction.destination_wallet_id == wallet_id,
-        ),
-        visible_to_customer(),
-    ]
+    flt = flt or HistoryFilter(txn_type=txn_type, status=status)
+    conditions = history_conditions(wallet_id, flt)
     if cursor is not None:
         conditions.append(Transaction.id < cursor)
-    if txn_type is not None:
-        conditions.append(Transaction.type == txn_type.value)
-    if status is not None:
-        conditions.append(Transaction.status == status.value)
     rows = list(
         (
             await session.scalars(

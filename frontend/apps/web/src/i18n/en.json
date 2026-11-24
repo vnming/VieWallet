@@ -18,7 +18,9 @@
     "transfer": "Send money",
     "scan": "Scan QR",
     "merchant": "Shop",
-    "kyc": "Verify"
+    "kyc": "Verify",
+    "account": "Account",
+    "help": "Help"
   },
   "language": {
     "label": "Language",
@@ -49,7 +51,8 @@
     "errorTitle": "Cannot reach the server",
     "errorDescription": "Check that the backend is running, then try again.",
     "retry": "Try again",
-    "correlation": "Reference"
+    "correlation": "Reference",
+    "offline": "You are offline. Data may be out of date; actions need a connection."
   },
   "notFound": {
     "title": "Page not found",
@@ -226,7 +229,27 @@
     "filterType": "Type",
     "filterStatus": "Status",
     "all": "All",
-    "error": "Could not load your transactions"
+    "error": "Could not load your transactions",
+    "search": "Search by reference, message or counterparty",
+    "searchHint": "At least 2 characters.",
+    "filterDirection": "Direction",
+    "direction": {
+      "IN": "Money in",
+      "OUT": "Money out"
+    },
+    "from": "From",
+    "to": "To",
+    "minAmount": "Min amount (VND)",
+    "maxAmount": "Max amount (VND)",
+    "clear": "Clear filters",
+    "export": {
+      "title": "Export CSV",
+      "create": "Create CSV",
+      "pending": "Building the file…",
+      "download": "Download ({{count}} transactions)",
+      "truncated": "Only the first 10,000 transactions.",
+      "gone": "The file expired. Create it again."
+    }
   },
   "txn": {
     "types": {
@@ -253,7 +276,9 @@
     "back": "Back to history",
     "copy": "Copy reference",
     "copied": "Reference copied",
-    "failure": "Reason"
+    "failure": "Reason",
+    "category": "Category",
+    "report": "Report a problem"
   },
   "money": {
     "amount": "Amount (VND)",
@@ -549,6 +574,123 @@
       "PER_TXN": "Per transaction",
       "DAILY": "Today",
       "MONTHLY": "This month"
+    }
+  },
+  "account": {
+    "title": "Account",
+    "description": "Profile, settings, security and support.",
+    "hub": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "security": "Security",
+      "kyc": "Identity verification",
+      "limits": "Limits",
+      "destinations": "Bank accounts",
+      "recipients": "Saved recipients",
+      "support": "Support tickets",
+      "help": "Help"
+    },
+    "hubHint": {
+      "profile": "Name, phone, e-mail",
+      "settings": "Language, theme, privacy mode",
+      "security": "Password, PIN, sessions, wallet freeze",
+      "kyc": "Reach tier 1 to withdraw",
+      "limits": "Used and left",
+      "destinations": "Bank accounts for withdrawals",
+      "recipients": "Your transfer contacts",
+      "support": "Contact the support team",
+      "help": "Frequently asked questions"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Fictional personal details of the simulated account.",
+    "fullName": "Full name",
+    "displayName": "Display name",
+    "phone": "Phone (simulated)",
+    "phoneHint": "Vietnamese mobile number, e.g. 0912345678. Not verified by SMS.",
+    "email": "E-mail",
+    "save": "Save profile",
+    "saved": "Profile saved",
+    "nameLocked": "Your identity is verified, so the name cannot change.",
+    "emailTitle": "Change e-mail",
+    "newEmail": "New e-mail",
+    "password": "Current password",
+    "sendCode": "Send a code",
+    "codeSent": "A code was sent to {{email}}.",
+    "code": "6-digit code",
+    "confirmEmail": "Confirm the new e-mail",
+    "emailChanged": "E-mail changed"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Applies on every device you sign in on.",
+    "language": "Language",
+    "theme": "Appearance",
+    "themes": {
+      "SYSTEM": "Follow system",
+      "LIGHT": "Light",
+      "DARK": "Dark"
+    },
+    "privacy": "Privacy mode",
+    "privacyLabel": "Hide balances and amounts",
+    "privacyHint": "Balances and amounts in lists stay hidden until you reveal them.",
+    "saved": "Settings saved",
+    "amountHidden": "Amount hidden"
+  },
+  "recipients": {
+    "title": "Saved recipients",
+    "description": "People you often send money to.",
+    "empty": "No saved recipients yet.",
+    "remove": "Remove",
+    "removeOf": "Remove {{name}}",
+    "removed": "Recipient removed"
+  },
+  "help": {
+    "title": "Help",
+    "description": "Answers to common questions.",
+    "search": "Search articles",
+    "noResults": "No matching article.",
+    "askUs": "Open a support ticket",
+    "stillStuck": "Still need help?",
+    "back": "All articles",
+    "notFound": "Article not found",
+    "updated": "Updated {{time}}"
+  },
+  "support": {
+    "title": "Support",
+    "description": "Send a request and follow the support team's answers.",
+    "new": "New request",
+    "mine": "Your requests",
+    "empty": "You have no requests yet.",
+    "category": "Topic",
+    "subject": "Subject",
+    "message": "Message",
+    "noSecrets": "Never send your PIN, password or verification codes.",
+    "send": "Send",
+    "sent": "Sent",
+    "about": "About transaction",
+    "back": "All requests",
+    "notFound": "Request not found",
+    "conversation": "Conversation",
+    "reply": "Reply",
+    "closedNote": "This request is closed. Open a new one if needed.",
+    "categories": {
+      "TRANSACTION": "Transaction",
+      "ACCOUNT": "Account",
+      "KYC": "Identity verification",
+      "SECURITY": "Security",
+      "OTHER": "Other"
+    },
+    "status": {
+      "OPEN": "In progress",
+      "PENDING_CUSTOMER": "Waiting for you",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed"
+    },
+    "author": {
+      "CUSTOMER": "You",
+      "STAFF": "Support"
     }
   }
 }

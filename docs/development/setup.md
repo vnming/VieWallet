@@ -120,6 +120,14 @@ Worker chạy thêm: `expire_spend_quotes` (1 phút), `expire_payment_requests` 
 
 Worker chạy thêm: `expire_kyc_approvals` (1 giờ). Handler mới: giám sát rủi ro trên `transaction.status_changed` và `identity.pin_locked`; thông báo KYC trên `kyc.status_changed`.
 
+## 3b4. Hoàn thiện app khách hàng (Phase 7)
+
+- **Tài khoản**: menu Tài khoản gom hồ sơ, cài đặt (ngôn ngữ, giao diện sáng/tối/theo hệ thống, chế độ riêng tư), bảo mật, KYC, hạn mức, tài khoản nhận, người nhận đã lưu, hỗ trợ, trợ giúp.
+- **Trợ giúp**: bài viết nằm ở `backend/app/modules/support/articles/<slug>.<vi|en>.md` (đầu tệp: `title`, `summary`, `category`, `position`, rồi `---`). Sửa tệp rồi chạy lại seed. Chỉ hỗ trợ `## tiêu đề`, đoạn văn, `- danh sách`, `**đậm**`.
+- **Ticket**: nhân viên SUPPORT/OPERATIONS trả lời qua `POST /api/v1/admin/tickets/{ref}/messages` (UI admin ở Phase 8).
+- **Xuất CSV**: worker job `transaction_exports` (10 giây) tạo tệp.
+- **Kiểm tra tiếp cận**: `pnpm test` chạy axe trên 21 trang; E2E `web.account.spec.ts` chạy axe trên trình duyệt thật.
+
 ## 3c. Tạo số dư demo
 
 Chưa có nạp tiền (Phase 4), nên số dư demo được tạo bằng **điều chỉnh số dư** qua maker-checker, đúng như mọi thay đổi số dư khác:
@@ -174,6 +182,8 @@ pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 VW_NEW_DESTINATION_COOLDOWN_MINUTES=0 SIM_PENDING_DELAY_SECONDS=5 SIM_SLOW_RESPONSE_SECONDS=15   docker compose up -d --build
 cd e2e && pnpm test
 ```
+
+Lưu ý E2E: luôn dựng lại cả stack bằng lệnh trên (thiếu biến môi trường thì simulator chờ mặc định 120 giây và hành trình nạp/rút quá thời gian). Nếu chỉ `api` bị tạo lại, chạy `docker compose restart admin web worker`: nginx của `admin`/`web` giữ địa chỉ IP cũ của `api` và trả 502.
 
 Integration test đọc `VW_TEST_DATABASE_URL`, `VW_TEST_MIGRATION_DATABASE_URL`, `VW_TEST_REDIS_URL`, `VW_TEST_SIM_DATABASE_URL` từ `backend/.env`. Simulator chạy thật trong test (ASGI, cùng process); một test khác dựng uvicorn thật để kiểm tra timeout và mất kết nối. Nếu thiếu, pytest bỏ qua các test này và in rõ lý do. Mỗi phiên test dựng lại schema của `viewallet_test` bằng `alembic downgrade base` rồi `upgrade head`, nên cũng kiểm tra luôn chiều downgrade của migration.
 

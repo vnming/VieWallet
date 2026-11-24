@@ -2,6 +2,12 @@ import { createBrowserRouter, type RouteObject } from "react-router";
 
 import { RequireAuth } from "../features/auth/RequireAuth";
 import { AppShell } from "../layouts/AppShell";
+import {
+  AccountHubPage,
+  ProfilePage,
+  RecipientsPage,
+  SettingsPage,
+} from "../routes/account/AccountPages";
 import { SecurityPage } from "../routes/account/SecurityPage";
 import { SetPinPage } from "../routes/account/SetPinPage";
 import { LoginPage } from "../routes/auth/LoginPage";
@@ -20,6 +26,7 @@ import {
   WithdrawPage,
 } from "../routes/money/MoneyPages";
 import { NotificationsPage } from "../routes/NotificationsPage";
+import { HelpArticlePage, HelpPage, TicketPage, TicketsPage } from "../routes/support/SupportPages";
 import {
   MerchantPage,
   PaymentResultPage,
@@ -42,11 +49,20 @@ export const routes: RouteObject[] = [
       { path: "verify-email", element: <VerifyEmailPage /> },
       { path: "forgot-password", element: <ForgotPasswordPage /> },
       { path: "reset-password", element: <ResetPasswordPage /> },
+      // The help center is public: people look for answers before they can sign in.
+      { path: "help", element: <HelpPage /> },
+      { path: "help/:slug", element: <HelpArticlePage /> },
       {
         element: <RequireAuth />,
         children: [
           { path: "onboarding/pin", element: <SetPinPage /> },
+          { path: "account", element: <AccountHubPage /> },
+          { path: "account/profile", element: <ProfilePage /> },
+          { path: "account/recipients", element: <RecipientsPage /> },
           { path: "account/security", element: <SecurityPage /> },
+          { path: "settings", element: <SettingsPage /> },
+          { path: "support/tickets", element: <TicketsPage /> },
+          { path: "support/tickets/:reference", element: <TicketPage /> },
           { path: "wallet", element: <WalletPage /> },
           { path: "history", element: <HistoryPage /> },
           { path: "history/:reference", element: <TransactionDetailPage /> },

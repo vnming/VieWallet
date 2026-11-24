@@ -26,6 +26,9 @@ import app.modules.payments.models
 import app.modules.pricing.models
 import app.modules.providers.models
 import app.modules.risk.models
+import app.modules.support.models
+import app.modules.transactions.categories
+import app.modules.transactions.exports
 import app.modules.transactions.models
 import app.modules.wallet.destinations
 import app.modules.wallet.models

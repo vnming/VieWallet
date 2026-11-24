@@ -111,6 +111,8 @@ Index: `status`, `created_at`. Nhân viên và khách hàng dùng chung bảng; 
 
 > Phase 6 (`0006`): `kyc_profiles` (thêm `created_at`, `updated_at`), `kyc_submissions` (thêm `user_id`, `document_number_enc`, `decided_at`; trạng thái DRAFT, PENDING, IN_REVIEW, APPROVED, REJECTED; index duy nhất một hồ sơ mở mỗi người), `kyc_documents` (CHECK loại tệp và ≤ 5 MB), `kyc_reviews` (chỉ-thêm). `risk_rules` thêm `status` (PENDING, ACTIVE, RETIRED, REJECTED), `block`, `created_by`, `activated_at`, `UNIQUE(code, version)` và index duy nhất một ACTIVE mỗi mã. `risk_alerts` thêm `detail JSONB`, `dedup_key UNIQUE`. `account_risk_flags` thêm `removed_at/removed_by` (gỡ mềm). Ứng dụng không DELETE các bảng này. Action `RISK_RULE_CHANGE` trong `approval_requests`.
 
+> Phase 7 (`0007`): `users.phone` (duy nhất, CHECK định dạng `+84` + 9 số), `users.theme`, `users.privacy_mode`. `transaction_categories` (PK `(user_id, transaction_id)`: danh mục riêng của mỗi phía), `export_jobs` (nội dung CSV nằm trong dòng, xóa khi hết hạn), `help_articles` (chỉ đọc với role ứng dụng; seed từ `backend/app/modules/support/articles`), `support_tickets`, `support_ticket_messages` (chỉ-thêm).
+
 **kyc_profiles** — `user_id UNIQUE`, `status` (NOT_STARTED, PENDING, IN_REVIEW, APPROVED, REJECTED, EXPIRED), `tier`, `approved_at`, `expires_at`, `current_submission_id`.
 **kyc_submissions** — `kyc_profile_id`, `full_name`, `date_of_birth`, `document_type` (NATIONAL_ID, PASSPORT, DRIVER_LICENSE), `document_number_masked`, `document_number_hash`, `address`, `status`, `submitted_at`, `claimed_by`, `claimed_at`. Index `(status, submitted_at)` cho hàng đợi.
 **kyc_documents** — `submission_id`, `kind` (FRONT, BACK, SELFIE), `storage_key`, `content_type`, `size_bytes`, `sha256`.

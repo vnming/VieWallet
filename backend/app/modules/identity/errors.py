@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from app.core.errors import AppError, FieldError, register_titles
+from app.core.errors import AppError, ConflictError, FieldError, register_titles
 
 register_titles(
     {
@@ -167,3 +167,25 @@ class MfaStepUpRequiredError(AppError):
 class MfaAlreadyEnrolledError(AppError):
     code = "MFA_ALREADY_ENROLLED"
     status = 409
+
+
+register_titles(
+    {
+        "PHONE_TAKEN": {
+            "vi": "Số điện thoại đã được tài khoản khác dùng",
+            "en": "The phone number is used by another account",
+        },
+        "PROFILE_NAME_LOCKED": {
+            "vi": "Họ tên đã được xác minh (KYC), không đổi được",
+            "en": "The name is verified (KYC) and cannot be changed",
+        },
+    }
+)
+
+
+class PhoneTakenError(ConflictError):
+    code = "PHONE_TAKEN"
+
+
+class ProfileNameLockedError(ConflictError):
+    code = "PROFILE_NAME_LOCKED"

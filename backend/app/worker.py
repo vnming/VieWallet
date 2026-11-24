@@ -31,6 +31,7 @@ from app.modules.notifications.public import register_handlers as register_email
 from app.modules.operations.public import expire_due, register_recovery_handlers, run_internal
 from app.modules.payments.public import expire_due as expire_payment_requests
 from app.modules.providers.public import PaymentProvider, ProviderServices, SimulatorProvider
+from app.modules.transactions.exports import process_pending as process_exports
 from app.modules.transactions.public import (
     FinanceContext,
     resubmit_stalled_deposits,
@@ -124,6 +125,9 @@ def build_jobs(
         async with db.transaction() as session:
             await expire_payment_requests(session, clock)
 
+    async def build_exports() -> None:
+        await process_exports(db, clock, settings.business_timezone)
+
     async def expire_kyc() -> None:
         async with db.transaction() as session:
             expired = await expire_kyc_approvals(session, clock)
@@ -146,6 +150,7 @@ def build_jobs(
         JobSpec("expire_payment_requests", timedelta(minutes=5), expire_requests),
         JobSpec("expire_risk_holds", timedelta(minutes=15), expire_review_holds),
         JobSpec("expire_kyc_approvals", timedelta(hours=1), expire_kyc),
+        JobSpec("transaction_exports", timedelta(seconds=10), build_exports),
     ]
 
 

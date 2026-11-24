@@ -18,7 +18,9 @@
     "transfer": "Chuyển tiền",
     "scan": "Quét QR",
     "merchant": "Cửa hàng",
-    "kyc": "Xác minh"
+    "kyc": "Xác minh",
+    "account": "Tài khoản",
+    "help": "Trợ giúp"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -49,7 +51,8 @@
     "errorTitle": "Không kết nối được máy chủ",
     "errorDescription": "Kiểm tra backend đã chạy chưa, rồi thử lại.",
     "retry": "Thử lại",
-    "correlation": "Mã tham chiếu"
+    "correlation": "Mã tham chiếu",
+    "offline": "Bạn đang ngoại tuyến. Dữ liệu có thể chưa mới; thao tác sẽ cần mạng."
   },
   "notFound": {
     "title": "Không tìm thấy trang",
@@ -226,7 +229,27 @@
     "filterType": "Loại giao dịch",
     "filterStatus": "Trạng thái",
     "all": "Tất cả",
-    "error": "Không tải được lịch sử giao dịch"
+    "error": "Không tải được lịch sử giao dịch",
+    "search": "Tìm theo mã, nội dung hoặc đối tác",
+    "searchHint": "Ít nhất 2 ký tự.",
+    "filterDirection": "Chiều tiền",
+    "direction": {
+      "IN": "Tiền vào",
+      "OUT": "Tiền ra"
+    },
+    "from": "Từ ngày",
+    "to": "Đến ngày",
+    "minAmount": "Từ số tiền (₫)",
+    "maxAmount": "Đến số tiền (₫)",
+    "clear": "Xóa bộ lọc",
+    "export": {
+      "title": "Xuất CSV",
+      "create": "Tạo tệp CSV",
+      "pending": "Đang tạo tệp…",
+      "download": "Tải tệp ({{count}} giao dịch)",
+      "truncated": "Chỉ gồm 10.000 giao dịch đầu.",
+      "gone": "Tệp đã hết hạn. Hãy tạo lại."
+    }
   },
   "txn": {
     "types": {
@@ -253,7 +276,9 @@
     "back": "Quay lại lịch sử",
     "copy": "Sao chép mã giao dịch",
     "copied": "Đã sao chép mã giao dịch",
-    "failure": "Lý do"
+    "failure": "Lý do",
+    "category": "Danh mục",
+    "report": "Báo lỗi giao dịch"
   },
   "money": {
     "amount": "Số tiền (₫)",
@@ -549,6 +574,123 @@
       "PER_TXN": "Mỗi giao dịch",
       "DAILY": "Trong ngày",
       "MONTHLY": "Trong tháng"
+    }
+  },
+  "account": {
+    "title": "Tài khoản",
+    "description": "Hồ sơ, cài đặt, bảo mật và hỗ trợ.",
+    "hub": {
+      "profile": "Hồ sơ",
+      "settings": "Cài đặt",
+      "security": "Bảo mật",
+      "kyc": "Xác minh danh tính",
+      "limits": "Hạn mức",
+      "destinations": "Tài khoản nhận tiền",
+      "recipients": "Người nhận đã lưu",
+      "support": "Yêu cầu hỗ trợ",
+      "help": "Trợ giúp"
+    },
+    "hubHint": {
+      "profile": "Tên, số điện thoại, email",
+      "settings": "Ngôn ngữ, giao diện, chế độ riêng tư",
+      "security": "Mật khẩu, PIN, phiên đăng nhập, khóa ví",
+      "kyc": "Lên cấp 1 để rút tiền",
+      "limits": "Đã dùng và còn lại",
+      "destinations": "Tài khoản ngân hàng để rút",
+      "recipients": "Danh bạ chuyển tiền",
+      "support": "Liên hệ đội hỗ trợ",
+      "help": "Câu hỏi thường gặp"
+    }
+  },
+  "profile": {
+    "title": "Hồ sơ",
+    "description": "Thông tin cá nhân hư cấu của tài khoản mô phỏng.",
+    "fullName": "Họ và tên",
+    "displayName": "Tên hiển thị",
+    "phone": "Số điện thoại (mô phỏng)",
+    "phoneHint": "Số di động Việt Nam, ví dụ 0912345678. Không xác minh bằng SMS.",
+    "email": "Email",
+    "save": "Lưu hồ sơ",
+    "saved": "Đã lưu hồ sơ",
+    "nameLocked": "Đã xác minh danh tính nên không đổi được họ tên.",
+    "emailTitle": "Đổi email",
+    "newEmail": "Email mới",
+    "password": "Mật khẩu hiện tại",
+    "sendCode": "Gửi mã xác minh",
+    "codeSent": "Đã gửi mã tới {{email}}.",
+    "code": "Mã 6 số",
+    "confirmEmail": "Xác nhận email mới",
+    "emailChanged": "Đã đổi email"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "description": "Áp dụng cho mọi thiết bị bạn đăng nhập.",
+    "language": "Ngôn ngữ",
+    "theme": "Giao diện",
+    "themes": {
+      "SYSTEM": "Theo hệ thống",
+      "LIGHT": "Sáng",
+      "DARK": "Tối"
+    },
+    "privacy": "Chế độ riêng tư",
+    "privacyLabel": "Ẩn số dư và số tiền",
+    "privacyHint": "Số dư và số tiền trong danh sách bị ẩn cho tới khi bạn bấm hiện.",
+    "saved": "Đã lưu cài đặt",
+    "amountHidden": "Số tiền đang ẩn"
+  },
+  "recipients": {
+    "title": "Người nhận đã lưu",
+    "description": "Người bạn hay chuyển tiền.",
+    "empty": "Chưa lưu người nhận nào.",
+    "remove": "Xóa",
+    "removeOf": "Xóa {{name}}",
+    "removed": "Đã xóa người nhận"
+  },
+  "help": {
+    "title": "Trợ giúp",
+    "description": "Câu trả lời cho câu hỏi thường gặp.",
+    "search": "Tìm bài viết",
+    "noResults": "Không tìm thấy bài viết phù hợp.",
+    "askUs": "Gửi yêu cầu hỗ trợ",
+    "stillStuck": "Vẫn cần giúp đỡ?",
+    "back": "Tất cả bài viết",
+    "notFound": "Không tìm thấy bài viết",
+    "updated": "Cập nhật {{time}}"
+  },
+  "support": {
+    "title": "Hỗ trợ",
+    "description": "Gửi yêu cầu và theo dõi phản hồi của đội hỗ trợ.",
+    "new": "Tạo yêu cầu mới",
+    "mine": "Yêu cầu của bạn",
+    "empty": "Bạn chưa có yêu cầu nào.",
+    "category": "Chủ đề",
+    "subject": "Tiêu đề",
+    "message": "Nội dung",
+    "noSecrets": "Không bao giờ gửi PIN, mật khẩu hay mã xác minh.",
+    "send": "Gửi",
+    "sent": "Đã gửi",
+    "about": "Về giao dịch",
+    "back": "Tất cả yêu cầu",
+    "notFound": "Không tìm thấy yêu cầu",
+    "conversation": "Trao đổi",
+    "reply": "Trả lời",
+    "closedNote": "Yêu cầu đã đóng. Hãy tạo yêu cầu mới nếu cần.",
+    "categories": {
+      "TRANSACTION": "Giao dịch",
+      "ACCOUNT": "Tài khoản",
+      "KYC": "Xác minh danh tính",
+      "SECURITY": "Bảo mật",
+      "OTHER": "Khác"
+    },
+    "status": {
+      "OPEN": "Đang xử lý",
+      "PENDING_CUSTOMER": "Chờ bạn trả lời",
+      "RESOLVED": "Đã giải quyết",
+      "CLOSED": "Đã đóng"
+    },
+    "author": {
+      "CUSTOMER": "Bạn",
+      "STAFF": "Đội hỗ trợ"
     }
   }
 }

@@ -145,3 +145,19 @@ Loading (skeleton giống bố cục), Empty (minh họa + một hành động),
 ## 7. Checklist tiếp cận (cho mỗi component và trang)
 
 HTML ngữ nghĩa, input có nhãn, thông báo lỗi liên kết qua `aria-describedby`, giữ focus trong dialog, `aria-live` cho toast và kết quả giao dịch, hỗ trợ bàn phím cho bảng và menu, tương phản ≥ 4.5:1 cho chữ / 3:1 cho UI, số tiền được đọc kèm đơn vị ("một triệu hai trăm năm mươi nghìn đồng" qua `Intl` + văn bản cho trình đọc màn hình), biểu đồ có bảng dữ liệu thay thế. Kiểm tra tự động: `axe` trong component test và Playwright.
+
+## 9. Bảy trạng thái của một trang khách hàng (Phase 7)
+
+Mọi trang của app khách hàng phải xử lý đủ 7 trạng thái; tiêu đề trang (h1) luôn hiện, kể cả khi đang tải hoặc lỗi.
+
+| # | Trạng thái | Cách làm | Kiểm chứng |
+|---|---|---|---|
+| 1 | Đang tải | Skeleton đúng hình khối nội dung, giữ tiêu đề trang | Test component |
+| 2 | Trống | `EmptyState` có lời giải thích và bước tiếp theo (liên kết hành động) | Test component |
+| 3 | Lỗi | `ErrorState` có nút thử lại; lỗi API hiện tiêu đề đã dịch và correlation id | `a11y.test.tsx` quét 21 trang khi mọi API lỗi |
+| 4 | Có dữ liệu / thành công | Nội dung, toast cho thao tác thành công | Test component, E2E |
+| 5 | Ngoại tuyến | `OfflineBanner` toàn cục (`navigator.onLine`), dữ liệu cũ vẫn xem được | Test component |
+| 6 | Phiên hết hạn / chưa đăng nhập | `RequireAuth` chuyển về `/login`; trợ giúp xem được khi chưa đăng nhập | Test router (Phase 2), E2E |
+| 7 | Không tìm thấy / không có quyền | 404 cho tài nguyên không thuộc mình (không lộ sự tồn tại), trang 404 | Test API và component |
+
+Tiếp cận: axe-core không có vi phạm serious/critical trên 21 trang ở trạng thái có dữ liệu và trạng thái lỗi (jsdom, `apps/web/src/routes/a11y.test.tsx`), và trên trình duyệt thật kèm kiểm tra tương phản màu (`e2e/tests/web.account.spec.ts`, `@axe-core/playwright`).

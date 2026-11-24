@@ -134,10 +134,17 @@ test("journey 8: a large transfer is held for review and an analyst approves it"
   await web.getByLabel("PIN hiện tại").fill(PIN);
   await web.getByRole("button", { name: "Xác nhận chuyển" }).click();
   await expect(web.getByRole("heading", { level: 1, name: "Đang kiểm tra an toàn" })).toBeVisible();
+  const reference = /\/transfers\/([A-Z0-9]+)/.exec(web.url())?.[1] ?? "";
+  expect(reference).not.toBe("");
 
   await enrolledStaff(page, ["RISK_ANALYST"]);
   await page.getByRole("link", { name: "Rủi ro" }).click();
-  await page.getByRole("button", { name: "Duyệt", exact: true }).first().click();
+  // Approve this test's hold: holds left by other runs may still be in the queue.
+  await page
+    .getByRole("listitem")
+    .filter({ hasText: reference })
+    .getByRole("button", { name: "Duyệt", exact: true })
+    .click();
   await page.getByRole("button", { name: "Xác nhận" }).click();
   await expect(page.getByText("Đã duyệt, tiền tiếp tục tới người nhận")).toBeVisible();
 

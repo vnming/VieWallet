@@ -3,10 +3,12 @@ import { TransactionRow } from "@viewallet/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { usePrivacyMode } from "../preferences/privacy";
 import { formatDateTime, transactionTitle, uiLocale } from "./format";
 
 export function TransactionList({ items }: { items: TransactionItem[] }) {
   const { t, i18n } = useTranslation();
+  const privacy = usePrivacyMode();
   return (
     <ul className="divide-y divide-border">
       {items.map((txn) => (
@@ -22,6 +24,7 @@ export function TransactionList({ items }: { items: TransactionItem[] }) {
               direction={txn.direction === "IN" ? "IN" : "OUT"}
               status={txn.status}
               locale={uiLocale(i18n.language)}
+              {...(privacy ? { maskedLabel: t("settings.amountHidden") } : {})}
             />
           </Link>
         </li>

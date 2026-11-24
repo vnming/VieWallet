@@ -15,6 +15,8 @@ export interface TransactionRowProps {
   locale?: "vi" | "en";
   /** Hide the badge for the common "completed" case to keep lists calm. */
   hideCompletedBadge?: boolean;
+  /** Privacy mode: the amount is replaced by dots (and its accessible name says so). */
+  maskedLabel?: string;
   className?: string;
 }
 
@@ -27,6 +29,7 @@ export function TransactionRow({
   status,
   locale = "vi",
   hideCompletedBadge = true,
+  maskedLabel,
   className,
 }: TransactionRowProps) {
   const Icon = direction === "IN" ? ArrowDownLeft : ArrowUpRight;
@@ -46,12 +49,18 @@ export function TransactionRow({
         {subtitle && <span className="truncate text-xs text-fg-muted">{subtitle}</span>}
       </span>
       <span className="flex flex-col items-end gap-1">
-        <AmountText
-          money={money}
-          direction={direction}
-          locale={locale === "en" ? "en-US" : "vi-VN"}
-          className={clsx(!settled && "text-fg-muted")}
-        />
+        {maskedLabel ? (
+          <span className="font-semibold tabular-nums text-fg-muted" aria-label={maskedLabel}>
+            ••••••
+          </span>
+        ) : (
+          <AmountText
+            money={money}
+            direction={direction}
+            locale={locale === "en" ? "en-US" : "vi-VN"}
+            className={clsx(!settled && "text-fg-muted")}
+          />
+        )}
         {(!settled || !hideCompletedBadge) && <StatusBadge status={status} locale={locale} />}
       </span>
     </div>

@@ -10,17 +10,19 @@ import {
   BadgeCheck,
   History,
   Home,
+  LifeBuoy,
   type LucideIcon,
   Palette,
   ScanLine,
-  ShieldCheck,
   Store,
+  UserRound,
   Wallet,
 } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
 
+import { OfflineBanner, ThemeSync } from "../features/preferences/Preferences";
 import { NotificationBell } from "../routes/NotificationsPage";
 
 interface NavItem {
@@ -44,7 +46,8 @@ function useNavItems(signedIn: boolean): NavItem[] {
           { to: "/history", key: "nav.history", icon: History, end: false },
           ...(merchant ? [{ to: "/merchant", key: "nav.merchant", icon: Store, end: true }] : []),
           { to: "/kyc", key: "nav.kyc", icon: BadgeCheck, end: true },
-          { to: "/account/security", key: "nav.security", icon: ShieldCheck, end: false },
+          { to: "/account", key: "nav.account", icon: UserRound, end: false },
+          { to: "/help", key: "nav.help", icon: LifeBuoy, end: false },
         ]
       : []),
     // The living style guide is only linked in development builds.
@@ -171,6 +174,8 @@ export function AppShell() {
             <UserMenu />
           </div>
         </header>
+        <OfflineBanner />
+        <ThemeSync />
 
         <main id="main" tabIndex={-1} className="flex-1 px-4 pb-24 pt-6 md:px-8 lg:pb-10">
           <div className="mx-auto w-full max-w-[1120px]">

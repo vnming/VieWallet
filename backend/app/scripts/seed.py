@@ -22,6 +22,7 @@ from app.modules.ledger.public import AccountCode, open_account, seed_system_acc
 from app.modules.pricing.public import seed_defaults
 from app.modules.providers.public import SIMULATOR, seed_providers
 from app.modules.risk.public import seed_rules
+from app.modules.support.public import seed_articles
 
 logger = structlog.get_logger("app.seed")
 
@@ -60,6 +61,7 @@ async def seed(db: Database) -> None:
         await seed_defaults(session)
         await seed_providers(session)
         await seed_rules(session, clock)
+        await seed_articles(session, clock)
     logger.info(
         "seed_completed",
         currencies=[c["code"] for c in CURRENCIES],

@@ -1006,6 +1006,74 @@
         "title": "ApprovalStatus",
         "type": "string"
       },
+      "ArticleOut": {
+        "properties": {
+          "body": {
+            "description": "Markdown subset: ## headings, paragraphs, - lists, **bold**",
+            "title": "Body",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "category",
+          "title",
+          "summary",
+          "body",
+          "updated_at"
+        ],
+        "title": "ArticleOut",
+        "type": "object"
+      },
+      "ArticleSummaryOut": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "category",
+          "title",
+          "summary"
+        ],
+        "title": "ArticleSummaryOut",
+        "type": "object"
+      },
       "AuditLogItem": {
         "properties": {
           "action": {
@@ -1167,6 +1235,38 @@
           "name"
         ],
         "title": "BankOut",
+        "type": "object"
+      },
+      "CategoryIn": {
+        "properties": {
+          "category_code": {
+            "maxLength": 20,
+            "title": "Category Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "category_code"
+        ],
+        "title": "CategoryIn",
+        "type": "object"
+      },
+      "CategoryOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "CategoryOut",
         "type": "object"
       },
       "ChainVerificationResponse": {
@@ -1637,6 +1737,105 @@
           "email"
         ],
         "title": "EmailOnlyRequest",
+        "type": "object"
+      },
+      "ExportIn": {
+        "properties": {
+          "date_from": {
+            "format": "date",
+            "title": "Date From",
+            "type": "string"
+          },
+          "date_to": {
+            "format": "date",
+            "title": "Date To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date_from",
+          "date_to"
+        ],
+        "title": "ExportIn",
+        "type": "object"
+      },
+      "ExportOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "date_from": {
+            "format": "date",
+            "title": "Date From",
+            "type": "string"
+          },
+          "date_to": {
+            "format": "date",
+            "title": "Date To",
+            "type": "string"
+          },
+          "download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Url"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "row_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Count"
+          },
+          "status": {
+            "enum": [
+              "PENDING",
+              "READY",
+              "FAILED",
+              "EXPIRED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "More than 10 000 rows: only the first ones are in",
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "date_from",
+          "date_to",
+          "row_count",
+          "truncated",
+          "created_at",
+          "expires_at",
+          "download_url"
+        ],
+        "title": "ExportOut",
         "type": "object"
       },
       "FlagIn": {
@@ -2320,8 +2519,34 @@
             "title": "Permissions",
             "type": "array"
           },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Simulated, unverified (E.164, +84...)",
+            "title": "Phone"
+          },
           "pin": {
             "$ref": "#/components/schemas/PinStatusResponse"
+          },
+          "privacy_mode": {
+            "description": "Hide balances and amounts until revealed",
+            "title": "Privacy Mode",
+            "type": "boolean"
+          },
+          "theme": {
+            "enum": [
+              "SYSTEM",
+              "LIGHT",
+              "DARK"
+            ],
+            "title": "Theme",
+            "type": "string"
           },
           "user_type": {
             "enum": [
@@ -2343,7 +2568,10 @@
           "created_at",
           "permissions",
           "pin",
-          "kyc_tier"
+          "kyc_tier",
+          "phone",
+          "theme",
+          "privacy_mode"
         ],
         "title": "MeResponse",
         "type": "object"
@@ -2499,6 +2727,60 @@
           "next_cursor"
         ],
         "title": "MerchantPaymentPageOut",
+        "type": "object"
+      },
+      "MessageIn": {
+        "properties": {
+          "body": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Body",
+            "type": "string"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "title": "MessageIn",
+        "type": "object"
+      },
+      "MessageOut": {
+        "properties": {
+          "author": {
+            "enum": [
+              "CUSTOMER",
+              "STAFF"
+            ],
+            "title": "Author",
+            "type": "string"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "internal": {
+            "title": "Internal",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "author",
+          "body",
+          "internal",
+          "created_at"
+        ],
+        "title": "MessageOut",
         "type": "object"
       },
       "MfaConfirmResponse": {
@@ -4225,6 +4507,247 @@
         "title": "StaffMeResponse",
         "type": "object"
       },
+      "StaffMessageIn": {
+        "properties": {
+          "body": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Body",
+            "type": "string"
+          },
+          "internal": {
+            "default": false,
+            "title": "Internal",
+            "type": "boolean"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "OPEN",
+                  "PENDING_CUSTOMER",
+                  "RESOLVED",
+                  "CLOSED"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "title": "StaffMessageIn",
+        "type": "object"
+      },
+      "StaffTicketDetailOut": {
+        "properties": {
+          "assigned_to": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned To"
+          },
+          "category": {
+            "enum": [
+              "TRANSACTION",
+              "ACCOUNT",
+              "KYC",
+              "SECURITY",
+              "OTHER"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/MessageOut"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "PENDING_CUSTOMER",
+              "RESOLVED",
+              "CLOSED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "transaction_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Reference"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "category",
+          "subject",
+          "status",
+          "transaction_reference",
+          "created_at",
+          "updated_at",
+          "user_id",
+          "assigned_to",
+          "messages"
+        ],
+        "title": "StaffTicketDetailOut",
+        "type": "object"
+      },
+      "StaffTicketOut": {
+        "properties": {
+          "assigned_to": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned To"
+          },
+          "category": {
+            "enum": [
+              "TRANSACTION",
+              "ACCOUNT",
+              "KYC",
+              "SECURITY",
+              "OTHER"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "PENDING_CUSTOMER",
+              "RESOLVED",
+              "CLOSED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "transaction_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Reference"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "category",
+          "subject",
+          "status",
+          "transaction_reference",
+          "created_at",
+          "updated_at",
+          "user_id",
+          "assigned_to"
+        ],
+        "title": "StaffTicketOut",
+        "type": "object"
+      },
+      "StaffTicketPageOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StaffTicketOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "StaffTicketPageOut",
+        "type": "object"
+      },
       "SubmissionOut": {
         "properties": {
           "address": {
@@ -4369,10 +4892,198 @@
         "title": "SystemStatus",
         "type": "object"
       },
+      "TicketDetailOut": {
+        "properties": {
+          "category": {
+            "enum": [
+              "TRANSACTION",
+              "ACCOUNT",
+              "KYC",
+              "SECURITY",
+              "OTHER"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/MessageOut"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "PENDING_CUSTOMER",
+              "RESOLVED",
+              "CLOSED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "transaction_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Reference"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "category",
+          "subject",
+          "status",
+          "transaction_reference",
+          "created_at",
+          "updated_at",
+          "messages"
+        ],
+        "title": "TicketDetailOut",
+        "type": "object"
+      },
+      "TicketIn": {
+        "properties": {
+          "category": {
+            "enum": [
+              "TRANSACTION",
+              "ACCOUNT",
+              "KYC",
+              "SECURITY",
+              "OTHER"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Message",
+            "type": "string"
+          },
+          "subject": {
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Subject",
+            "type": "string"
+          },
+          "transaction_reference": {
+            "anyOf": [
+              {
+                "pattern": "^VW\\d{6}[0-9A-Z]{10}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Reference"
+          }
+        },
+        "required": [
+          "category",
+          "subject",
+          "message"
+        ],
+        "title": "TicketIn",
+        "type": "object"
+      },
+      "TicketOut": {
+        "properties": {
+          "category": {
+            "enum": [
+              "TRANSACTION",
+              "ACCOUNT",
+              "KYC",
+              "SECURITY",
+              "OTHER"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "PENDING_CUSTOMER",
+              "RESOLVED",
+              "CLOSED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "transaction_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Reference"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "category",
+          "subject",
+          "status",
+          "transaction_reference",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TicketOut",
+        "type": "object"
+      },
       "TransactionDetailOut": {
         "properties": {
           "amount": {
             "$ref": "#/components/schemas/Amount"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryOut",
+            "description": "Default for this side, or the customer's own"
           },
           "completed_at": {
             "anyOf": [
@@ -4467,6 +5178,7 @@
           "description",
           "counterparty",
           "failure_code",
+          "category",
           "created_at",
           "completed_at",
           "events"
@@ -4519,6 +5231,10 @@
         "properties": {
           "amount": {
             "$ref": "#/components/schemas/Amount"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryOut",
+            "description": "Default for this side, or the customer's own"
           },
           "completed_at": {
             "anyOf": [
@@ -4606,6 +5322,7 @@
           "description",
           "counterparty",
           "failure_code",
+          "category",
           "created_at",
           "completed_at"
         ],
@@ -4838,6 +5555,46 @@
               }
             ],
             "title": "Locale"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Vietnamese mobile (0912345678 or +84912345678); empty string removes it",
+            "title": "Phone"
+          },
+          "privacy_mode": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Privacy Mode"
+          },
+          "theme": {
+            "anyOf": [
+              {
+                "enum": [
+                  "SYSTEM",
+                  "LIGHT",
+                  "DARK"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theme"
           }
         },
         "title": "UpdateProfileRequest",
@@ -6567,6 +7324,178 @@
         ]
       }
     },
+    "/api/v1/admin/tickets": {
+      "get": {
+        "operationId": "staff_tickets_api_v1_admin_tickets_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "OPEN",
+                    "PENDING_CUSTOMER",
+                    "RESOLVED",
+                    "CLOSED"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffTicketPageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Staff Tickets",
+        "tags": [
+          "admin-support"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/{reference}": {
+      "get": {
+        "operationId": "staff_ticket_api_v1_admin_tickets__reference__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffTicketDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Staff Ticket",
+        "tags": [
+          "admin-support"
+        ]
+      }
+    },
+    "/api/v1/admin/tickets/{reference}/messages": {
+      "post": {
+        "operationId": "staff_reply_api_v1_admin_tickets__reference__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMessageIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffTicketDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Staff Reply",
+        "tags": [
+          "admin-support"
+        ]
+      }
+    },
     "/api/v1/admin/transactions/{reference}": {
       "get": {
         "operationId": "admin_get_transaction_api_v1_admin_transactions__reference__get",
@@ -7346,6 +8275,130 @@
         "summary": "Get Deposit",
         "tags": [
           "money-movement"
+        ]
+      }
+    },
+    "/api/v1/help/articles": {
+      "get": {
+        "operationId": "help_articles_api_v1_help_articles_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "required": false,
+            "schema": {
+              "default": "vi",
+              "enum": [
+                "vi",
+                "en"
+              ],
+              "title": "Locale",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ArticleSummaryOut"
+                  },
+                  "title": "Response Help Articles Api V1 Help Articles Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Help Articles",
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/help/articles/{slug}": {
+      "get": {
+        "operationId": "help_article_api_v1_help_articles__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "required": false,
+            "schema": {
+              "default": "vi",
+              "enum": [
+                "vi",
+                "en"
+              ],
+              "title": "Locale",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Help Article",
+        "tags": [
+          "support"
         ]
       }
     },
@@ -8957,6 +10010,164 @@
         ]
       }
     },
+    "/api/v1/support/tickets": {
+      "get": {
+        "operationId": "my_tickets_api_v1_support_tickets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TicketOut"
+                  },
+                  "title": "Response My Tickets Api V1 Support Tickets Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Tickets",
+        "tags": [
+          "support"
+        ]
+      },
+      "post": {
+        "operationId": "open_ticket_api_v1_support_tickets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Open Ticket",
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/tickets/{reference}": {
+      "get": {
+        "operationId": "my_ticket_api_v1_support_tickets__reference__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "My Ticket",
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/tickets/{reference}/messages": {
+      "post": {
+        "operationId": "reply_api_v1_support_tickets__reference__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reply",
+        "tags": [
+          "support"
+        ]
+      }
+    },
     "/api/v1/system/status": {
       "get": {
         "operationId": "system_status_api_v1_system_status_get",
@@ -9042,6 +10253,114 @@
               ],
               "title": "Status"
             }
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "IN",
+                    "OUT"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Direction"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_amount",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 9000000000000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Amount"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_amount",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 9000000000000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Amount"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 60,
+                  "minLength": 2,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
           }
         ],
         "responses": {
@@ -9067,6 +10386,176 @@
           }
         },
         "summary": "List My Transactions",
+        "tags": [
+          "transactions"
+        ]
+      }
+    },
+    "/api/v1/transactions/categories": {
+      "get": {
+        "operationId": "list_categories_api_v1_transactions_categories_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryOut"
+                  },
+                  "title": "Response List Categories Api V1 Transactions Categories Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Categories",
+        "tags": [
+          "transactions"
+        ]
+      }
+    },
+    "/api/v1/transactions/exports": {
+      "post": {
+        "operationId": "create_export_api_v1_transactions_exports_post",
+        "parameters": [
+          {
+            "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Export",
+        "tags": [
+          "transactions"
+        ]
+      }
+    },
+    "/api/v1/transactions/exports/{export_id}": {
+      "get": {
+        "operationId": "get_export_api_v1_transactions_exports__export_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Export Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Export",
+        "tags": [
+          "transactions"
+        ]
+      }
+    },
+    "/api/v1/transactions/exports/{export_id}/download": {
+      "get": {
+        "operationId": "download_export_api_v1_transactions_exports__export_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Export Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Export",
         "tags": [
           "transactions"
         ]
@@ -9109,6 +10598,58 @@
           }
         },
         "summary": "Get My Transaction",
+        "tags": [
+          "transactions"
+        ]
+      }
+    },
+    "/api/v1/transactions/{reference}/category": {
+      "patch": {
+        "operationId": "change_category_api_v1_transactions__reference__category_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Category",
         "tags": [
           "transactions"
         ]

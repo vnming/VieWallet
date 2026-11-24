@@ -66,12 +66,22 @@ class MeResponse(BaseModel):
     permissions: list[str]
     pin: PinStatusResponse
     kyc_tier: int = Field(description="0 = unverified, 1 = verified (simulated KYC)")
+    phone: str | None = Field(description="Simulated, unverified (E.164, +84...)")
+    theme: Literal["SYSTEM", "LIGHT", "DARK"]
+    privacy_mode: bool = Field(description="Hide balances and amounts until revealed")
 
 
 class UpdateProfileRequest(StrictModel):
     full_name: str | None = Field(default=None, min_length=2, max_length=120)
     display_name: str | None = Field(default=None, max_length=60)
     locale: Locale | None = None
+    phone: str | None = Field(
+        default=None,
+        max_length=16,
+        description="Vietnamese mobile (0912345678 or +84912345678); empty string removes it",
+    )
+    theme: Literal["SYSTEM", "LIGHT", "DARK"] | None = None
+    privacy_mode: bool | None = None
 
 
 class ChangePasswordRequest(StrictModel):

@@ -16,6 +16,7 @@ from app.modules.transactions.service import (
     TxnInvalidStateError,
     get,
     get_by_reference,
+    get_for_wallet,
     held_totals,
 )
 from app.modules.transactions.use_cases import (
@@ -63,6 +64,7 @@ __all__ = [
     "deposit",
     "get",
     "get_by_reference",
+    "get_for_wallet",
     "held_totals",
     "process_callback",
     "refund",

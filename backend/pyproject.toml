@@ -118,7 +118,7 @@ allow_indirect_imports = true
 name = "Business modules are layered (higher layers call lower ones through public.py)"
 type = "layers"
 layers = [
-    "app.modules.operations",
+    "app.modules.operations | app.modules.support",
     "app.modules.transactions",
     "app.modules.payments",
     "app.modules.wallet | app.modules.kyc",

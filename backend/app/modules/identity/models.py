@@ -38,6 +38,8 @@ class User(Base):
         CheckConstraint(_in("user_type", USER_TYPES), name="user_type_valid"),
         CheckConstraint(_in("status", USER_STATUSES), name="status_valid"),
         CheckConstraint("locale IN ('vi', 'en')", name="locale_valid"),
+        CheckConstraint("theme IN ('SYSTEM', 'LIGHT', 'DARK')", name="theme_valid"),
+        CheckConstraint("phone IS NULL OR phone ~ '^\\+84[0-9]{9}$'", name="phone_format"),
         CheckConstraint("kyc_tier IN (0, 1)", name="kyc_tier_valid"),
         Index("ix_users_status_created", "status", "created_at"),
     )
@@ -48,6 +50,10 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(120))
     display_name: Mapped[str | None] = mapped_column(String(60))
     user_type: Mapped[str] = mapped_column(String(20))
+    # Simulated phone number (E.164, never verified by SMS: there is no real carrier).
+    phone: Mapped[str | None] = mapped_column(String(16), unique=True)
+    theme: Mapped[str] = mapped_column(String(10), default="SYSTEM")
+    privacy_mode: Mapped[bool] = mapped_column(default=False)
     status: Mapped[str] = mapped_column(String(30))
     locale: Mapped[str] = mapped_column(String(5), default="vi")
     # KYC tier (0 = unverified, 1 = verified). Set by the KYC flow from Phase 6; until then

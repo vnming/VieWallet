@@ -44,7 +44,7 @@ MUTABLE_TABLES = (
 )
 # Append-only children reached by the cascade. The test fixture (table owner) lifts their
 # TRUNCATE guard inside its own transaction; the application role can never do this.
-CASCADED_APPEND_ONLY = ("transaction_events", "kyc_reviews")
+CASCADED_APPEND_ONLY = ("transaction_events", "kyc_reviews", "support_ticket_messages")
 
 SIM_TABLES = ("sim_callbacks", "sim_operations", "sim_settings", "sim_logs")
 SIM_API_KEY = "test-sim-api-key"  # gitleaks:allow (throwaway test value)

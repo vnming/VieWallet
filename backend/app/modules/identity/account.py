@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import re
 import uuid
+from dataclasses import dataclass
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.errors import NotFoundError
+from app.core.errors import FieldError, NotFoundError, ValidationFailedError
 from app.modules.identity import sessions
 from app.modules.identity.auth import ensure_password_policy, find_user_by_email, normalize_email
 from app.modules.identity.context import (
@@ -16,7 +18,12 @@ from app.modules.identity.context import (
     IdentityServices,
     RequestMeta,
 )
-from app.modules.identity.errors import PasswordIncorrectError, VerificationCodeInvalidError
+from app.modules.identity.errors import (
+    PasswordIncorrectError,
+    PhoneTakenError,
+    ProfileNameLockedError,
+    VerificationCodeInvalidError,
+)
 from app.modules.identity.models import Credential, LoginAttempt, User, UserSession
 from app.modules.identity.tokens import consume_code, issue_code
 from app.modules.notifications.public import request_email
@@ -30,36 +37,64 @@ async def _load(session: AsyncSession, user_id: uuid.UUID) -> tuple[User, Creden
     return user, credential
 
 
+@dataclass(frozen=True, slots=True)
+class ProfileChanges:
+    full_name: str | None = None
+    display_name: str | None = None
+    locale: str | None = None
+    phone: str | None = None  # "" removes the number
+    theme: str | None = None
+    privacy_mode: bool | None = None
+
+    def empty(self) -> bool:
+        return all(getattr(self, f) is None for f in self.__dataclass_fields__)
+
+
+_PHONE = re.compile(r"^(?:\+84|0)([35789][0-9]{8})$")
+
+
+def normalize_phone(raw: str) -> str:
+    """Vietnamese mobile numbers only (simulated), stored as +84XXXXXXXXX."""
+    match = _PHONE.match(raw.replace(" ", "").replace(".", "").replace("-", ""))
+    if match is None:
+        raise ValidationFailedError(
+            errors=[FieldError("phone", "PHONE_INVALID", "Vietnamese mobile number")]
+        )
+    return f"+84{match.group(1)}"
+
+
 async def update_profile(
-    ctx: IdentityServices,
-    *,
-    user_id: uuid.UUID,
-    full_name: str | None,
-    display_name: str | None,
-    locale: str | None,
-    meta: RequestMeta,
+    ctx: IdentityServices, *, user_id: uuid.UUID, changes: ProfileChanges, meta: RequestMeta
 ) -> User:
     async with ctx.db.transaction() as session:
         user = await session.get(User, user_id, with_for_update=True)
         if user is None:
             raise NotFoundError()
-        before = {
-            "full_name": user.full_name,
-            "display_name": user.display_name,
-            "locale": user.locale,
-        }
-        if full_name is not None:
-            user.full_name = " ".join(full_name.split())
-        if display_name is not None:
-            user.display_name = " ".join(display_name.split()) or None
-        if locale is not None:
-            user.locale = locale
+        fields = ("full_name", "display_name", "locale", "phone", "theme", "privacy_mode")
+        before = {f: getattr(user, f) for f in fields}
+        if changes.full_name is not None:
+            name = " ".join(changes.full_name.split())
+            if name != user.full_name and user.kyc_tier >= 1:
+                # The verified identity is the KYC name; changing it needs a new KYC.
+                raise ProfileNameLockedError()
+            user.full_name = name
+        if changes.display_name is not None:
+            user.display_name = " ".join(changes.display_name.split()) or None
+        if changes.locale is not None:
+            user.locale = changes.locale
+        if changes.phone is not None:
+            phone = normalize_phone(changes.phone) if changes.phone.strip() else None
+            if phone is not None and phone != user.phone:
+                taken = await session.scalar(select(User.id).where(User.phone == phone))
+                if taken is not None:
+                    raise PhoneTakenError()
+            user.phone = phone
+        if changes.theme is not None:
+            user.theme = changes.theme
+        if changes.privacy_mode is not None:
+            user.privacy_mode = changes.privacy_mode
         user.updated_at = ctx.clock.now()
-        after = {
-            "full_name": user.full_name,
-            "display_name": user.display_name,
-            "locale": user.locale,
-        }
+        after = {f: getattr(user, f) for f in fields}
         await ctx.audit(
             session,
             action="identity.profile_updated",
@@ -67,7 +102,9 @@ async def update_profile(
             actor_id=user_id,
             target_id=user_id,
             meta=meta,
-            details={"before": before, "after": after},
+            details={
+                "changed": sorted(f for f in fields if before[f] != after[f]),
+            },
         )
         return user
 

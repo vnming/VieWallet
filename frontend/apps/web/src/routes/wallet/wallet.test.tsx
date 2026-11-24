@@ -47,6 +47,7 @@ function txn(index: number, overrides: object = {}) {
     description: `Nạp tiền mô phỏng ${String(index)}`,
     counterparty: { kind: "SYSTEM", name: "VieWallet", wallet_number_masked: null },
     failure_code: null,
+    category: { code: "OTHER", name: "Khác" },
     created_at: "2026-11-22T03:00:00Z",
     completed_at: "2026-11-22T03:05:00Z",
     ...overrides,

@@ -25,6 +25,15 @@ export type TxnStatus = Schemas["TxnStatus"];
 export interface TransactionFilters {
   type?: TxnType | undefined;
   status?: TxnStatus | undefined;
+  direction?: "IN" | "OUT" | undefined;
+  /** Calendar days (YYYY-MM-DD) in Vietnam time, both included. */
+  from?: string | undefined;
+  to?: string | undefined;
+  /** Integer dong. */
+  minAmount?: number | undefined;
+  maxAmount?: number | undefined;
+  /** Reference, description or counterparty (at least 2 characters). */
+  q?: string | undefined;
 }
 
 export const financeKeys = {
@@ -61,6 +70,12 @@ export const financeApi = (client: ApiClient) => ({
             ...(cursor ? { cursor } : {}),
             ...(filters.type ? { type: filters.type } : {}),
             ...(filters.status ? { status: filters.status } : {}),
+            ...(filters.direction ? { direction: filters.direction } : {}),
+            ...(filters.from ? { from: filters.from } : {}),
+            ...(filters.to ? { to: filters.to } : {}),
+            ...(filters.minAmount !== undefined ? { min_amount: filters.minAmount } : {}),
+            ...(filters.maxAmount !== undefined ? { max_amount: filters.maxAmount } : {}),
+            ...(filters.q && filters.q.length >= 2 ? { q: filters.q } : {}),
           },
         },
       }),

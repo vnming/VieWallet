@@ -386,6 +386,55 @@ async def notify_kyc(db: Database, clock: Clock, message: OutboxMessage) -> None
         )
 
 
+SUPPORT_TOPIC = "support.ticket_updated"
+SUPPORT_TEMPLATES: dict[str, InAppTemplate] = {
+    "STAFF_REPLY": InAppTemplate(
+        {"vi": "Hỗ trợ đã trả lời", "en": "Support replied"},
+        {
+            "vi": "Yêu cầu $reference: $subject",
+            "en": "Ticket $reference: $subject",
+        },
+    ),
+    "STATUS": InAppTemplate(
+        {"vi": "Yêu cầu hỗ trợ được cập nhật", "en": "Ticket updated"},
+        {
+            "vi": "Yêu cầu $reference: $subject",
+            "en": "Ticket $reference: $subject",
+        },
+    ),
+}
+
+
+async def notify_ticket(db: Database, clock: Clock, message: OutboxMessage) -> None:
+    payload = message.payload
+    template = SUPPORT_TEMPLATES.get(str(payload.get("kind")))
+    if template is None:
+        return
+    locale = str(payload.get("locale", "vi"))
+    title, body = render(
+        template,
+        locale,
+        {"reference": str(payload["reference"]), "subject": str(payload["subject"])},
+    )
+    async with db.transaction() as session:
+        await session.execute(
+            insert(Notification)
+            .values(
+                id=new_id(),
+                user_id=uuid.UUID(str(payload["user_id"])),
+                category="SYSTEM",
+                type=f"support.{str(payload['kind']).lower()}",
+                title=title,
+                body=body,
+                data={"link": f"/support/tickets/{payload['reference']}"},
+                priority="NORMAL",
+                source_event_id=message.id,
+                created_at=clock.now(),
+            )
+            .on_conflict_do_nothing(index_elements=["source_event_id", "user_id"])
+        )
+
+
 def register_inapp_handlers(registry: HandlerRegistry, db: Database, clock: Clock) -> None:
     async def handler(message: OutboxMessage) -> None:
         await notify_transaction(db, clock, message)
@@ -395,6 +444,11 @@ def register_inapp_handlers(registry: HandlerRegistry, db: Database, clock: Cloc
 
     registry.register(TRANSACTION_TOPIC, handler)
     registry.register(KYC_TOPIC, kyc_handler)
+
+    async def ticket_handler(message: OutboxMessage) -> None:
+        await notify_ticket(db, clock, message)
+
+    registry.register(SUPPORT_TOPIC, ticket_handler)
 
 
 # ---------------------------------------------------------------- queries for the API

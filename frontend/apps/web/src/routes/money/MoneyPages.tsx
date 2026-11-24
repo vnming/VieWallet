@@ -240,9 +240,17 @@ export function WithdrawPage() {
       </div>
     );
   }
-  if (destinations.isPending) return <Skeleton className="h-56 w-full" />;
-  if (destinations.isError) {
-    return <ErrorState title={t("errors.generic")} onRetry={() => void destinations.refetch()} />;
+  if (destinations.isPending || destinations.isError) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader title={t("withdraw.title")} description={t("withdraw.description")} />
+        {destinations.isPending ? (
+          <Skeleton className="h-56 w-full" />
+        ) : (
+          <ErrorState title={t("errors.generic")} onRetry={() => void destinations.refetch()} />
+        )}
+      </div>
+    );
   }
   if (destinations.data.length === 0) {
     return (

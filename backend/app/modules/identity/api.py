@@ -73,6 +73,9 @@ async def _me(ctx: IdentityDep, principal: Principal) -> MeResponse:
             requires_reset=status_.requires_reset,
         ),
         kyc_tier=user.kyc_tier,
+        phone=user.phone,
+        theme=user.theme,  # type: ignore[arg-type]
+        privacy_mode=user.privacy_mode,
     )
 
 
@@ -179,16 +182,10 @@ async def get_me(principal: CustomerPrincipal, ctx: IdentityDep) -> MeResponse:
 async def update_me(
     body: UpdateProfileRequest, principal: CustomerPrincipal, ctx: IdentityDep, meta: MetaDep
 ) -> MeResponse:
-    if body.full_name is None and body.display_name is None and body.locale is None:
+    changes = account.ProfileChanges(**body.model_dump(exclude_unset=True))
+    if changes.empty():
         raise ValidationFailedError("nothing to update")
-    user = await account.update_profile(
-        ctx,
-        user_id=principal.user_id,
-        full_name=body.full_name,
-        display_name=body.display_name,
-        locale=body.locale,
-        meta=meta,
-    )
+    user = await account.update_profile(ctx, user_id=principal.user_id, changes=changes, meta=meta)
     return await _me(ctx, _with_user(principal, user))
 
 

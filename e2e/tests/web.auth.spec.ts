@@ -37,7 +37,8 @@ test("customer signs up, verifies e-mail, sets a PIN, reviews security and signs
     page.getByRole("heading", { level: 1, name: "Xin chào, Trần Thị Lan" }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "Bảo mật" }).first().click();
+  await page.getByRole("link", { name: "Tài khoản", exact: true }).first().click();
+  await page.getByRole("link", { name: /^Bảo mật/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Bảo mật tài khoản" })).toBeVisible();
   await expect(page.getByText("Thiết bị này")).toBeVisible();
   await expect(page.getByText("Thành công").first()).toBeVisible();

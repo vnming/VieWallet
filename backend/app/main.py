@@ -43,6 +43,7 @@ from app.modules.providers.public import (
     ProviderServices,
     SimulatorProvider,
 )
+from app.modules.support import api as support_api
 from app.modules.transactions import api as transactions_api
 from app.modules.transactions import limits_api, money_api, spend_api
 from app.modules.transactions.public import FinanceContext
@@ -177,6 +178,8 @@ def _include_routers(app: FastAPI) -> None:
     app.include_router(kyc_api.router)
     app.include_router(kyc_api.admin_router)
     app.include_router(limits_api.router)
+    app.include_router(support_api.router)
+    app.include_router(support_api.admin_router)
     app.include_router(money_api.router)
     app.include_router(spend_api.router)
     app.include_router(payments_api.router)

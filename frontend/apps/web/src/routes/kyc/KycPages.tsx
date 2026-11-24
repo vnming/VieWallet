@@ -120,9 +120,17 @@ export function KycPage() {
     },
   });
 
-  if (kyc.isPending) return <Skeleton className="h-64 w-full" />;
-  if (kyc.isError) {
-    return <ErrorState title={t("errors.generic")} onRetry={() => void kyc.refetch()} />;
+  if (kyc.isPending || kyc.isError) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader title={t("kyc.title")} description={t("kyc.description")} />
+        {kyc.isPending ? (
+          <Skeleton className="h-64 w-full" />
+        ) : (
+          <ErrorState title={t("errors.generic")} onRetry={() => void kyc.refetch()} />
+        )}
+      </div>
+    );
   }
   const data = kyc.data;
   const submission = data.submission;
@@ -287,9 +295,17 @@ export function KycPage() {
 export function LimitsPage() {
   const { t, i18n } = useTranslation();
   const limits = useLimits();
-  if (limits.isPending) return <Skeleton className="h-64 w-full" />;
-  if (limits.isError) {
-    return <ErrorState title={t("errors.generic")} onRetry={() => void limits.refetch()} />;
+  if (limits.isPending || limits.isError) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader title={t("limits.title")} description={t("limits.description")} />
+        {limits.isPending ? (
+          <Skeleton className="h-64 w-full" />
+        ) : (
+          <ErrorState title={t("errors.generic")} onRetry={() => void limits.refetch()} />
+        )}
+      </div>
+    );
   }
   const data = limits.data;
   const money = (amount: string) => ({ amount, currency: data.currency });
