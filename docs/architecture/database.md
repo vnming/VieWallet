@@ -113,6 +113,8 @@ Index: `status`, `created_at`. Nhân viên và khách hàng dùng chung bảng; 
 
 > Phase 7 (`0007`): `users.phone` (duy nhất, CHECK định dạng `+84` + 9 số), `users.theme`, `users.privacy_mode`. `transaction_categories` (PK `(user_id, transaction_id)`: danh mục riêng của mỗi phía), `export_jobs` (nội dung CSV nằm trong dòng, xóa khi hết hạn), `help_articles` (chỉ đọc với role ứng dụng; seed từ `backend/app/modules/support/articles`), `support_tickets`, `support_ticket_messages` (chỉ-thêm).
 
+> Phase 8 (`0008`): `approval_requests.action_type` thêm REFUND, FEE_RULE_CHANGE, LIMIT_RULE_CHANGE, ROLE_CHANGE. `fee_rules`/`limit_rules` thành bảng có phiên bản: bỏ unique `code`, thêm unique `(code, version)`, index duy nhất một ACTIVE và một DRAFT mỗi `code`, trạng thái REJECTED, cột `created_by`; role ứng dụng được INSERT và chỉ UPDATE cột trạng thái/hiệu lực (`status`, `effective_from`, `effective_to`) — giá trị một phiên bản không bao giờ đổi, không xóa. `reconciliation_items` thêm `resolution_note`, `updated_by`, `updated_at`. Downgrade dừng lại nếu đã có phiên bản > 1 (tránh mất lịch sử phí/hạn mức).
+
 **kyc_profiles** — `user_id UNIQUE`, `status` (NOT_STARTED, PENDING, IN_REVIEW, APPROVED, REJECTED, EXPIRED), `tier`, `approved_at`, `expires_at`, `current_submission_id`.
 **kyc_submissions** — `kyc_profile_id`, `full_name`, `date_of_birth`, `document_type` (NATIONAL_ID, PASSPORT, DRIVER_LICENSE), `document_number_masked`, `document_number_hash`, `address`, `status`, `submitted_at`, `claimed_by`, `claimed_at`. Index `(status, submitted_at)` cho hàng đợi.
 **kyc_documents** — `submission_id`, `kind` (FRONT, BACK, SELFIE), `storage_key`, `content_type`, `size_bytes`, `sha256`.

@@ -22,10 +22,12 @@ from app.core.clock import Clock
 from app.core.errors import AppError, ConflictError, ForbiddenError, NotFoundError, register_titles
 from app.core.idempotency import request_fingerprint
 from app.core.ids import new_id
+from app.modules.access.public import assign_role, holders_of, revoke_role, roles_for_user
 from app.modules.audit.public import AuditEntry, record
 from app.modules.operations.models import ActionType, ApprovalRequest, ApprovalStatus
+from app.modules.pricing.public import activate_rule_version, reject_rule_version
 from app.modules.risk.public import activate_version, reject_version
-from app.modules.transactions.public import SYSTEM, Actor, adjustment, reversal
+from app.modules.transactions.public import SYSTEM, Actor, adjustment, reversal, staff_refund
 from app.modules.wallet.public import WalletStateConflictError, unfreeze
 
 register_titles(
@@ -47,6 +49,10 @@ register_titles(
             "vi": "Đã có yêu cầu đang chờ duyệt cho đối tượng này",
             "en": "A pending request already exists for this target",
         },
+        "APPROVAL_SUPER_ADMIN_ONLY": {
+            "vi": "Chỉ Super Admin được duyệt thay đổi role Super Admin",
+            "en": "Only a Super Admin can decide on Super Admin role changes",
+        },
     }
 )
 
@@ -58,7 +64,13 @@ APPROVE_PERMISSION: dict[ActionType, str] = {
     ActionType.WALLET_UNFREEZE: "wallet:unfreeze:any",
     ActionType.REVERSAL: "reversal:approve:any",
     ActionType.RISK_RULE_CHANGE: "risk_rule:approve:any",
+    ActionType.REFUND: "refund:approve:any",
+    ActionType.FEE_RULE_CHANGE: "config:approve:any",
+    ActionType.LIMIT_RULE_CHANGE: "config:approve:any",
+    ActionType.ROLE_CHANGE: "role:assign:any",
 }
+
+SUPER_ADMIN = "SUPER_ADMIN"
 
 
 class ApprovalNotFoundError(NotFoundError):
@@ -79,6 +91,10 @@ class ApprovalExpiredError(ConflictError):
 
 class DuplicateApprovalError(ConflictError):
     code = "APPROVAL_DUPLICATE"
+
+
+class SuperAdminOnlyError(ForbiddenError):
+    code = "APPROVAL_SUPER_ADMIN_ONLY"
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,6 +218,14 @@ async def _compensate(
             actor=actor,
             reason_code=reason,
         )
+    elif request.action_type == ActionType.REFUND.value:
+        await staff_refund.cancel(
+            session, clock, uuid.UUID(request.target_id), actor=actor, reason_code=reason
+        )
+    elif request.action_type == ActionType.FEE_RULE_CHANGE.value:
+        await reject_rule_version(session, "FEE", uuid.UUID(str(request.payload["rule_id"])))
+    elif request.action_type == ActionType.LIMIT_RULE_CHANGE.value:
+        await reject_rule_version(session, "LIMIT", uuid.UUID(str(request.payload["rule_id"])))
 
 
 @dataclass(frozen=True, slots=True)
@@ -220,34 +244,10 @@ async def _expire_if_due(session: AsyncSession, clock: Clock, request: ApprovalR
     return True
 
 
-async def approve(
-    session: AsyncSession,
-    clock: Clock,
-    approval_id: uuid.UUID,
-    *,
-    checker: StaffActor,
-    note: str | None,
-) -> Decided:
-    """Approve and execute. Returns ``Decided.error`` for outcomes the caller must commit
-    before raising (expiry); raises for requests it does not change."""
-    request = await _lock(session, approval_id)
-    if request.status != ApprovalStatus.PENDING.value:
-        raise ApprovalNotPendingError()
-    if request.maker_id == checker.id:
-        await _audit(session, clock, request, "approval.self_decision", checker, result="DENIED")
-        return Decided(request, SelfApprovalError())
-    if await _expire_if_due(session, clock, request):
-        return Decided(request, ApprovalExpiredError())
-    if request.payload_hash != request_fingerprint(request.payload):
-        raise RuntimeError("approval payload does not match its hash")
-
-    now = clock.now()
-    request.status = ApprovalStatus.APPROVED.value
-    request.checker_id = checker.id
-    request.checker_note = (note or "")[:500] or None
-    request.decided_at = now
-    await session.flush()  # the DB CHECK maker <> checker applies here as well
-
+async def _execute(
+    session: AsyncSession, clock: Clock, request: ApprovalRequest, checker: StaffActor
+) -> str | None:
+    """Run the approved action; returns a business failure code instead of raising."""
     failure: str | None = None
     if request.action_type == ActionType.ADJUSTMENT.value:
         outcome = await adjustment.execute(
@@ -271,6 +271,28 @@ async def approve(
         failure = await activate_version(
             session, clock, uuid.UUID(str(request.payload["rule_id"])), checker_id=checker.id
         )
+    elif request.action_type == ActionType.REFUND.value:
+        refunded = await staff_refund.execute(
+            session,
+            clock,
+            uuid.UUID(request.target_id),
+            checker_id=checker.id,
+            approval_request_id=request.id,
+        )
+        failure = refunded.failure_code
+    elif request.action_type in (
+        ActionType.FEE_RULE_CHANGE.value,
+        ActionType.LIMIT_RULE_CHANGE.value,
+    ):
+        failure = await activate_rule_version(
+            session,
+            clock,
+            "FEE" if request.action_type == ActionType.FEE_RULE_CHANGE.value else "LIMIT",
+            uuid.UUID(str(request.payload["rule_id"])),
+            checker_id=checker.id,
+        )
+    elif request.action_type == ActionType.ROLE_CHANGE.value:
+        failure = await _execute_role_change(session, clock, request, checker)
     elif request.action_type == ActionType.WALLET_UNFREEZE.value:
         try:
             async with session.begin_nested():
@@ -289,6 +311,41 @@ async def approve(
             failure = "WALLET_NOT_FROZEN"
     else:  # pragma: no cover - guarded by the CHECK constraint
         raise ValueError(request.action_type)
+    return failure
+
+
+async def approve(
+    session: AsyncSession,
+    clock: Clock,
+    approval_id: uuid.UUID,
+    *,
+    checker: StaffActor,
+    note: str | None,
+) -> Decided:
+    """Approve and execute. Returns ``Decided.error`` for outcomes the caller must commit
+    before raising (expiry); raises for requests it does not change."""
+    request = await _lock(session, approval_id)
+    if request.status != ApprovalStatus.PENDING.value:
+        raise ApprovalNotPendingError()
+    if request.maker_id == checker.id:
+        await _audit(session, clock, request, "approval.self_decision", checker, result="DENIED")
+        return Decided(request, SelfApprovalError())
+    if (refused := await _role_change_refusal(session, request, checker)) is not None:
+        await _audit(session, clock, request, "approval.refused", checker, result="DENIED")
+        return Decided(request, refused)
+    if await _expire_if_due(session, clock, request):
+        return Decided(request, ApprovalExpiredError())
+    if request.payload_hash != request_fingerprint(request.payload):
+        raise RuntimeError("approval payload does not match its hash")
+
+    now = clock.now()
+    request.status = ApprovalStatus.APPROVED.value
+    request.checker_id = checker.id
+    request.checker_note = (note or "")[:500] or None
+    request.decided_at = now
+    await session.flush()  # the DB CHECK maker <> checker applies here as well
+
+    failure = await _execute(session, clock, request, checker)
 
     request.status = (ApprovalStatus.FAILED if failure else ApprovalStatus.EXECUTED).value
     request.failure_code = failure
@@ -306,6 +363,60 @@ async def approve(
     return Decided(request)
 
 
+async def _role_change_refusal(
+    session: AsyncSession, request: ApprovalRequest, checker: StaffActor
+) -> AppError | None:
+    """Nobody decides on their own roles; only a Super Admin decides on Super Admin."""
+    if request.action_type != ActionType.ROLE_CHANGE.value:
+        return None
+    if str(checker.id) == str(request.payload["user_id"]):
+        return SelfApprovalError("you cannot decide on a change to your own roles")
+    if request.payload["role"] == SUPER_ADMIN and SUPER_ADMIN not in await roles_for_user(
+        session, checker.id
+    ):
+        return SuperAdminOnlyError()
+    return None
+
+
+async def _execute_role_change(
+    session: AsyncSession, clock: Clock, request: ApprovalRequest, checker: StaffActor
+) -> str | None:
+    user_id = uuid.UUID(str(request.payload["user_id"]))
+    role = str(request.payload["role"])
+    granting = request.payload["op"] == "GRANT"
+    held = await roles_for_user(session, user_id)
+    if granting and role in held:
+        return "ROLE_ALREADY_HELD"
+    if not granting and role not in held:
+        return "ROLE_NOT_HELD"
+    if not granting and role == SUPER_ADMIN:
+        holders = await holders_of(session, frozenset({SUPER_ADMIN}))
+        if set(holders) == {user_id}:
+            return "LAST_SUPER_ADMIN"
+    if granting:
+        await assign_role(session, clock, user_id=user_id, role_code=role, granted_by=checker.id)
+    else:
+        await revoke_role(session, user_id=user_id, role_code=role)
+    await record(
+        session,
+        clock,
+        AuditEntry(
+            action="access.role_granted" if granting else "access.role_revoked",
+            actor_type="STAFF",
+            actor_id=checker.id,
+            actor_roles=checker.roles,
+            target_type="user",
+            target_id=str(user_id),
+            before={"roles": sorted(held)},
+            after={"roles": sorted(await roles_for_user(session, user_id))},
+            details={"approval_request_id": str(request.id), "maker_id": str(request.maker_id)},
+            ip=checker.ip,
+            user_agent=checker.user_agent,
+        ),
+    )
+    return None
+
+
 async def reject(
     session: AsyncSession, clock: Clock, approval_id: uuid.UUID, *, checker: StaffActor, note: str
 ) -> Decided:
@@ -314,6 +425,8 @@ async def reject(
         raise ApprovalNotPendingError()
     if request.maker_id == checker.id:
         return Decided(request, SelfApprovalError("use cancel for your own request"))
+    if (refused := await _role_change_refusal(session, request, checker)) is not None:
+        return Decided(request, refused)
     if await _expire_if_due(session, clock, request):
         return Decided(request, ApprovalExpiredError())
     request.status = ApprovalStatus.REJECTED.value

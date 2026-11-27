@@ -4,4 +4,10 @@ export const APPROVER_PERMISSIONS = [
   "wallet:unfreeze:any",
   "reversal:approve:any",
   "risk_rule:approve:any",
+  "refund:approve:any",
+  "config:approve:any",
+  "role:assign:any",
 ];
+
+/** Holding either lets a staff member see fee and limit configuration. */
+export const CONFIG_PERMISSIONS = ["config:propose:any", "config:approve:any"];

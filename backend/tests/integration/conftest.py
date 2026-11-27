@@ -14,13 +14,13 @@ from alembic.config import Config
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from redis.asyncio import Redis
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 
 from app.core.clock import FixedClock
 from app.core.config import Environment, Settings
 from app.core.db import Database
 from app.main import create_app
-from app.modules.providers.public import SIMULATOR, SimulatorProvider
+from app.modules.providers.public import SIMULATOR, SimulatorControl, SimulatorProvider
 from app.scripts.seed import seed
 from sim.config import SimSettings
 from sim.db import SimDatabase
@@ -56,6 +56,35 @@ TEST_ENCRYPTION_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
 TEST_PIN_PEPPER = base64.urlsafe_b64encode(os.urandom(32)).decode()
 
 
+# Seeded fee/limit rules are reference data (kept between tests); versions added by a test are
+# removed so every test, and the next session's downgrade, starts from the seeded version 1.
+RESET_PRICING = (
+    "DELETE FROM app.fee_rules WHERE version > 1",
+    "UPDATE app.fee_rules SET status = 'ACTIVE', effective_to = NULL",
+    "DELETE FROM app.limit_rules WHERE version > 1",
+    "UPDATE app.limit_rules SET status = 'ACTIVE'",
+)
+
+
+def reset_pricing_sync(url: str) -> None:
+    engine = create_engine(url)
+    try:
+        with engine.begin() as conn:
+            exists = conn.scalar(
+                text("SELECT to_regclass('app.fee_rules') IS NOT NULL")
+            ) and conn.scalar(
+                text(
+                    "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema"
+                    " = 'app' AND table_name = 'fee_rules' AND column_name = 'created_by')"
+                )
+            )
+            if exists:
+                for statement in RESET_PRICING:
+                    conn.execute(text(statement))
+    finally:
+        engine.dispose()
+
+
 def alembic_config(url: str) -> Config:
     config = Config()  # no ini file: keeps Alembic from reconfiguring logging
     config.set_main_option("script_location", str(BACKEND_DIR / "migrations"))
@@ -68,6 +97,7 @@ def migrated(test_settings: IntegrationSettings) -> IntegrationSettings:
     """Rebuild the test database schema from scratch once per session (also proves downgrade)."""
     assert test_settings.migration_database_url
     config = alembic_config(test_settings.migration_database_url)
+    reset_pricing_sync(test_settings.migration_database_url)
     command.downgrade(config, "base")
     command.upgrade(config, "head")
     return test_settings
@@ -111,6 +141,8 @@ async def clean_tables(migrator_db: Database) -> None:
             )
         tables = ", ".join(f"app.{t}" for t in MUTABLE_TABLES)
         await session.execute(text(f"TRUNCATE {tables} CASCADE"))
+        for statement in RESET_PRICING:
+            await session.execute(text(statement))
         for table in CASCADED_APPEND_ONLY:
             await session.execute(
                 text(f"ALTER TABLE app.{table} ENABLE TRIGGER {table}_no_truncate")
@@ -243,9 +275,17 @@ async def app(
     app_settings: Settings,
     clock: FixedClock,
     provider: SimulatorProvider,
+    sim_app: FastAPI,
     relay: CallbackRelay,
 ) -> AsyncIterator[FastAPI]:
-    application = create_app(app_settings, clock=clock, providers={SIMULATOR: provider})
+    control = SimulatorControl.build(
+        "http://simulator.test",
+        admin_key=SIM_ADMIN_KEY,
+        transport=httpx.ASGITransport(app=sim_app),
+    )
+    application = create_app(
+        app_settings, clock=clock, providers={SIMULATOR: provider}, sim_control=control
+    )
     relay.target = application
     async with LifespanManager(application):
         yield application

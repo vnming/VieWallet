@@ -187,6 +187,30 @@ Mã lỗi mới: `KYC_NOT_FOUND`, `KYC_ALREADY_VERIFIED`, `KYC_IN_REVIEW`, `KYC_
 | GET | `/api/v1/admin/tickets?status=` · `/admin/tickets/{ref}` | `ticket:manage:any`; kèm ghi chú nội bộ |
 | POST | `/api/v1/admin/tickets/{ref}/messages` | `{body, internal, status?}`; trả lời công khai ⇒ PENDING_CUSTOMER + thông báo in-app |
 
+## 3f. Admin & Operations (đã cài đặt ở Phase 8)
+
+Mọi route dưới `/api/v1/admin` cần phiên nhân viên đã bật MFA; permission ghi trong cột cuối được kiểm ở backend (permission nhạy cảm cần MFA trong 15 phút). Thiếu permission ⇒ 403. Test `test_staff_without_permissions_is_refused_everywhere` duyệt toàn bộ route admin lấy từ OpenAPI.
+
+| Method | Path | Ghi chú | Permission |
+|---|---|---|---|
+| GET | `/admin/dashboard` | KPI hôm nay (giao dịch hoàn tất theo loại, thất bại, đang xử lý), khách hàng, số mục trong từng hàng đợi; chỉ trả phần người gọi có quyền (phần khác là `null`) | nhân viên bất kỳ |
+| GET | `/admin/operations-queue` | Nạp/rút treo quá 30 phút, thao tác provider UNKNOWN/SUBMITTED, ca khôi phục mở, hoàn tiền/đảo/điều chỉnh chờ duyệt | `transaction:read:any` |
+| GET | `/admin/system-health` | DB, Redis, worker (job gần nhất < 2 phút), outbox (đang chờ, thất bại, độ trễ), provider (UP/DEGRADED/DOWN, chế độ simulator), push/AI = NOT_CONFIGURED | nhân viên bất kỳ |
+| GET · PUT | `/admin/simulator` · `/admin/simulator/mode` | Chế độ NORMAL/DEGRADED/OUTAGE + thao tác gần đây; `{mode, reason}`; ghi audit `simulator.mode_changed`. Tắt (404 `SIMULATOR_PANEL_DISABLED`) khi thiếu `VW_SIMULATOR_ADMIN_KEY` hoặc môi trường production-like | `simulator:manage:any` |
+| POST | `/admin/simulator/operations/{key}/actions` | `{action: SUCCEED/FAIL/EXPIRE/RETURN/RESEND_CALLBACK, reason}`; audit | `simulator:manage:any` |
+| GET | `/admin/users?q=` · `/admin/users/{id}` | Tìm khách (số ví, SĐT chính xác; tiền tố email; tên), hồ sơ, ví, cờ rủi ro, 10 giao dịch gần nhất; email/tên/SĐT luôn che | `user:read:any` |
+| POST | `/admin/users/{id}/pii-reveals` | Trả email, họ tên, SĐT thật; audit `user.pii_revealed` mỗi lần | `user:pii_reveal:any` (nhạy cảm) |
+| GET | `/admin/transactions/{ref}` | Thêm `refunded`, `related_reference` | `transaction:read:any` |
+| POST | `/admin/transactions/{ref}/refund-requests` [I] | `{amount, reason}` ⇒ 201 REFUND PENDING + yêu cầu phê duyệt `REFUND`; phần còn hoàn được trừ cả đề xuất đang chờ (422 `REFUND_EXCEEDS_REMAINING`) | `refund:propose:any` |
+| GET | `/admin/config/fees` · `/admin/config/limits` | Phiên bản ACTIVE và DRAFT | `config:propose:any` hoặc `config:approve:any` |
+| POST | `/admin/config/fees/{code}/versions` · `/admin/config/limits/{code}/versions` | Giá trị mới + `reason` ⇒ phiên bản DRAFT + phê duyệt `FEE_RULE_CHANGE`/`LIMIT_RULE_CHANGE` (payload có `before`/`after`); không đổi gì ⇒ 409 `PRICING_RULE_UNCHANGED`; đã có bản nháp ⇒ 409 `PRICING_RULE_DRAFT_EXISTS` | `config:propose:any` (duyệt: `config:approve:any`) |
+| GET | `/admin/roles` · `/admin/staff` | Danh mục role/permission (cố định trong seed); nhân viên và role | `role:assign:any` |
+| POST | `/admin/staff/{id}/role-changes` | `{role, op: GRANT/REVOKE, reason}` ⇒ phê duyệt `ROLE_CHANGE`. Tự đổi role mình ⇒ 403 `APPROVAL_SELF_DECISION`; role SUPER_ADMIN cần người đề xuất và người duyệt là Super Admin ⇒ 403 `APPROVAL_SUPER_ADMIN_ONLY`; người bị đổi role không được duyệt; gỡ Super Admin cuối cùng ⇒ `LAST_SUPER_ADMIN` | `role:assign:any` |
+| POST | `/admin/reconciliation/provider-runs` | `{business_date}` ⇒ tải sao kê ngày của provider (ngoài DB transaction) rồi so với `provider_operations`; mục MISSING_INTERNAL/MISSING_PROVIDER/AMOUNT_MISMATCH/STATUS_MISMATCH; provider không phản hồi ⇒ 503 `PROVIDER_UNAVAILABLE` | `reconciliation:manage:any` |
+| GET · POST | `/admin/reconciliation/items` · `/admin/reconciliation/items/{id}` | Mục đang mở; `{status: INVESTIGATING/RESOLVED/WRITTEN_OFF, note}`; mục đã đóng ⇒ 409 `RECONCILIATION_ITEM_CLOSED`; không di chuyển tiền | `reconciliation:manage:any` |
+
+Phê duyệt (`/admin/approvals`) nhận thêm loại `REFUND` (`refund:approve:any`), `FEE_RULE_CHANGE`/`LIMIT_RULE_CHANGE` (`config:approve:any`), `ROLE_CHANGE` (`role:assign:any`). Nhân viên không có quyền duyệt loại nào ⇒ 403 cho cả danh sách và từng yêu cầu; có quyền duyệt loại khác ⇒ 404 cho yêu cầu không thuộc loại mình thấy. `reject` kiểm quyền trước rồi mới kiểm `note`.
+
 ## 4. KYC
 
 `GET /kyc` (trạng thái, tier, lịch sử) · `POST /kyc/submissions` (thông tin) · `POST /kyc/submissions/{id}/documents` (multipart, ≤ 5 MB) · `POST /kyc/submissions/{id}/submit`.

@@ -28,6 +28,8 @@ x-backend-env: &backend-env
   VW_SIMULATOR_URL: http://simulator:8090
   VW_SIMULATOR_API_KEY: ${VW_SIMULATOR_API_KEY:?set in .env}
   VW_SIMULATOR_WEBHOOK_SECRET: ${VW_SIMULATOR_WEBHOOK_SECRET:?set in .env}
+  # Admin control panel (Phase 8): the key stays on the server, the browser never sees it.
+  VW_SIMULATOR_ADMIN_KEY: ${VW_SIMULATOR_ADMIN_KEY:?set in .env}
   VW_PROVIDER_CALLBACK_BASE_URL: http://api:8000
   # 60 minutes by default; the E2E run sets 0 so a new bank account is usable at once.
   VW_NEW_DESTINATION_COOLDOWN_MINUTES: ${VW_NEW_DESTINATION_COOLDOWN_MINUTES:-60}

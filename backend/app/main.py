@@ -13,10 +13,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from redis.asyncio import Redis
 
-from app.api import health
+from app.api import admin_console, health
 from app.api.deps import AppState
 from app.core.clock import Clock, SystemClock
-from app.core.config import Settings, get_settings
+from app.core.config import Environment, Settings, get_settings
 from app.core.db import Database
 from app.core.errors import register_exception_handlers
 from app.core.idempotency import IdempotencyStore
@@ -34,13 +34,14 @@ from app.modules.kyc import api as kyc_api
 from app.modules.kyc.public import KycKeys, LocalEncryptedStore
 from app.modules.notifications import api as notifications_api
 from app.modules.operations import api as operations_api
-from app.modules.operations import holds_api, risk_api
+from app.modules.operations import changes_api, holds_api, risk_api, users_api
 from app.modules.payments import api as payments_api
 from app.modules.providers import api as providers_api
 from app.modules.providers.public import (
     SIMULATOR,
     PaymentProvider,
     ProviderServices,
+    SimulatorControl,
     SimulatorProvider,
 )
 from app.modules.support import api as support_api
@@ -72,6 +73,12 @@ def build_providers(settings: Settings) -> dict[str, PaymentProvider]:
     }
 
 
+def build_sim_control(settings: Settings) -> SimulatorControl | None:
+    if not settings.simulator_admin_key or settings.environment is Environment.PRODUCTION_LIKE:
+        return None
+    return SimulatorControl.build(settings.simulator_url, admin_key=settings.simulator_admin_key)
+
+
 def build_kyc(settings: Settings, identity: IdentityServices) -> kyc_api.KycContext:
     return kyc_api.KycContext(
         KycKeys(identity.cipher, identity.lookup_key, identity.link_key),
@@ -85,6 +92,7 @@ def create_app(
     *,
     clock: Clock | None = None,
     providers: dict[str, PaymentProvider] | None = None,
+    sim_control: SimulatorControl | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     clock = clock or SystemClock()
@@ -121,6 +129,8 @@ def create_app(
         )
         app.state.providers = provider_services
         app.state.finance = FinanceContext(identity, provider_services)
+        control = sim_control if owned is False else build_sim_control(settings)
+        app.state.sim_control = control
         try:
             yield
         finally:
@@ -128,6 +138,8 @@ def create_app(
                 for provider in provider_map.values():
                     if isinstance(provider, SimulatorProvider):
                         await provider.aclose()
+                if control is not None:
+                    await control.aclose()
             await redis.aclose()
             await db.dispose()
 
@@ -162,6 +174,7 @@ def create_app(
 
 def _include_routers(app: FastAPI) -> None:
     app.include_router(health.router)
+    app.include_router(admin_console.router)
     app.include_router(identity_api.auth_router)
     app.include_router(identity_api.me_router)
     app.include_router(identity_api.admin_router)
@@ -175,6 +188,8 @@ def _include_routers(app: FastAPI) -> None:
     app.include_router(operations_api.router)
     app.include_router(holds_api.router)
     app.include_router(risk_api.router)
+    app.include_router(changes_api.router)
+    app.include_router(users_api.router)
     app.include_router(kyc_api.router)
     app.include_router(kyc_api.admin_router)
     app.include_router(limits_api.router)

@@ -34,6 +34,10 @@ class ActionType(StrEnum):
     WALLET_UNFREEZE = "WALLET_UNFREEZE"
     REVERSAL = "REVERSAL"
     RISK_RULE_CHANGE = "RISK_RULE_CHANGE"
+    REFUND = "REFUND"
+    FEE_RULE_CHANGE = "FEE_RULE_CHANGE"
+    LIMIT_RULE_CHANGE = "LIMIT_RULE_CHANGE"
+    ROLE_CHANGE = "ROLE_CHANGE"
 
 
 def _in(column: str, values: list[str]) -> str:
@@ -120,3 +124,6 @@ class ReconciliationItem(Base):
     actual: Mapped[str] = mapped_column(String(64))
     status: Mapped[str] = mapped_column(String(20), default="OPEN")
     created_at: Mapped[datetime]
+    resolution_note: Mapped[str | None] = mapped_column(String(500), default=None)
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(default=None)
+    updated_at: Mapped[datetime | None] = mapped_column(default=None)

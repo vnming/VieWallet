@@ -71,6 +71,7 @@ DOCUMENTED_EDGES: dict[str, set[str]] = {
         "CREATED>COMPLETED",
         "CREATED>FAILED",
         "PENDING>COMPLETED",
+        "PENDING>FAILED",
         "PENDING>CANCELLED",
     },
     "REVERSAL": {

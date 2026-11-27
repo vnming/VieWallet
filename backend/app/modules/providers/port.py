@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import date
 from enum import StrEnum
 from typing import Protocol
 
@@ -79,6 +80,18 @@ class OperationStatus:
     checkout_url: str | None = None
 
 
+@dataclass(frozen=True, slots=True)
+class StatementLine:
+    """One operation in the provider's daily statement (business date, Asia/Ho_Chi_Minh)."""
+
+    operation_key: str
+    provider_reference: str | None
+    kind: str
+    status: str  # PENDING, SUCCEEDED, FAILED, EXPIRED, RETURNED
+    amount_minor: int
+    currency: str
+
+
 _EVENT_OUTCOMES = {
     "succeeded": Outcome.SUCCEEDED,
     "failed": Outcome.FAILED,
@@ -111,5 +124,7 @@ class PaymentProvider(Protocol):
     async def create_payout(self, request: PayoutRequest) -> OperationStatus: ...
 
     async def get_operation(self, operation_key: str) -> OperationStatus: ...
+
+    async def get_statement(self, business_date: date) -> list[StatementLine]: ...
 
     def verify_callback(self, headers: Mapping[str, str], raw_body: bytes) -> ProviderEvent: ...

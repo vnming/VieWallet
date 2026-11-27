@@ -18,7 +18,11 @@
           "ADJUSTMENT",
           "WALLET_UNFREEZE",
           "REVERSAL",
-          "RISK_RULE_CHANGE"
+          "RISK_RULE_CHANGE",
+          "REFUND",
+          "FEE_RULE_CHANGE",
+          "LIMIT_RULE_CHANGE",
+          "ROLE_CHANGE"
         ],
         "title": "ActionType",
         "type": "string"
@@ -547,6 +551,20 @@
             "title": "Reference",
             "type": "string"
           },
+          "refunded": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "related_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Reference"
+          },
           "risk_decision": {
             "anyOf": [
               {
@@ -589,6 +607,8 @@
           "amount",
           "fee",
           "held",
+          "refunded",
+          "related_reference",
           "initiator_user_id",
           "source_wallet_id",
           "destination_wallet_id",
@@ -1422,6 +1442,69 @@
         "title": "CodeRequest",
         "type": "object"
       },
+      "ComponentHealth": {
+        "properties": {
+          "ai": {
+            "enum": [
+              "UP",
+              "DEGRADED",
+              "DOWN",
+              "NOT_CONFIGURED"
+            ],
+            "title": "Ai",
+            "type": "string"
+          },
+          "database": {
+            "enum": [
+              "UP",
+              "DEGRADED",
+              "DOWN",
+              "NOT_CONFIGURED"
+            ],
+            "title": "Database",
+            "type": "string"
+          },
+          "push": {
+            "enum": [
+              "UP",
+              "DEGRADED",
+              "DOWN",
+              "NOT_CONFIGURED"
+            ],
+            "title": "Push",
+            "type": "string"
+          },
+          "redis": {
+            "enum": [
+              "UP",
+              "DEGRADED",
+              "DOWN",
+              "NOT_CONFIGURED"
+            ],
+            "title": "Redis",
+            "type": "string"
+          },
+          "worker": {
+            "enum": [
+              "UP",
+              "DEGRADED",
+              "DOWN",
+              "NOT_CONFIGURED"
+            ],
+            "title": "Worker",
+            "type": "string"
+          }
+        },
+        "required": [
+          "database",
+          "redis",
+          "worker",
+          "push",
+          "ai"
+        ],
+        "title": "ComponentHealth",
+        "type": "object"
+      },
       "ConfirmIn": {
         "properties": {
           "pin": {
@@ -1506,6 +1589,52 @@
           "kind"
         ],
         "title": "Counterparty",
+        "type": "object"
+      },
+      "DashboardOut": {
+        "properties": {
+          "business_date": {
+            "format": "date",
+            "title": "Business Date",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "queues": {
+            "$ref": "#/components/schemas/Queues"
+          },
+          "transactions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TransactionKpis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "users": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserKpis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "generated_at",
+          "business_date",
+          "transactions",
+          "users",
+          "queues"
+        ],
+        "title": "DashboardOut",
         "type": "object"
       },
       "DepositIn": {
@@ -1838,6 +1967,141 @@
         "title": "ExportOut",
         "type": "object"
       },
+      "FeeRuleOut": {
+        "properties": {
+          "bps": {
+            "title": "Bps",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "effective_from": {
+            "format": "date-time",
+            "title": "Effective From",
+            "type": "string"
+          },
+          "fixed": {
+            "title": "Fixed",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "max_fee": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Fee"
+          },
+          "min_fee": {
+            "title": "Min Fee",
+            "type": "string"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope Value"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "txn_type": {
+            "title": "Txn Type",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "txn_type",
+          "currency",
+          "scope",
+          "scope_value",
+          "fixed",
+          "bps",
+          "min_fee",
+          "max_fee",
+          "version",
+          "status",
+          "effective_from"
+        ],
+        "title": "FeeRuleOut",
+        "type": "object"
+      },
+      "FeeVersionIn": {
+        "properties": {
+          "bps": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Bps",
+            "type": "integer"
+          },
+          "fixed": {
+            "pattern": "^[0-9]{1,15}$",
+            "title": "Fixed",
+            "type": "string"
+          },
+          "max_fee": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]{1,15}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Fee"
+          },
+          "min_fee": {
+            "pattern": "^[0-9]{1,15}$",
+            "title": "Min Fee",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fixed",
+          "bps",
+          "min_fee",
+          "reason"
+        ],
+        "title": "FeeVersionIn",
+        "type": "object"
+      },
       "FlagIn": {
         "properties": {
           "expires_in_days": {
@@ -1870,75 +2134,6 @@
           "reason"
         ],
         "title": "FlagIn",
-        "type": "object"
-      },
-      "FlagOut": {
-        "properties": {
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "expires_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Expires At"
-          },
-          "flag": {
-            "title": "Flag",
-            "type": "string"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "reason": {
-            "title": "Reason",
-            "type": "string"
-          },
-          "removed_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Removed At"
-          },
-          "set_by": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Set By"
-          }
-        },
-        "required": [
-          "id",
-          "flag",
-          "reason",
-          "set_by",
-          "created_at",
-          "expires_at",
-          "removed_at"
-        ],
-        "title": "FlagOut",
         "type": "object"
       },
       "FlagRemoveIn": {
@@ -2167,6 +2362,81 @@
         "title": "IssuerType",
         "type": "string"
       },
+      "ItemUpdateIn": {
+        "properties": {
+          "note": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Note",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "INVESTIGATING",
+              "RESOLVED",
+              "WRITTEN_OFF"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "note"
+        ],
+        "title": "ItemUpdateIn",
+        "type": "object"
+      },
+      "JobHealth": {
+        "properties": {
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Finished At"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "last_status",
+          "last_finished_at",
+          "last_error"
+        ],
+        "title": "JobHealth",
+        "type": "object"
+      },
       "KycStatusOut": {
         "properties": {
           "approved_at": {
@@ -2285,6 +2555,160 @@
           "used_count"
         ],
         "title": "LimitOut",
+        "type": "object"
+      },
+      "LimitRuleOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "max_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Amount"
+          },
+          "max_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Count"
+          },
+          "min_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Amount"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope Value"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "txn_type": {
+            "title": "Txn Type",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "txn_type",
+          "direction",
+          "scope",
+          "scope_value",
+          "period",
+          "currency",
+          "max_amount",
+          "max_count",
+          "min_amount",
+          "version",
+          "status"
+        ],
+        "title": "LimitRuleOut",
+        "type": "object"
+      },
+      "LimitVersionIn": {
+        "properties": {
+          "max_amount": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]{1,15}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Amount"
+          },
+          "max_count": {
+            "anyOf": [
+              {
+                "maximum": 1000000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Count"
+          },
+          "min_amount": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]{1,15}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Amount"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "LimitVersionIn",
         "type": "object"
       },
       "LimitsOut": {
@@ -2849,6 +3273,31 @@
         "title": "MfaVerifyRequest",
         "type": "object"
       },
+      "ModeIn": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "NORMAL",
+              "DEGRADED",
+              "OUTAGE"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "reason"
+        ],
+        "title": "ModeIn",
+        "type": "object"
+      },
       "MoneyFlowOut": {
         "properties": {
           "amount": {
@@ -3068,6 +3517,76 @@
         "title": "NotificationPageOut",
         "type": "object"
       },
+      "OperationsQueueOut": {
+        "properties": {
+          "pending_money_approvals": {
+            "items": {
+              "$ref": "#/components/schemas/QueueApproval"
+            },
+            "title": "Pending Money Approvals",
+            "type": "array"
+          },
+          "recovery_cases": {
+            "items": {
+              "$ref": "#/components/schemas/QueueCase"
+            },
+            "title": "Recovery Cases",
+            "type": "array"
+          },
+          "stuck_transactions": {
+            "items": {
+              "$ref": "#/components/schemas/QueueTransaction"
+            },
+            "title": "Stuck Transactions",
+            "type": "array"
+          },
+          "unknown_provider_operations": {
+            "items": {
+              "$ref": "#/components/schemas/QueueOperation"
+            },
+            "title": "Unknown Provider Operations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stuck_transactions",
+          "unknown_provider_operations",
+          "recovery_cases",
+          "pending_money_approvals"
+        ],
+        "title": "OperationsQueueOut",
+        "type": "object"
+      },
+      "OutboxHealth": {
+        "properties": {
+          "failed": {
+            "title": "Failed",
+            "type": "integer"
+          },
+          "oldest_pending_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Pending Seconds"
+          },
+          "pending": {
+            "title": "Pending",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pending",
+          "failed",
+          "oldest_pending_seconds"
+        ],
+        "title": "OutboxHealth",
+        "type": "object"
+      },
       "PasswordOnlyRequest": {
         "additionalProperties": false,
         "properties": {
@@ -3271,6 +3790,29 @@
         "title": "PaymentRequestOut",
         "type": "object"
       },
+      "PermissionOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "sensitive": {
+            "title": "Sensitive",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "description",
+          "sensitive"
+        ],
+        "title": "PermissionOut",
+        "type": "object"
+      },
       "PinStatusResponse": {
         "properties": {
           "is_set": {
@@ -3314,6 +3856,262 @@
         "title": "ProfileStatus",
         "type": "string"
       },
+      "ProviderHealth": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "recent_unavailable_failures": {
+            "title": "Recent Unavailable Failures",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "UP",
+              "DEGRADED",
+              "DOWN",
+              "NOT_CONFIGURED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "unknown_operations": {
+            "title": "Unknown Operations",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code",
+          "status",
+          "mode",
+          "unknown_operations",
+          "recent_unavailable_failures"
+        ],
+        "title": "ProviderHealth",
+        "type": "object"
+      },
+      "ProviderRunIn": {
+        "properties": {
+          "business_date": {
+            "format": "date",
+            "title": "Business Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "business_date"
+        ],
+        "title": "ProviderRunIn",
+        "type": "object"
+      },
+      "ProviderRunOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReconItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "title": "Stats",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "violations": {
+            "title": "Violations",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "violations",
+          "stats",
+          "started_at",
+          "items"
+        ],
+        "title": "ProviderRunOut",
+        "type": "object"
+      },
+      "QueueApproval": {
+        "properties": {
+          "action_type": {
+            "title": "Action Type",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "maker_reason": {
+            "title": "Maker Reason",
+            "type": "string"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "action_type",
+          "target_id",
+          "maker_reason",
+          "created_at",
+          "expires_at"
+        ],
+        "title": "QueueApproval",
+        "type": "object"
+      },
+      "QueueCase": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "transaction_id": {
+            "format": "uuid",
+            "title": "Transaction Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "transaction_id",
+          "reason",
+          "detail",
+          "status",
+          "created_at"
+        ],
+        "title": "QueueCase",
+        "type": "object"
+      },
+      "QueueOperation": {
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "inquiry_count": {
+            "title": "Inquiry Count",
+            "type": "integer"
+          },
+          "next_inquiry_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Inquiry At"
+          },
+          "operation": {
+            "title": "Operation",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "transaction_id": {
+            "format": "uuid",
+            "title": "Transaction Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "transaction_id",
+          "operation",
+          "status",
+          "amount",
+          "inquiry_count",
+          "submitted_at",
+          "next_inquiry_at"
+        ],
+        "title": "QueueOperation",
+        "type": "object"
+      },
       "QueueOut": {
         "properties": {
           "items": {
@@ -3343,6 +4141,133 @@
           "total"
         ],
         "title": "QueueOut",
+        "type": "object"
+      },
+      "QueueTransaction": {
+        "properties": {
+          "age_minutes": {
+            "title": "Age Minutes",
+            "type": "integer"
+          },
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "type",
+          "status",
+          "amount",
+          "currency",
+          "created_at",
+          "age_minutes"
+        ],
+        "title": "QueueTransaction",
+        "type": "object"
+      },
+      "Queues": {
+        "properties": {
+          "approvals": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvals"
+          },
+          "kyc_reviews": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kyc Reviews"
+          },
+          "reconciliation_items": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reconciliation Items"
+          },
+          "recovery_cases": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recovery Cases"
+          },
+          "risk_alerts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Alerts"
+          },
+          "risk_holds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Holds"
+          },
+          "tickets": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tickets"
+          }
+        },
+        "title": "Queues",
         "type": "object"
       },
       "ReadyResponse": {
@@ -3390,6 +4315,50 @@
         "title": "ReceiveQrOut",
         "type": "object"
       },
+      "RecentTxnOut": {
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "type",
+          "status",
+          "amount",
+          "currency",
+          "direction",
+          "created_at"
+        ],
+        "title": "RecentTxnOut",
+        "type": "object"
+      },
       "RecipientOut": {
         "properties": {
           "active": {
@@ -3417,6 +4386,94 @@
           "active"
         ],
         "title": "RecipientOut",
+        "type": "object"
+      },
+      "ReconItemOut": {
+        "properties": {
+          "actual": {
+            "title": "Actual",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "invariant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invariant"
+          },
+          "resolution_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Note"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "id",
+          "run_id",
+          "type",
+          "invariant",
+          "subject",
+          "expected",
+          "actual",
+          "status",
+          "resolution_note",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ReconItemOut",
         "type": "object"
       },
       "ReconciliationItemOut": {
@@ -3749,6 +4806,45 @@
         "title": "RefundIn",
         "type": "object"
       },
+      "RefundProposalIn": {
+        "properties": {
+          "amount": {
+            "description": "Integer minor units as a string",
+            "maxLength": 19,
+            "title": "Amount",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "reason"
+        ],
+        "title": "RefundProposalIn",
+        "type": "object"
+      },
+      "RefundProposedOut": {
+        "properties": {
+          "approval": {
+            "$ref": "#/components/schemas/ApprovalOut"
+          },
+          "refund_reference": {
+            "title": "Refund Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval",
+          "refund_reference"
+        ],
+        "title": "RefundProposedOut",
+        "type": "object"
+      },
       "RegisterRequest": {
         "additionalProperties": false,
         "properties": {
@@ -3791,15 +4887,18 @@
       "RejectIn": {
         "properties": {
           "note": {
-            "maxLength": 500,
-            "minLength": 5,
-            "title": "Note",
-            "type": "string"
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
           }
         },
-        "required": [
-          "note"
-        ],
         "title": "RejectIn",
         "type": "object"
       },
@@ -3891,6 +4990,36 @@
         "title": "ResolveIn",
         "type": "object"
       },
+      "RevealedPiiOut": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          }
+        },
+        "required": [
+          "email",
+          "full_name",
+          "phone"
+        ],
+        "title": "RevealedPiiOut",
+        "type": "object"
+      },
       "ReversalCreatedOut": {
         "properties": {
           "approval": {
@@ -3969,6 +5098,91 @@
           "at"
         ],
         "title": "ReviewOut",
+        "type": "object"
+      },
+      "RoleCatalogOut": {
+        "properties": {
+          "permissions": {
+            "items": {
+              "$ref": "#/components/schemas/PermissionOut"
+            },
+            "title": "Permissions",
+            "type": "array"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleOut"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "roles",
+          "permissions"
+        ],
+        "title": "RoleCatalogOut",
+        "type": "object"
+      },
+      "RoleChangeIn": {
+        "properties": {
+          "op": {
+            "enum": [
+              "GRANT",
+              "REVOKE"
+            ],
+            "title": "Op",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          },
+          "role": {
+            "maxLength": 30,
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "op",
+          "reason"
+        ],
+        "title": "RoleChangeIn",
+        "type": "object"
+      },
+      "RoleOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "is_staff": {
+            "title": "Is Staff",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "is_staff",
+          "permissions"
+        ],
+        "title": "RoleOut",
         "type": "object"
       },
       "RuleOut": {
@@ -4267,6 +5481,55 @@
         "title": "SetPinRequest",
         "type": "object"
       },
+      "SimActionIn": {
+        "properties": {
+          "action": {
+            "enum": [
+              "SUCCEED",
+              "FAIL",
+              "EXPIRE",
+              "RETURN",
+              "RESEND_CALLBACK"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason"
+        ],
+        "title": "SimActionIn",
+        "type": "object"
+      },
+      "SimulatorOut": {
+        "properties": {
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "operations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Operations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "mode",
+          "operations"
+        ],
+        "title": "SimulatorOut",
+        "type": "object"
+      },
       "SpendOut": {
         "properties": {
           "amount": {
@@ -4505,6 +5768,56 @@
           "session_expires_at"
         ],
         "title": "StaffMeResponse",
+        "type": "object"
+      },
+      "StaffMemberOut": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "status",
+          "roles",
+          "last_login_at"
+        ],
+        "title": "StaffMemberOut",
         "type": "object"
       },
       "StaffMessageIn": {
@@ -4854,6 +6167,50 @@
         ],
         "title": "SubmissionStatus",
         "type": "string"
+      },
+      "SystemHealthOut": {
+        "properties": {
+          "checked_at": {
+            "format": "date-time",
+            "title": "Checked At",
+            "type": "string"
+          },
+          "components": {
+            "$ref": "#/components/schemas/ComponentHealth"
+          },
+          "environment": {
+            "title": "Environment",
+            "type": "string"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobHealth"
+            },
+            "title": "Jobs",
+            "type": "array"
+          },
+          "outbox": {
+            "$ref": "#/components/schemas/OutboxHealth"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ProviderHealth"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "checked_at",
+          "environment",
+          "version",
+          "components",
+          "outbox",
+          "provider",
+          "jobs"
+        ],
+        "title": "SystemHealthOut",
+        "type": "object"
       },
       "SystemStatus": {
         "properties": {
@@ -5227,6 +6584,32 @@
         "title": "TransactionEventOut",
         "type": "object"
       },
+      "TransactionKpis": {
+        "properties": {
+          "completed_today": {
+            "items": {
+              "$ref": "#/components/schemas/TypeVolume"
+            },
+            "title": "Completed Today",
+            "type": "array"
+          },
+          "failed_today": {
+            "title": "Failed Today",
+            "type": "integer"
+          },
+          "in_progress": {
+            "title": "In Progress",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "completed_today",
+          "failed_today",
+          "in_progress"
+        ],
+        "title": "TransactionKpis",
+        "type": "object"
+      },
       "TransactionOut": {
         "properties": {
           "amount": {
@@ -5470,6 +6853,29 @@
         "title": "TypeLimitsOut",
         "type": "object"
       },
+      "TypeVolume": {
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "count",
+          "amount"
+        ],
+        "title": "TypeVolume",
+        "type": "object"
+      },
       "UnfreezeIn": {
         "properties": {
           "pin": {
@@ -5598,6 +7004,227 @@
           }
         },
         "title": "UpdateProfileRequest",
+        "type": "object"
+      },
+      "UserDetailOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "email_verified": {
+            "title": "Email Verified",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kyc_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kyc Status"
+          },
+          "kyc_tier": {
+            "title": "Kyc Tier",
+            "type": "integer"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "recent_transactions": {
+            "items": {
+              "$ref": "#/components/schemas/RecentTxnOut"
+            },
+            "title": "Recent Transactions",
+            "type": "array"
+          },
+          "risk_flags": {
+            "items": {
+              "$ref": "#/components/schemas/app__modules__operations__users_api__FlagOut"
+            },
+            "title": "Risk Flags",
+            "type": "array"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "user_type": {
+            "title": "User Type",
+            "type": "string"
+          },
+          "wallet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WalletSummaryOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "wallet_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wallet Number"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "phone",
+          "user_type",
+          "status",
+          "kyc_tier",
+          "wallet_number",
+          "created_at",
+          "roles",
+          "email_verified",
+          "last_login_at",
+          "kyc_status",
+          "wallet",
+          "risk_flags",
+          "recent_transactions"
+        ],
+        "title": "UserDetailOut",
+        "type": "object"
+      },
+      "UserKpis": {
+        "properties": {
+          "customers": {
+            "title": "Customers",
+            "type": "integer"
+          },
+          "new_today": {
+            "title": "New Today",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "customers",
+          "new_today"
+        ],
+        "title": "UserKpis",
+        "type": "object"
+      },
+      "UserSummaryOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kyc_tier": {
+            "title": "Kyc Tier",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "user_type": {
+            "title": "User Type",
+            "type": "string"
+          },
+          "wallet_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wallet Number"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "phone",
+          "user_type",
+          "status",
+          "kyc_tier",
+          "wallet_number",
+          "created_at"
+        ],
+        "title": "UserSummaryOut",
         "type": "object"
       },
       "ValidationError": {
@@ -5730,6 +7357,46 @@
         "title": "WalletStatus",
         "type": "string"
       },
+      "WalletSummaryOut": {
+        "properties": {
+          "balance": {
+            "title": "Balance",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "freeze_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freeze Source"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "wallet_number": {
+            "title": "Wallet Number",
+            "type": "string"
+          }
+        },
+        "required": [
+          "wallet_number",
+          "status",
+          "freeze_source",
+          "balance",
+          "currency"
+        ],
+        "title": "WalletSummaryOut",
+        "type": "object"
+      },
       "WithdrawalIn": {
         "properties": {
           "amount": {
@@ -5803,6 +7470,125 @@
           }
         },
         "title": "DecisionIn",
+        "type": "object"
+      },
+      "app__modules__operations__risk_api__FlagOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "flag": {
+            "title": "Flag",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "removed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removed At"
+          },
+          "set_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Set By"
+          }
+        },
+        "required": [
+          "id",
+          "flag",
+          "reason",
+          "set_by",
+          "created_at",
+          "expires_at",
+          "removed_at"
+        ],
+        "title": "FlagOut",
+        "type": "object"
+      },
+      "app__modules__operations__users_api__FlagOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "flag": {
+            "title": "Flag",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "removed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removed At"
+          }
+        },
+        "required": [
+          "flag",
+          "reason",
+          "created_at",
+          "expires_at",
+          "removed_at"
+        ],
+        "title": "FlagOut",
         "type": "object"
       },
       "app__modules__payments__api__AmountOut": {
@@ -6507,6 +8293,181 @@
         ]
       }
     },
+    "/api/v1/admin/config/fees": {
+      "get": {
+        "operationId": "get_fee_rules_api_v1_admin_config_fees_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FeeRuleOut"
+                  },
+                  "title": "Response Get Fee Rules Api V1 Admin Config Fees Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Fee Rules",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/config/fees/{code}/versions": {
+      "post": {
+        "operationId": "propose_fee_version_api_v1_admin_config_fees__code__versions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeeVersionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Propose Fee Version",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/config/limits": {
+      "get": {
+        "operationId": "get_limit_rules_api_v1_admin_config_limits_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LimitRuleOut"
+                  },
+                  "title": "Response Get Limit Rules Api V1 Admin Config Limits Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Limit Rules",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/config/limits/{code}/versions": {
+      "post": {
+        "operationId": "propose_limit_version_api_v1_admin_config_limits__code__versions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LimitVersionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Propose Limit Version",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/dashboard": {
+      "get": {
+        "operationId": "dashboard_api_v1_admin_dashboard_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Dashboard",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
     "/api/v1/admin/kyc/documents/{document_id}/content": {
       "get": {
         "operationId": "document_content_api_v1_admin_kyc_documents__document_id__content_get",
@@ -6796,6 +8757,170 @@
         "summary": "Staff Me",
         "tags": [
           "admin-auth"
+        ]
+      }
+    },
+    "/api/v1/admin/operations-queue": {
+      "get": {
+        "operationId": "operations_queue_api_v1_admin_operations_queue_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationsQueueOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Operations Queue",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
+    "/api/v1/admin/reconciliation/items": {
+      "get": {
+        "operationId": "reconciliation_items_api_v1_admin_reconciliation_items_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReconItemOut"
+                  },
+                  "title": "Response Reconciliation Items Api V1 Admin Reconciliation Items Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reconciliation Items",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
+    "/api/v1/admin/reconciliation/items/{item_id}": {
+      "post": {
+        "operationId": "update_reconciliation_item_api_v1_admin_reconciliation_items__item_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Item Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconItemOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Reconciliation Item",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
+    "/api/v1/admin/reconciliation/provider-runs": {
+      "post": {
+        "operationId": "run_provider_reconciliation_api_v1_admin_reconciliation_provider_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderRunIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderRunOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Provider Reconciliation",
+        "tags": [
+          "admin-console"
         ]
       }
     },
@@ -7324,6 +9449,243 @@
         ]
       }
     },
+    "/api/v1/admin/roles": {
+      "get": {
+        "operationId": "role_catalog_api_v1_admin_roles_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleCatalogOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Role Catalog",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/simulator": {
+      "get": {
+        "operationId": "simulator_panel_api_v1_admin_simulator_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulatorOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Simulator Panel",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
+    "/api/v1/admin/simulator/mode": {
+      "put": {
+        "operationId": "set_simulator_mode_api_v1_admin_simulator_mode_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulatorOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Simulator Mode",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
+    "/api/v1/admin/simulator/operations/{operation_key}/actions": {
+      "post": {
+        "operationId": "simulator_action_api_v1_admin_simulator_operations__operation_key__actions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "operation_key",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "title": "Operation Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimActionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Simulator Action Api V1 Admin Simulator Operations  Operation Key  Actions Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Simulator Action",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
+    "/api/v1/admin/staff": {
+      "get": {
+        "operationId": "staff_members_api_v1_admin_staff_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMemberOut"
+                  },
+                  "title": "Response Staff Members Api V1 Admin Staff Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Staff Members",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/staff/{user_id}/role-changes": {
+      "post": {
+        "operationId": "propose_role_change_api_v1_admin_staff__user_id__role_changes_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleChangeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Propose Role Change",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
+    "/api/v1/admin/system-health": {
+      "get": {
+        "operationId": "system_health_api_v1_admin_system_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemHealthOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "System Health",
+        "tags": [
+          "admin-console"
+        ]
+      }
+    },
     "/api/v1/admin/tickets": {
       "get": {
         "operationId": "staff_tickets_api_v1_admin_tickets_get",
@@ -7538,6 +9900,76 @@
         ]
       }
     },
+    "/api/v1/admin/transactions/{reference}/refund-requests": {
+      "post": {
+        "operationId": "propose_refund_api_v1_admin_transactions__reference__refund_requests_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -).",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundProposalIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundProposedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Propose Refund",
+        "tags": [
+          "admin-changes"
+        ]
+      }
+    },
     "/api/v1/admin/transactions/{reference}/reversals": {
       "post": {
         "operationId": "propose_reversal_api_v1_admin_transactions__reference__reversals_post",
@@ -7608,6 +10040,153 @@
         ]
       }
     },
+    "/api/v1/admin/users": {
+      "get": {
+        "description": "Exact wallet number or phone, email prefix, or name words (case-insensitive).",
+        "operationId": "search_users_api_v1_admin_users_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 120,
+              "minLength": 3,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserSummaryOut"
+                  },
+                  "title": "Response Search Users Api V1 Admin Users Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Users",
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}": {
+      "get": {
+        "operationId": "user_detail_api_v1_admin_users__user_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "User Detail",
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}/pii-reveals": {
+      "post": {
+        "operationId": "reveal_pii_api_v1_admin_users__user_id__pii_reveals_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevealedPiiOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reveal Pii",
+        "tags": [
+          "admin-users"
+        ]
+      }
+    },
     "/api/v1/admin/users/{user_id}/risk-flags": {
       "get": {
         "operationId": "user_flags_api_v1_admin_users__user_id__risk_flags_get",
@@ -7629,7 +10208,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/FlagOut"
+                    "$ref": "#/components/schemas/app__modules__operations__risk_api__FlagOut"
                   },
                   "title": "Response User Flags Api V1 Admin Users  User Id  Risk Flags Get",
                   "type": "array"
@@ -7683,7 +10262,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlagOut"
+                  "$ref": "#/components/schemas/app__modules__operations__risk_api__FlagOut"
                 }
               }
             },

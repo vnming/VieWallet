@@ -30,7 +30,9 @@ import { type ReactNode, type SyntheticEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 
+import { ApprovalDetails } from "../features/ApprovalDetails";
 import { FormError } from "../features/auth/FormError";
+import { ProviderReconciliation } from "../features/ProviderReconciliation";
 import { needsStepUp, useStepUp } from "../features/auth/StepUp";
 
 const REASONS: AdjustmentInput["reason_code"][] = [
@@ -424,7 +426,7 @@ function ApprovalSummary({ approval }: { approval: Approval }) {
       </span>
     );
   }
-  return <span className="text-sm text-fg">{p.wallet_number_masked}</span>;
+  return <ApprovalDetails approval={approval} />;
 }
 
 function ApprovalCard({ approval }: { approval: Approval }) {
@@ -643,6 +645,7 @@ export function ReconciliationPage() {
         </Button>
       </div>
       <FormError error={run.error} />
+      <ProviderReconciliation />
       {latest && latest.items.length > 0 && (
         <Card title={t("reconciliation.items")}>
           <table className="w-full text-left text-sm">

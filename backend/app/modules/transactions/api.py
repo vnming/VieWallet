@@ -106,6 +106,8 @@ class AdminTransactionOut(BaseModel):
     amount: Amount
     fee: Amount
     held: Amount
+    refunded: Amount
+    related_reference: str | None
     initiator_user_id: uuid.UUID
     source_wallet_id: uuid.UUID | None
     destination_wallet_id: uuid.UUID | None
@@ -359,6 +361,11 @@ async def admin_get_transaction(
     async with ctx.db.transaction() as session:
         txn = await service.get_by_reference(session, reference)
         events = await service.events_of(session, txn.id)
+        related = (
+            await service.get(session, txn.related_transaction_id)
+            if txn.related_transaction_id
+            else None
+        )
     return AdminTransactionOut(
         id=txn.id,
         reference=txn.reference,
@@ -367,6 +374,8 @@ async def admin_get_transaction(
         amount=_amount(txn.amount_minor, txn.currency),
         fee=_amount(txn.fee_minor, txn.currency),
         held=_amount(txn.held_minor, txn.currency),
+        refunded=_amount(txn.refunded_amount_minor, txn.currency),
+        related_reference=related.reference if related else None,
         initiator_user_id=txn.initiator_user_id,
         source_wallet_id=txn.source_wallet_id,
         destination_wallet_id=txn.destination_wallet_id,

@@ -193,11 +193,11 @@ async def seed_defaults(session: AsyncSession) -> None:
                 status=ACTIVE,
                 **fee,
             )
-            .on_conflict_do_nothing(index_elements=["code"])
+            .on_conflict_do_nothing(index_elements=["code", "version"])
         )
     for limit in default_limits():
         await session.execute(
             insert(LimitRule)
             .values(id=new_id(), currency="VND", version=1, status=ACTIVE, **limit)
-            .on_conflict_do_nothing(index_elements=["code"])
+            .on_conflict_do_nothing(index_elements=["code", "version"])
         )

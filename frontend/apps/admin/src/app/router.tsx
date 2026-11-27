@@ -1,10 +1,19 @@
 import { createBrowserRouter, type RouteObject } from "react-router";
 
-import { APPROVER_PERMISSIONS } from "../features/auth/permissions";
+import { APPROVER_PERMISSIONS, CONFIG_PERMISSIONS } from "../features/auth/permissions";
 import { RequirePermission, RequireStaff } from "../features/auth/StaffAuth";
 import { AdminShell } from "../layouts/AdminShell";
 import { BareLayout } from "../layouts/BareLayout";
 import { AuditPage } from "../routes/AuditPage";
+import { ConfigPage, StaffPage } from "../routes/ConfigPages";
+import {
+  DashboardPage,
+  OperationsQueuePage,
+  SimulatorPage,
+  SystemHealthPage,
+} from "../routes/ConsolePages";
+import { TicketDetailPage, TicketsPage } from "../routes/TicketPages";
+import { TransactionPage, UserDetailPage, UsersPage } from "../routes/UsersPages";
 import {
   AdjustmentsPage,
   ApprovalsPage,
@@ -13,7 +22,6 @@ import {
 } from "../routes/FinancePages";
 import { MfaSetupPage, MfaVerifyPage, StaffLoginPage } from "../routes/auth/StaffLoginPages";
 import { NotFoundPage } from "../routes/NotFoundPage";
-import { OverviewPage } from "../routes/OverviewPage";
 import { KycReviewPage, RiskPage } from "../routes/RiskKycPages";
 
 export const routes: RouteObject[] = [
@@ -47,7 +55,80 @@ export const routes: RouteObject[] = [
       {
         element: <RequireStaff />,
         children: [
-          { index: true, element: <OverviewPage /> },
+          { index: true, element: <DashboardPage /> },
+          {
+            path: "users",
+            element: (
+              <RequirePermission permission={"user:read:any"}>
+                <UsersPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "users/:id",
+            element: (
+              <RequirePermission permission={"user:read:any"}>
+                <UserDetailPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "transactions/:reference",
+            element: (
+              <RequirePermission permission={"transaction:read:any"}>
+                <TransactionPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "operations",
+            element: (
+              <RequirePermission permission={"transaction:read:any"}>
+                <OperationsQueuePage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "tickets",
+            element: (
+              <RequirePermission permission={"ticket:manage:any"}>
+                <TicketsPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "tickets/:reference",
+            element: (
+              <RequirePermission permission={"ticket:manage:any"}>
+                <TicketDetailPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "config",
+            element: (
+              <RequirePermission permission={CONFIG_PERMISSIONS}>
+                <ConfigPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "staff",
+            element: (
+              <RequirePermission permission={"role:assign:any"}>
+                <StaffPage />
+              </RequirePermission>
+            ),
+          },
+          {
+            path: "simulator",
+            element: (
+              <RequirePermission permission={"simulator:manage:any"}>
+                <SimulatorPage />
+              </RequirePermission>
+            ),
+          },
+          { path: "system", element: <SystemHealthPage /> },
           {
             path: "wallets",
             element: (

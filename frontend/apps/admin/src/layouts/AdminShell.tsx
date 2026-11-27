@@ -4,7 +4,14 @@ import { Badge, Button } from "@viewallet/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
 import {
+  Activity,
   BadgeCheck,
+  FlaskConical,
+  LifeBuoy,
+  ListChecks,
+  Settings2,
+  UserCog,
+  Users,
   ClipboardCheck,
   LayoutDashboard,
   type LucideIcon,
@@ -18,7 +25,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router";
 
-import { APPROVER_PERMISSIONS } from "../features/auth/permissions";
+import { APPROVER_PERMISSIONS, CONFIG_PERMISSIONS } from "../features/auth/permissions";
 
 interface NavItem {
   to: string;
@@ -31,6 +38,21 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: "/", key: "nav.overview", icon: LayoutDashboard, end: true },
+  { to: "/users", key: "nav.users", icon: Users, end: false, permission: ["user:read:any"] },
+  {
+    to: "/operations",
+    key: "nav.operations",
+    icon: ListChecks,
+    end: false,
+    permission: ["transaction:read:any"],
+  },
+  {
+    to: "/tickets",
+    key: "nav.tickets",
+    icon: LifeBuoy,
+    end: false,
+    permission: ["ticket:manage:any"],
+  },
   {
     to: "/wallets",
     key: "nav.wallets",
@@ -68,6 +90,16 @@ const NAV_ITEMS: NavItem[] = [
     permission: ["risk_hold:decide:any"],
   },
   { to: "/audit", key: "nav.audit", icon: ScrollText, end: false, permission: ["audit:read:any"] },
+  { to: "/config", key: "nav.config", icon: Settings2, end: false, permission: CONFIG_PERMISSIONS },
+  { to: "/staff", key: "nav.staff", icon: UserCog, end: false, permission: ["role:assign:any"] },
+  {
+    to: "/simulator",
+    key: "nav.simulator",
+    icon: FlaskConical,
+    end: false,
+    permission: ["simulator:manage:any"],
+  },
+  { to: "/system", key: "nav.health", icon: Activity, end: false },
 ];
 
 function StaffMenu() {

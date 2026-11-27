@@ -101,3 +101,31 @@ async def permissions_for_user(session: AsyncSession, user_id: uuid.UUID) -> fro
         .distinct()
     )
     return frozenset(rows.all())
+
+
+async def revoke_role(session: AsyncSession, *, user_id: uuid.UUID, role_code: str) -> bool:
+    """Remove a role; False when the user did not hold it. History is in the audit log."""
+    role_id = await session.scalar(select(Role.id).where(Role.code == role_code))
+    if role_id is None:
+        raise UnknownRoleError(role_code)
+    result = await session.execute(
+        delete(UserRole)
+        .where(UserRole.user_id == user_id, UserRole.role_id == role_id)
+        .returning(UserRole.user_id)
+    )
+    return result.first() is not None
+
+
+async def holders_of(
+    session: AsyncSession, role_codes: frozenset[str]
+) -> dict[uuid.UUID, set[str]]:
+    """Users holding any of ``role_codes`` with the roles they hold among them."""
+    rows = await session.execute(
+        select(UserRole.user_id, Role.code)
+        .join(Role, Role.id == UserRole.role_id)
+        .where(Role.code.in_(role_codes))
+    )
+    holders: dict[uuid.UUID, set[str]] = {}
+    for user_id, code in rows.all():
+        holders.setdefault(user_id, set()).add(code)
+    return holders

@@ -181,12 +181,15 @@ Vòng đời payment request (thực thể riêng `payment_requests`): `OPEN →
 ```mermaid
 stateDiagram-v2
   [*] --> CREATED: merchant/nhân viên yêu cầu hoàn R cho thanh toán P
-  CREATED --> PENDING: cần phê duyệt (R > ngưỡng hoặc do rủi ro)
-  CREATED --> COMPLETED: thực hiện [journal REFUND]
+  CREATED --> PENDING: nhân viên đề xuất (luôn cần phê duyệt, Phase 8)
+  CREATED --> COMPLETED: merchant tự hoàn [journal REFUND]
   CREATED --> FAILED: merchant không đủ số dư / P không hoàn được
   PENDING --> COMPLETED: checker duyệt [journal REFUND]
-  PENDING --> CANCELLED: checker từ chối
+  PENDING --> FAILED: lúc duyệt kiểm tra lại thấy không thực hiện được
+  PENDING --> CANCELLED: checker từ chối / maker hủy / hết hạn
 ```
+
+Hoàn tiền do nhân viên đề xuất (Phase 8, `transactions/use_cases/staff_refund.py`): Operations đề xuất, Finance duyệt (maker-checker, không có ngưỡng — luôn cần người thứ hai). Lúc đề xuất, phần còn hoàn được trừ cả các đề xuất đang chờ; lúc duyệt khóa lại thanh toán gốc và kiểm tra lại (merchant có thể đã tự hoàn trong lúc chờ), lỗi nghiệp vụ ⇒ REFUND `FAILED` với `failure_code`, yêu cầu phê duyệt `FAILED`. Khách hàng không thấy REFUND của nhân viên cho tới khi hoàn tất.
 
 Quy tắc: khóa dòng thanh toán gốc; `Σ hoàn tiền đã hoàn tất + R ≤ P.amount`; tiền tệ hoàn = tiền tệ gốc; thanh toán gốc chuyển sang PARTIALLY_REFUNDED/REFUNDED trong cùng DB transaction. Chỉ loại PAYMENT được hoàn tiền (chuyển P2P không hoàn được — người nhận chuyển lại bằng lệnh mới, hoặc nhân viên đảo).
 

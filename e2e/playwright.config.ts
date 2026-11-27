@@ -42,5 +42,15 @@ export default defineConfig({
       },
       testMatch: /admin\..*\.spec\.ts/,
     },
+    {
+      // Journey 10 switches the shared simulator to OUTAGE: it must not overlap any other test.
+      name: "admin-outage",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.VW_E2E_ADMIN_URL ?? "http://127.0.0.1:8081",
+      },
+      testMatch: /outage\.spec\.ts/,
+      dependencies: ["web-mobile", "web-desktop", "admin-desktop"],
+    },
   ],
 });

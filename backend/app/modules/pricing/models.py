@@ -1,18 +1,23 @@
-"""Fee and limit rule tables (database.md §3.7). Read-only for the application role."""
+"""Fee and limit rule tables (database.md §3.7).
+
+Versioned: one ACTIVE version per code; new versions start as DRAFT and are activated through
+maker-checker (``pricing.versions``). The application role may insert drafts and change the
+status columns, never delete.
+"""
 
 from __future__ import annotations
 
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, CheckConstraint, Index, Integer, String
+from sqlalchemy import BigInteger, CheckConstraint, Index, Integer, String, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
 from app.core.ids import new_id
 from app.modules.pricing.domain import LimitDirection, LimitPeriod, RuleScope
 
-RULE_STATUSES = ("DRAFT", "ACTIVE", "RETIRED")
+RULE_STATUSES = ("DRAFT", "ACTIVE", "RETIRED", "REJECTED")
 
 
 def _in(column: str, values: list[str] | tuple[str, ...]) -> str:
@@ -34,10 +39,23 @@ class FeeRule(Base):
             "(scope = 'DEFAULT') = (scope_value IS NULL)", name="scope_value_iff_scoped"
         ),
         Index("ix_fee_rules_lookup", "txn_type", "currency", "status"),
+        UniqueConstraint("code", "version"),
+        Index(
+            "uq_fee_rules_active_code",
+            "code",
+            unique=True,
+            postgresql_where=text("status = 'ACTIVE'"),
+        ),
+        Index(
+            "uq_fee_rules_draft_code",
+            "code",
+            unique=True,
+            postgresql_where=text("status = 'DRAFT'"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=new_id)
-    code: Mapped[str] = mapped_column(String(60), unique=True)
+    code: Mapped[str] = mapped_column(String(60))
     txn_type: Mapped[str] = mapped_column(String(20))
     currency: Mapped[str] = mapped_column(String(3))
     scope: Mapped[str] = mapped_column(String(10))
@@ -50,6 +68,7 @@ class FeeRule(Base):
     effective_to: Mapped[datetime | None]
     version: Mapped[int] = mapped_column(default=1)
     status: Mapped[str] = mapped_column(String(10))
+    created_by: Mapped[uuid.UUID | None] = mapped_column(default=None)
 
 
 class LimitRule(Base):
@@ -71,10 +90,23 @@ class LimitRule(Base):
             "(scope = 'DEFAULT') = (scope_value IS NULL)", name="scope_value_iff_scoped"
         ),
         Index("ix_limit_rules_lookup", "currency", "status"),
+        UniqueConstraint("code", "version"),
+        Index(
+            "uq_limit_rules_active_code",
+            "code",
+            unique=True,
+            postgresql_where=text("status = 'ACTIVE'"),
+        ),
+        Index(
+            "uq_limit_rules_draft_code",
+            "code",
+            unique=True,
+            postgresql_where=text("status = 'DRAFT'"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=new_id)
-    code: Mapped[str] = mapped_column(String(60), unique=True)
+    code: Mapped[str] = mapped_column(String(60))
     txn_type: Mapped[str] = mapped_column(String(20))
     direction: Mapped[str] = mapped_column(String(3))
     scope: Mapped[str] = mapped_column(String(10))
@@ -86,3 +118,4 @@ class LimitRule(Base):
     min_amount_minor: Mapped[int | None] = mapped_column(BigInteger)
     version: Mapped[int] = mapped_column(default=1)
     status: Mapped[str] = mapped_column(String(10))
+    created_by: Mapped[uuid.UUID | None] = mapped_column(default=None)

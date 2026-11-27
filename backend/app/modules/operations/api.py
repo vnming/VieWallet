@@ -107,7 +107,8 @@ class DecisionIn(BaseModel):
 
 
 class RejectIn(BaseModel):
-    note: str = Field(min_length=5, max_length=500)
+    # Required (5-500 chars); checked after authorization so unauthorized callers get 403.
+    note: str | None = Field(default=None, max_length=500)
 
 
 class ReconciliationItemOut(BaseModel):
@@ -344,6 +345,8 @@ async def list_approvals(
 
 
 async def _visible(session: Any, approval_id: uuid.UUID, principal: Principal) -> ApprovalRequest:
+    if not _visible_action_types(principal):
+        raise ForbiddenError()
     request = await approvals.get(session, approval_id)
     if request.action_type not in _visible_action_types(principal):
         raise approvals.ApprovalNotFoundError()
@@ -398,13 +401,16 @@ async def reject_request(
     meta: MetaDep,
 ) -> ApprovalOut:
     await _check_decider(ctx, approval_id, principal)
+    note = (body.note or "").strip()
+    if len(note) < 5:  # noqa: PLR2004
+        raise ValidationFailedError(errors=[FieldError("note", "TOO_SHORT", "min 5 characters")])
     async with ctx.db.transaction() as session:
         decided = await approvals.reject(
             session,
             ctx.clock,
             approval_id,
             checker=staff_actor(principal, meta.ip, meta.user_agent),
-            note=body.note,
+            note=note,
         )
         out = approval_out(decided.request, principal)
     if decided.error is not None:

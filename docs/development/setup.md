@@ -128,6 +128,16 @@ Worker chạy thêm: `expire_kyc_approvals` (1 giờ). Handler mới: giám sát
 - **Xuất CSV**: worker job `transaction_exports` (10 giây) tạo tệp.
 - **Kiểm tra tiếp cận**: `pnpm test` chạy axe trên 21 trang; E2E `web.account.spec.ts` chạy axe trên trình duyệt thật.
 
+## 3b5. Admin & Operations (Phase 8)
+
+- **Bảng điều khiển simulator** (`/simulator` trong app admin) cần `VW_SIMULATOR_ADMIN_KEY` cho api (compose đã truyền từ `.env`; chạy api trên máy thì thêm vào `backend/.env`). Thiếu biến này hoặc `VW_ENVIRONMENT=production-like` ⇒ bảng tắt. Khóa nằm ở server, trình duyệt không thấy.
+- **Hoàn tiền do nhân viên**: Operations mở `/transactions/<mã>` ⇒ "Đề xuất hoàn tiền"; Finance duyệt ở `/approvals`.
+- **Phí/hạn mức**: ADMIN đề xuất ở `/config`; chỉ người có `config:approve:any` (mặc định SUPER_ADMIN) duyệt.
+- **Role**: `/staff`, hai quản trị viên khác nhau (đề xuất + duyệt). CLI `create_staff` vẫn dùng cho tài khoản đầu tiên.
+- **Đối soát provider**: `/reconciliation` ⇒ chọn ngày nghiệp vụ ⇒ "Đối soát ngày này". Số tiền có `888` ở hàng nghìn (ví dụ 888 000 ₫) cho sao kê lệch 1 000 ₫ để thử.
+- Trang sức khỏe hệ thống của admin là `/system` (`/health/...` thuộc về api qua nginx).
+- E2E: project `admin-outage` (hành trình 10, đổi simulator sang OUTAGE) luôn chạy sau các project khác. Chạy riêng: `pnpm exec playwright test --project=admin-outage --no-deps`.
+
 ## 3c. Tạo số dư demo
 
 Chưa có nạp tiền (Phase 4), nên số dư demo được tạo bằng **điều chỉnh số dư** qua maker-checker, đúng như mọi thay đổi số dư khác:

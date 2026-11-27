@@ -7,6 +7,7 @@ import hmac
 import json
 import time
 from collections.abc import Callable, Mapping
+from datetime import date
 from typing import Any
 
 import httpx
@@ -22,6 +23,7 @@ from app.modules.providers.port import (
     ProviderRejected,
     ProviderTimeout,
     ProviderUnavailable,
+    StatementLine,
 )
 
 SIMULATOR = "SIMULATOR"
@@ -161,6 +163,22 @@ class SimulatorProvider:
         if response.status_code == 404:  # noqa: PLR2004
             raise OperationNotFound(operation_key)
         return self._parse(response)
+
+    async def get_statement(self, business_date: date) -> list[StatementLine]:
+        response = await self._call("GET", f"/v1/statements/{business_date.isoformat()}")
+        if response.status_code >= 400:  # noqa: PLR2004
+            raise ProviderRejected(f"HTTP {response.status_code}: {response.text[:200]}")
+        return [
+            StatementLine(
+                operation_key=str(line["operation_key"]),
+                provider_reference=line.get("provider_reference"),
+                kind=str(line["kind"]),
+                status=str(line["status"]),
+                amount_minor=int(line["amount"]),
+                currency=str(line["currency"]),
+            )
+            for line in response.json()["lines"]
+        ]
 
     def verify_callback(self, headers: Mapping[str, str], raw_body: bytes) -> ProviderEvent:
         lowered = {k.lower(): v for k, v in headers.items()}

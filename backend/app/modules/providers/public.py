@@ -20,6 +20,7 @@ from app.modules.providers.port import (
     ProviderRejected,
     ProviderTimeout,
     ProviderUnavailable,
+    StatementLine,
 )
 from app.modules.providers.service import (
     CALLBACK_TOPIC,
@@ -37,6 +38,7 @@ from app.modules.providers.service import (
     receive_callback,
     seed_providers,
 )
+from app.modules.providers.sim_control import SimulatorControl
 from app.modules.providers.simulator_adapter import SIMULATOR, SimulatorProvider, expected_signature
 
 __all__ = [
@@ -62,7 +64,9 @@ __all__ = [
     "ProviderServices",
     "ProviderTimeout",
     "ProviderUnavailable",
+    "SimulatorControl",
     "SimulatorProvider",
+    "StatementLine",
     "add_result",
     "claim_due_inquiries",
     "create_operation",

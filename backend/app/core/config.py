@@ -80,6 +80,10 @@ class Settings(BaseSettings):
     simulator_url: str = "http://127.0.0.1:8090"
     simulator_api_key: str = Field(description="Bearer key for calling the simulator.")
     simulator_webhook_secret: str = Field(description="HMAC key that signs simulator callbacks.")
+    simulator_admin_key: str | None = Field(
+        default=None,
+        description="Simulator admin key for the control panel; unset or production-like: off.",
+    )
     provider_callback_base_url: str = Field(
         default="http://127.0.0.1:8000",
         description="Base URL the provider uses to reach /api/v1/webhooks/providers/... .",

@@ -428,10 +428,10 @@ async def test_reversal_needs_a_second_person_and_restores_balances(
         # Hidden from customers until it completes.
         types = [t["type"] for t in (await client.get("/api/v1/transactions")).json()["items"]]
         assert "REVERSAL" not in types
-        # Operations may propose but not approve: the request is not even visible to them.
+        # Operations may propose but approve nothing: approval requests are refused (403).
         assert (
             await maker.post(f"/api/v1/admin/approvals/{approval['id']}/approve", json={})
-        ).status_code == 404
+        ).status_code == 403
         done = await checker.post(f"/api/v1/admin/approvals/{approval['id']}/approve", json={})
         assert done.status_code == 200, done.text
         assert done.json()["status"] == "EXECUTED"

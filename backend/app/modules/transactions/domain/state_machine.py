@@ -59,7 +59,8 @@ TRANSITIONS: dict[TxnType, dict[TxnStatus, frozenset[TxnStatus]]] = {
     },
     TxnType.REFUND: {
         S.CREATED: frozenset({S.PENDING, S.COMPLETED, S.FAILED}),
-        S.PENDING: frozenset({S.COMPLETED, S.CANCELLED}),
+        # PENDING = a staff refund awaiting approval (Phase 8).
+        S.PENDING: frozenset({S.COMPLETED, S.FAILED, S.CANCELLED}),
     },
     TxnType.REVERSAL: {
         S.CREATED: frozenset({S.PENDING, S.COMPLETED, S.FAILED, S.CANCELLED}),

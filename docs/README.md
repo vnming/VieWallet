@@ -1,6 +1,6 @@
 # Tài liệu VieWallet
 
-VieWallet là ví điện tử fintech mô phỏng (không tiền thật, không ngân hàng thật, không dữ liệu cá nhân thật). Bắt đầu từ [Báo cáo Phase 0](00-phase0-report.md), [Phase 1](01-phase1-report.md), [Phase 2](02-phase2-report.md), [Phase 3](03-phase3-report.md), [Phase 4](04-phase4-report.md), [Phase 5](05-phase5-report.md), [Phase 6](06-phase6-report.md) và [Phase 7](07-phase7-report.md).
+VieWallet là ví điện tử fintech mô phỏng (không tiền thật, không ngân hàng thật, không dữ liệu cá nhân thật). Bắt đầu từ [Báo cáo Phase 0](00-phase0-report.md), [Phase 1](01-phase1-report.md), [Phase 2](02-phase2-report.md), [Phase 3](03-phase3-report.md), [Phase 4](04-phase4-report.md), [Phase 5](05-phase5-report.md), [Phase 6](06-phase6-report.md), [Phase 7](07-phase7-report.md) và [Phase 8](08-phase8-report.md).
 
 ## Bản đồ tài liệu
 

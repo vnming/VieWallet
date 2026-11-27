@@ -32,7 +32,7 @@ Quy mô: S nhỏ, M vừa, L lớn, XL rất lớn (tương đối, không cam k
 | 5 | Transfer, Payment, Refund, Reversal | 3 (4 cho đảo rút tiền) | xong |
 | 6 | KYC, Risk & Limits | 3, 5 | xong |
 | 7 | Hoàn thiện app khách hàng | 2–6 | xong |
-| 8 | Admin & Operations | 2–6 | XL |
+| 8 | Admin & Operations | 2–6 | xong |
 | 9 | Notifications (Push) & PWA | 4, 7 | M |
 | 10 | Analytics & Reporting | 5, 7 | M |
 | 11 | AI Financial Assistant (model miễn phí) | 10 | L |

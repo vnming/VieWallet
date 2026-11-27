@@ -242,6 +242,91 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/config/fees": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Fee Rules */
+    get: operations["get_fee_rules_api_v1_admin_config_fees_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/config/fees/{code}/versions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Fee Version */
+    post: operations["propose_fee_version_api_v1_admin_config_fees__code__versions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/config/limits": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Limit Rules */
+    get: operations["get_limit_rules_api_v1_admin_config_limits_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/config/limits/{code}/versions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Limit Version */
+    post: operations["propose_limit_version_api_v1_admin_config_limits__code__versions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/dashboard": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Dashboard */
+    get: operations["dashboard_api_v1_admin_dashboard_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/kyc/documents/{document_id}/content": {
     parameters: {
       query?: never;
@@ -338,6 +423,74 @@ export interface paths {
     get: operations["staff_me_api_v1_admin_me_get"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/operations-queue": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Operations Queue */
+    get: operations["operations_queue_api_v1_admin_operations_queue_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reconciliation/items": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reconciliation Items */
+    get: operations["reconciliation_items_api_v1_admin_reconciliation_items_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reconciliation/items/{item_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Update Reconciliation Item */
+    post: operations["update_reconciliation_item_api_v1_admin_reconciliation_items__item_id__post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reconciliation/provider-runs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Run Provider Reconciliation */
+    post: operations["run_provider_reconciliation_api_v1_admin_reconciliation_provider_runs_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -515,6 +668,125 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/roles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Role Catalog */
+    get: operations["role_catalog_api_v1_admin_roles_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/simulator": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Simulator Panel */
+    get: operations["simulator_panel_api_v1_admin_simulator_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/simulator/mode": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Set Simulator Mode */
+    put: operations["set_simulator_mode_api_v1_admin_simulator_mode_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/simulator/operations/{operation_key}/actions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Simulator Action */
+    post: operations["simulator_action_api_v1_admin_simulator_operations__operation_key__actions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/staff": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Staff Members */
+    get: operations["staff_members_api_v1_admin_staff_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/staff/{user_id}/role-changes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Role Change */
+    post: operations["propose_role_change_api_v1_admin_staff__user_id__role_changes_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/system-health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** System Health */
+    get: operations["system_health_api_v1_admin_system_health_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/tickets": {
     parameters: {
       query?: never;
@@ -583,6 +855,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/transactions/{reference}/refund-requests": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose Refund */
+    post: operations["propose_refund_api_v1_admin_transactions__reference__refund_requests_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/admin/transactions/{reference}/reversals": {
     parameters: {
       query?: never;
@@ -594,6 +883,60 @@ export interface paths {
     put?: never;
     /** Propose Reversal */
     post: operations["propose_reversal_api_v1_admin_transactions__reference__reversals_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Search Users
+     * @description Exact wallet number or phone, email prefix, or name words (case-insensitive).
+     */
+    get: operations["search_users_api_v1_admin_users_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users/{user_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** User Detail */
+    get: operations["user_detail_api_v1_admin_users__user_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users/{user_id}/pii-reveals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reveal Pii */
+    post: operations["reveal_pii_api_v1_admin_users__user_id__pii_reveals_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1978,7 +2321,15 @@ export interface components {
      * ActionType
      * @enum {string}
      */
-    ActionType: "ADJUSTMENT" | "WALLET_UNFREEZE" | "REVERSAL" | "RISK_RULE_CHANGE";
+    ActionType:
+      | "ADJUSTMENT"
+      | "WALLET_UNFREEZE"
+      | "REVERSAL"
+      | "RISK_RULE_CHANGE"
+      | "REFUND"
+      | "FEE_RULE_CHANGE"
+      | "LIMIT_RULE_CHANGE"
+      | "ROLE_CHANGE";
     /** AdjustmentCreatedOut */
     AdjustmentCreatedOut: {
       approval: components["schemas"]["ApprovalOut"];
@@ -2178,6 +2529,9 @@ export interface components {
       };
       /** Reference */
       reference: string;
+      refunded: components["schemas"]["Amount"];
+      /** Related Reference */
+      related_reference: string | null;
       /** Risk Decision */
       risk_decision: string | null;
       /** Source Wallet Id */
@@ -2493,6 +2847,34 @@ export interface components {
       /** Code */
       code: string;
     };
+    /** ComponentHealth */
+    ComponentHealth: {
+      /**
+       * Ai
+       * @enum {string}
+       */
+      ai: "UP" | "DEGRADED" | "DOWN" | "NOT_CONFIGURED";
+      /**
+       * Database
+       * @enum {string}
+       */
+      database: "UP" | "DEGRADED" | "DOWN" | "NOT_CONFIGURED";
+      /**
+       * Push
+       * @enum {string}
+       */
+      push: "UP" | "DEGRADED" | "DOWN" | "NOT_CONFIGURED";
+      /**
+       * Redis
+       * @enum {string}
+       */
+      redis: "UP" | "DEGRADED" | "DOWN" | "NOT_CONFIGURED";
+      /**
+       * Worker
+       * @enum {string}
+       */
+      worker: "UP" | "DEGRADED" | "DOWN" | "NOT_CONFIGURED";
+    };
     /** ConfirmIn */
     ConfirmIn: {
       /** Pin */
@@ -2515,6 +2897,22 @@ export interface components {
       name?: string | null;
       /** Wallet Number Masked */
       wallet_number_masked?: string | null;
+    };
+    /** DashboardOut */
+    DashboardOut: {
+      /**
+       * Business Date
+       * Format: date
+       */
+      business_date: string;
+      /**
+       * Generated At
+       * Format: date-time
+       */
+      generated_at: string;
+      queues: components["schemas"]["Queues"];
+      transactions: components["schemas"]["TransactionKpis"] | null;
+      users: components["schemas"]["UserKpis"] | null;
     };
     /** DepositIn */
     DepositIn: {
@@ -2683,6 +3081,54 @@ export interface components {
        */
       truncated: boolean;
     };
+    /** FeeRuleOut */
+    FeeRuleOut: {
+      /** Bps */
+      bps: number;
+      /** Code */
+      code: string;
+      /** Currency */
+      currency: string;
+      /**
+       * Effective From
+       * Format: date-time
+       */
+      effective_from: string;
+      /** Fixed */
+      fixed: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Max Fee */
+      max_fee: string | null;
+      /** Min Fee */
+      min_fee: string;
+      /** Scope */
+      scope: string;
+      /** Scope Value */
+      scope_value: string | null;
+      /** Status */
+      status: string;
+      /** Txn Type */
+      txn_type: string;
+      /** Version */
+      version: number;
+    };
+    /** FeeVersionIn */
+    FeeVersionIn: {
+      /** Bps */
+      bps: number;
+      /** Fixed */
+      fixed: string;
+      /** Max Fee */
+      max_fee?: string | null;
+      /** Min Fee */
+      min_fee: string;
+      /** Reason */
+      reason: string;
+    };
     /** FlagIn */
     FlagIn: {
       /** Expires In Days */
@@ -2694,29 +3140,6 @@ export interface components {
       flag: string;
       /** Reason */
       reason: string;
-    };
-    /** FlagOut */
-    FlagOut: {
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string;
-      /** Expires At */
-      expires_at: string | null;
-      /** Flag */
-      flag: string;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Reason */
-      reason: string;
-      /** Removed At */
-      removed_at: string | null;
-      /** Set By */
-      set_by: string | null;
     };
     /** FlagRemoveIn */
     FlagRemoveIn: {
@@ -2802,6 +3225,27 @@ export interface components {
      * @enum {string}
      */
     IssuerType: "MERCHANT" | "USER";
+    /** ItemUpdateIn */
+    ItemUpdateIn: {
+      /** Note */
+      note: string;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "INVESTIGATING" | "RESOLVED" | "WRITTEN_OFF";
+    };
+    /** JobHealth */
+    JobHealth: {
+      /** Last Error */
+      last_error: string | null;
+      /** Last Finished At */
+      last_finished_at: string | null;
+      /** Last Status */
+      last_status: string | null;
+      /** Name */
+      name: string;
+    };
     /** KycStatusOut */
     KycStatusOut: {
       /** Approved At */
@@ -2834,6 +3278,49 @@ export interface components {
       used_amount: string;
       /** Used Count */
       used_count: number;
+    };
+    /** LimitRuleOut */
+    LimitRuleOut: {
+      /** Code */
+      code: string;
+      /** Currency */
+      currency: string;
+      /** Direction */
+      direction: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Max Amount */
+      max_amount: string | null;
+      /** Max Count */
+      max_count: number | null;
+      /** Min Amount */
+      min_amount: string | null;
+      /** Period */
+      period: string;
+      /** Scope */
+      scope: string;
+      /** Scope Value */
+      scope_value: string | null;
+      /** Status */
+      status: string;
+      /** Txn Type */
+      txn_type: string;
+      /** Version */
+      version: number;
+    };
+    /** LimitVersionIn */
+    LimitVersionIn: {
+      /** Max Amount */
+      max_amount?: string | null;
+      /** Max Count */
+      max_count?: number | null;
+      /** Min Amount */
+      min_amount?: string | null;
+      /** Reason */
+      reason: string;
     };
     /** LimitsOut */
     LimitsOut: {
@@ -3055,6 +3542,16 @@ export interface components {
       /** Recovery Code */
       recovery_code?: string | null;
     };
+    /** ModeIn */
+    ModeIn: {
+      /**
+       * Mode
+       * @enum {string}
+       */
+      mode: "NORMAL" | "DEGRADED" | "OUTAGE";
+      /** Reason */
+      reason: string;
+    };
     /** MoneyFlowOut */
     MoneyFlowOut: {
       amount: components["schemas"]["Amount"];
@@ -3130,6 +3627,26 @@ export interface components {
       items: components["schemas"]["NotificationOut"][];
       /** Next Cursor */
       next_cursor: string | null;
+    };
+    /** OperationsQueueOut */
+    OperationsQueueOut: {
+      /** Pending Money Approvals */
+      pending_money_approvals: components["schemas"]["QueueApproval"][];
+      /** Recovery Cases */
+      recovery_cases: components["schemas"]["QueueCase"][];
+      /** Stuck Transactions */
+      stuck_transactions: components["schemas"]["QueueTransaction"][];
+      /** Unknown Provider Operations */
+      unknown_provider_operations: components["schemas"]["QueueOperation"][];
+    };
+    /** OutboxHealth */
+    OutboxHealth: {
+      /** Failed */
+      failed: number;
+      /** Oldest Pending Seconds */
+      oldest_pending_seconds: number | null;
+      /** Pending */
+      pending: number;
     };
     /** PasswordOnlyRequest */
     PasswordOnlyRequest: {
@@ -3216,6 +3733,15 @@ export interface components {
        */
       url: string;
     };
+    /** PermissionOut */
+    PermissionOut: {
+      /** Code */
+      code: string;
+      /** Description */
+      description: string;
+      /** Sensitive */
+      sensitive: boolean;
+    };
     /** PinStatusResponse */
     PinStatusResponse: {
       /** Is Set */
@@ -3230,6 +3756,125 @@ export interface components {
      * @enum {string}
      */
     ProfileStatus: "NOT_STARTED" | "PENDING" | "IN_REVIEW" | "APPROVED" | "REJECTED" | "EXPIRED";
+    /** ProviderHealth */
+    ProviderHealth: {
+      /** Code */
+      code: string;
+      /** Mode */
+      mode: string | null;
+      /** Recent Unavailable Failures */
+      recent_unavailable_failures: number;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "UP" | "DEGRADED" | "DOWN" | "NOT_CONFIGURED";
+      /** Unknown Operations */
+      unknown_operations: number;
+    };
+    /** ProviderRunIn */
+    ProviderRunIn: {
+      /**
+       * Business Date
+       * Format: date
+       */
+      business_date: string;
+    };
+    /** ProviderRunOut */
+    ProviderRunOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Items */
+      items: components["schemas"]["ReconItemOut"][];
+      /** Kind */
+      kind: string;
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+      /** Stats */
+      stats: {
+        [key: string]: unknown;
+      };
+      /** Status */
+      status: string;
+      /** Violations */
+      violations: number;
+    };
+    /** QueueApproval */
+    QueueApproval: {
+      /** Action Type */
+      action_type: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Expires At
+       * Format: date-time
+       */
+      expires_at: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Maker Reason */
+      maker_reason: string;
+      /** Target Id */
+      target_id: string;
+    };
+    /** QueueCase */
+    QueueCase: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Detail */
+      detail: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Reason */
+      reason: string;
+      /** Status */
+      status: string;
+      /**
+       * Transaction Id
+       * Format: uuid
+       */
+      transaction_id: string;
+    };
+    /** QueueOperation */
+    QueueOperation: {
+      /** Amount */
+      amount: string;
+      /** Id */
+      id: string;
+      /** Inquiry Count */
+      inquiry_count: number;
+      /** Next Inquiry At */
+      next_inquiry_at: string | null;
+      /** Operation */
+      operation: string;
+      /** Status */
+      status: string;
+      /** Submitted At */
+      submitted_at: string | null;
+      /**
+       * Transaction Id
+       * Format: uuid
+       */
+      transaction_id: string;
+    };
     /** QueueOut */
     QueueOut: {
       /** Items */
@@ -3240,6 +3885,43 @@ export interface components {
       page_size: number;
       /** Total */
       total: number;
+    };
+    /** QueueTransaction */
+    QueueTransaction: {
+      /** Age Minutes */
+      age_minutes: number;
+      /** Amount */
+      amount: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Currency */
+      currency: string;
+      /** Reference */
+      reference: string;
+      /** Status */
+      status: string;
+      /** Type */
+      type: string;
+    };
+    /** Queues */
+    Queues: {
+      /** Approvals */
+      approvals?: number | null;
+      /** Kyc Reviews */
+      kyc_reviews?: number | null;
+      /** Reconciliation Items */
+      reconciliation_items?: number | null;
+      /** Recovery Cases */
+      recovery_cases?: number | null;
+      /** Risk Alerts */
+      risk_alerts?: number | null;
+      /** Risk Holds */
+      risk_holds?: number | null;
+      /** Tickets */
+      tickets?: number | null;
     };
     /** ReadyResponse */
     ReadyResponse: {
@@ -3262,6 +3944,26 @@ export interface components {
       /** Wallet Number */
       wallet_number: string;
     };
+    /** RecentTxnOut */
+    RecentTxnOut: {
+      /** Amount */
+      amount: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Currency */
+      currency: string;
+      /** Direction */
+      direction: string;
+      /** Reference */
+      reference: string;
+      /** Status */
+      status: string;
+      /** Type */
+      type: string;
+    };
     /** RecipientOut */
     RecipientOut: {
       /** Active */
@@ -3275,6 +3977,40 @@ export interface components {
       kind: string;
       /** Wallet Number Masked */
       wallet_number_masked: string;
+    };
+    /** ReconItemOut */
+    ReconItemOut: {
+      /** Actual */
+      actual: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Expected */
+      expected: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Invariant */
+      invariant: string | null;
+      /** Resolution Note */
+      resolution_note: string | null;
+      /**
+       * Run Id
+       * Format: uuid
+       */
+      run_id: string;
+      /** Status */
+      status: string;
+      /** Subject */
+      subject: string;
+      /** Type */
+      type: string;
+      /** Updated At */
+      updated_at: string | null;
     };
     /** ReconciliationItemOut */
     ReconciliationItemOut: {
@@ -3407,6 +4143,22 @@ export interface components {
       /** Reason */
       reason: string;
     };
+    /** RefundProposalIn */
+    RefundProposalIn: {
+      /**
+       * Amount
+       * @description Integer minor units as a string
+       */
+      amount: string;
+      /** Reason */
+      reason: string;
+    };
+    /** RefundProposedOut */
+    RefundProposedOut: {
+      approval: components["schemas"]["ApprovalOut"];
+      /** Refund Reference */
+      refund_reference: string;
+    };
     /** RegisterRequest */
     RegisterRequest: {
       /**
@@ -3428,7 +4180,7 @@ export interface components {
     /** RejectIn */
     RejectIn: {
       /** Note */
-      note: string;
+      note?: string | null;
     };
     /**
      * RejectReason
@@ -3462,6 +4214,15 @@ export interface components {
        */
       outcome: "ACKNOWLEDGED" | "RESOLVED" | "FALSE_POSITIVE";
     };
+    /** RevealedPiiOut */
+    RevealedPiiOut: {
+      /** Email */
+      email: string;
+      /** Full Name */
+      full_name: string;
+      /** Phone */
+      phone: string | null;
+    };
     /** ReversalCreatedOut */
     ReversalCreatedOut: {
       approval: components["schemas"]["ApprovalOut"];
@@ -3490,6 +4251,36 @@ export interface components {
        * Format: uuid
        */
       reviewer_id: string;
+    };
+    /** RoleCatalogOut */
+    RoleCatalogOut: {
+      /** Permissions */
+      permissions: components["schemas"]["PermissionOut"][];
+      /** Roles */
+      roles: components["schemas"]["RoleOut"][];
+    };
+    /** RoleChangeIn */
+    RoleChangeIn: {
+      /**
+       * Op
+       * @enum {string}
+       */
+      op: "GRANT" | "REVOKE";
+      /** Reason */
+      reason: string;
+      /** Role */
+      role: string;
+    };
+    /** RoleOut */
+    RoleOut: {
+      /** Code */
+      code: string;
+      /** Is Staff */
+      is_staff: boolean;
+      /** Name */
+      name: string;
+      /** Permissions */
+      permissions: string[];
     };
     /** RuleOut */
     RuleOut: {
@@ -3608,6 +4399,25 @@ export interface components {
       /** Pin */
       pin: string;
     };
+    /** SimActionIn */
+    SimActionIn: {
+      /**
+       * Action
+       * @enum {string}
+       */
+      action: "SUCCEED" | "FAIL" | "EXPIRE" | "RETURN" | "RESEND_CALLBACK";
+      /** Reason */
+      reason: string;
+    };
+    /** SimulatorOut */
+    SimulatorOut: {
+      /** Mode */
+      mode: string;
+      /** Operations */
+      operations: {
+        [key: string]: unknown;
+      }[];
+    };
     /** SpendOut */
     SpendOut: {
       amount: components["schemas"]["Amount"];
@@ -3693,6 +4503,24 @@ export interface components {
        * Format: date-time
        */
       session_expires_at: string;
+    };
+    /** StaffMemberOut */
+    StaffMemberOut: {
+      /** Email */
+      email: string;
+      /** Full Name */
+      full_name: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Last Login At */
+      last_login_at: string | null;
+      /** Roles */
+      roles: string[];
+      /** Status */
+      status: string;
     };
     /** StaffMessageIn */
     StaffMessageIn: {
@@ -3829,6 +4657,23 @@ export interface components {
      * @enum {string}
      */
     SubmissionStatus: "DRAFT" | "PENDING" | "IN_REVIEW" | "APPROVED" | "REJECTED";
+    /** SystemHealthOut */
+    SystemHealthOut: {
+      /**
+       * Checked At
+       * Format: date-time
+       */
+      checked_at: string;
+      components: components["schemas"]["ComponentHealth"];
+      /** Environment */
+      environment: string;
+      /** Jobs */
+      jobs: components["schemas"]["JobHealth"][];
+      outbox: components["schemas"]["OutboxHealth"];
+      provider: components["schemas"]["ProviderHealth"];
+      /** Version */
+      version: string;
+    };
     /** SystemStatus */
     SystemStatus: {
       checks: components["schemas"]["Checks"];
@@ -3971,6 +4816,15 @@ export interface components {
       reason_code: string | null;
       to_status: components["schemas"]["TxnStatus"];
     };
+    /** TransactionKpis */
+    TransactionKpis: {
+      /** Completed Today */
+      completed_today: components["schemas"]["TypeVolume"][];
+      /** Failed Today */
+      failed_today: number;
+      /** In Progress */
+      in_progress: number;
+    };
     /** TransactionOut */
     TransactionOut: {
       amount: components["schemas"]["Amount"];
@@ -4065,6 +4919,15 @@ export interface components {
       limits: components["schemas"]["LimitOut"][];
       type: components["schemas"]["TxnType"];
     };
+    /** TypeVolume */
+    TypeVolume: {
+      /** Amount */
+      amount: string;
+      /** Count */
+      count: number;
+      /** Type */
+      type: string;
+    };
     /** UnfreezeIn */
     UnfreezeIn: {
       /** Pin */
@@ -4097,6 +4960,80 @@ export interface components {
       privacy_mode?: boolean | null;
       /** Theme */
       theme?: ("SYSTEM" | "LIGHT" | "DARK") | null;
+    };
+    /** UserDetailOut */
+    UserDetailOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Email */
+      email: string;
+      /** Email Verified */
+      email_verified: boolean;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Kyc Status */
+      kyc_status: string | null;
+      /** Kyc Tier */
+      kyc_tier: number;
+      /** Last Login At */
+      last_login_at: string | null;
+      /** Name */
+      name: string;
+      /** Phone */
+      phone: string | null;
+      /** Recent Transactions */
+      recent_transactions: components["schemas"]["RecentTxnOut"][];
+      /** Risk Flags */
+      risk_flags: components["schemas"]["app__modules__operations__users_api__FlagOut"][];
+      /** Roles */
+      roles: string[];
+      /** Status */
+      status: string;
+      /** User Type */
+      user_type: string;
+      wallet: components["schemas"]["WalletSummaryOut"] | null;
+      /** Wallet Number */
+      wallet_number: string | null;
+    };
+    /** UserKpis */
+    UserKpis: {
+      /** Customers */
+      customers: number;
+      /** New Today */
+      new_today: number;
+    };
+    /** UserSummaryOut */
+    UserSummaryOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Email */
+      email: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Kyc Tier */
+      kyc_tier: number;
+      /** Name */
+      name: string;
+      /** Phone */
+      phone: string | null;
+      /** Status */
+      status: string;
+      /** User Type */
+      user_type: string;
+      /** Wallet Number */
+      wallet_number: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -4143,6 +5080,19 @@ export interface components {
      * @enum {string}
      */
     WalletStatus: "ACTIVE" | "FROZEN" | "SUSPENDED" | "CLOSED";
+    /** WalletSummaryOut */
+    WalletSummaryOut: {
+      /** Balance */
+      balance: string;
+      /** Currency */
+      currency: string;
+      /** Freeze Source */
+      freeze_source: string | null;
+      /** Status */
+      status: string;
+      /** Wallet Number */
+      wallet_number: string;
+    };
     /** WithdrawalIn */
     WithdrawalIn: {
       /**
@@ -4168,6 +5118,45 @@ export interface components {
     app__modules__operations__api__DecisionIn: {
       /** Note */
       note?: string | null;
+    };
+    /** FlagOut */
+    app__modules__operations__risk_api__FlagOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Expires At */
+      expires_at: string | null;
+      /** Flag */
+      flag: string;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Reason */
+      reason: string;
+      /** Removed At */
+      removed_at: string | null;
+      /** Set By */
+      set_by: string | null;
+    };
+    /** FlagOut */
+    app__modules__operations__users_api__FlagOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Expires At */
+      expires_at: string | null;
+      /** Flag */
+      flag: string;
+      /** Reason */
+      reason: string;
+      /** Removed At */
+      removed_at: string | null;
     };
     /** AmountOut */
     app__modules__payments__api__AmountOut: {
@@ -4618,6 +5607,136 @@ export interface operations {
       };
     };
   };
+  get_fee_rules_api_v1_admin_config_fees_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FeeRuleOut"][];
+        };
+      };
+    };
+  };
+  propose_fee_version_api_v1_admin_config_fees__code__versions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FeeVersionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_limit_rules_api_v1_admin_config_limits_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LimitRuleOut"][];
+        };
+      };
+    };
+  };
+  propose_limit_version_api_v1_admin_config_limits__code__versions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        code: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LimitVersionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  dashboard_api_v1_admin_dashboard_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DashboardOut"];
+        };
+      };
+    };
+  };
   document_content_api_v1_admin_kyc_documents__document_id__content_get: {
     parameters: {
       query: {
@@ -4798,6 +5917,125 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["StaffMeResponse"];
+        };
+      };
+    };
+  };
+  operations_queue_api_v1_admin_operations_queue_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OperationsQueueOut"];
+        };
+      };
+    };
+  };
+  reconciliation_items_api_v1_admin_reconciliation_items_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReconItemOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_reconciliation_item_api_v1_admin_reconciliation_items__item_id__post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        item_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ItemUpdateIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReconItemOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  run_provider_reconciliation_api_v1_admin_reconciliation_provider_runs_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProviderRunIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ProviderRunOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -5131,6 +6369,191 @@ export interface operations {
       };
     };
   };
+  role_catalog_api_v1_admin_roles_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RoleCatalogOut"];
+        };
+      };
+    };
+  };
+  simulator_panel_api_v1_admin_simulator_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SimulatorOut"];
+        };
+      };
+    };
+  };
+  set_simulator_mode_api_v1_admin_simulator_mode_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ModeIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SimulatorOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  simulator_action_api_v1_admin_simulator_operations__operation_key__actions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        operation_key: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SimActionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  staff_members_api_v1_admin_staff_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffMemberOut"][];
+        };
+      };
+    };
+  };
+  propose_role_change_api_v1_admin_staff__user_id__role_changes_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RoleChangeIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApprovalOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  system_health_api_v1_admin_system_health_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SystemHealthOut"];
+        };
+      };
+    };
+  };
   staff_tickets_api_v1_admin_tickets_get: {
     parameters: {
       query?: {
@@ -5261,6 +6684,44 @@ export interface operations {
       };
     };
   };
+  propose_refund_api_v1_admin_transactions__reference__refund_requests_post: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Client-generated unique key per user intent (8-255 chars: A-Z a-z 0-9 _ -). */
+        "Idempotency-Key"?: string | null;
+      };
+      path: {
+        reference: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundProposalIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundProposedOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   propose_reversal_api_v1_admin_transactions__reference__reversals_post: {
     parameters: {
       query?: never;
@@ -5299,6 +6760,100 @@ export interface operations {
       };
     };
   };
+  search_users_api_v1_admin_users_get: {
+    parameters: {
+      query: {
+        q: string;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserSummaryOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  user_detail_api_v1_admin_users__user_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserDetailOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  reveal_pii_api_v1_admin_users__user_id__pii_reveals_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RevealedPiiOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   user_flags_api_v1_admin_users__user_id__risk_flags_get: {
     parameters: {
       query?: never;
@@ -5316,7 +6871,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["FlagOut"][];
+          "application/json": components["schemas"]["app__modules__operations__risk_api__FlagOut"][];
         };
       };
       /** @description Validation Error */
@@ -5351,7 +6906,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["FlagOut"];
+          "application/json": components["schemas"]["app__modules__operations__risk_api__FlagOut"];
         };
       };
       /** @description Validation Error */

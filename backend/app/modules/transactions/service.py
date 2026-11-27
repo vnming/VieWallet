@@ -274,13 +274,27 @@ async def events_of(session: AsyncSession, transaction_id: uuid.UUID) -> list[Tr
 STAFF_PROPOSALS = (TxnType.ADJUSTMENT.value, TxnType.REVERSAL.value)
 
 
+def _staff_refund() -> Any:
+    return and_(
+        Transaction.type == TxnType.REFUND.value,
+        Transaction.extra["subtype"].astext == "STAFF",
+    )
+
+
 def visible_to_customer() -> Any:
-    """Staff proposals (adjustments, reversals awaiting approval) stay hidden until they
-    complete."""
+    """Staff proposals (adjustments, reversals and staff refunds awaiting approval) stay hidden
+    until they complete."""
     return or_(
-        Transaction.type.not_in(STAFF_PROPOSALS),
+        and_(Transaction.type.not_in(STAFF_PROPOSALS), ~_staff_refund()),
         Transaction.status == TxnStatus.COMPLETED.value,
     )
+
+
+def is_hidden_proposal(txn: Transaction) -> bool:
+    staff = txn.type in STAFF_PROPOSALS or (
+        txn.type == TxnType.REFUND.value and txn.extra.get("subtype") == "STAFF"
+    )
+    return staff and txn.status != TxnStatus.COMPLETED.value
 
 
 @dataclass(frozen=True, slots=True)
@@ -382,7 +396,7 @@ async def get_for_wallet(
     """404 (not 403) for other people's transactions, so references cannot be probed."""
     txn = await get_by_reference(session, reference)
     involved = wallet_id in (txn.source_wallet_id, txn.destination_wallet_id)
-    if not involved or (txn.type in STAFF_PROPOSALS and txn.status != TxnStatus.COMPLETED.value):
+    if not involved or is_hidden_proposal(txn):
         raise TransactionNotFoundError()
     return txn
 

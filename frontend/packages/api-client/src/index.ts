@@ -8,3 +8,4 @@ export * from "./money";
 export * from "./spend";
 export * from "./kyc";
 export * from "./account";
+export * from "./admin";
